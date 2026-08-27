@@ -4,10 +4,10 @@ import { Sparkles, Archive, Droplets, Info, Wind, MessageCircle } from 'lucide-r
 
 const ApparelCareGuide = () => {
   useSEO({
-    title: 'Garment Care Guide - GUL FASHION',
+    title: 'Garment Care Guide - RANG AND CRAFT',
     description: 'Expert tips on preserving the life and beauty of your luxury handcrafted ethnic wear.',
-    keywords: 'garment care, clothing maintenance, silk care, embroidery care, GUL FASHION guide',
-    url: 'https://gulfashion.com/apparel-care-guide',
+    keywords: 'garment care, clothing maintenance, silk care, embroidery care, RANG AND CRAFT guide',
+    url: 'https://rangandcraft.store/apparel-care-guide',
     type: 'website'
   });
 

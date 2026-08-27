@@ -4,10 +4,10 @@ import { Eye, Globe, Users, Headphones, Mail, ShieldCheck, Lock, RefreshCcw } fr
 
 const Accessibility = () => {
   useSEO({
-    title: 'Accessibility Statement - GUL FASHION',
+    title: 'Accessibility Statement - RANG AND CRAFT',
     description: 'Our commitment to making our website accessible to everyone.',
-    keywords: 'accessibility, inclusive design, GUL FASHION accessibility',
-    url: 'https://gulfashion.com/accessibility',
+    keywords: 'accessibility, inclusive design, RANG AND CRAFT accessibility',
+    url: 'https://rangandcraft.store/accessibility',
     type: 'website'
   });
 
@@ -15,7 +15,7 @@ const Accessibility = () => {
     {
       icon: <Users size={30} />,
       title: "OUR COMMITMENT",
-      text: "At GUL FASHION, we are committed to ensuring that our website is accessible to the widest possible audience, regardless of technology or ability. We are actively working to increase the usability of our website and adhere to available standards."
+      text: "At RANG AND CRAFT, we are committed to ensuring that our website is accessible to the widest possible audience, regardless of technology or ability. We are actively working to increase the usability of our website and adhere to available standards."
     },
     {
       icon: <Globe size={30} />,
@@ -110,8 +110,8 @@ const Accessibility = () => {
             <ContactCard 
               icon={<Mail size={24} />} 
               label="EMAIL" 
-              value="gul.fashion.jaipur@gmail.com" 
-              href="mailto:gul.fashion.jaipur@gmail.com"
+              value="rangandcraft.fashion.jaipur@gmail.com" 
+              href="mailto:rangandcraft.fashion.jaipur@gmail.com"
             />
           </div>
         </div>

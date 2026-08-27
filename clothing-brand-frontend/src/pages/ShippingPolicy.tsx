@@ -4,10 +4,10 @@ import { Truck, Tag, RefreshCcw, MapPin, Box, Headphones, Mail, MessageCircle, S
 
 const ShippingPolicy = () => {
   useSEO({
-    title: 'Shipping Policy - GUL FASHION',
+    title: 'Shipping Policy - RANG AND CRAFT',
     description: 'Learn about our delivery times, shipping costs, and order tracking.',
-    keywords: 'shipping policy, delivery time, shipping rates, GUL FASHION',
-    url: 'https://gulfashion.com/shipping-policy',
+    keywords: 'shipping policy, delivery time, shipping rates, RANG AND CRAFT',
+    url: 'https://rangandcraft.store/shipping-policy',
     type: 'website'
   });
 
@@ -124,8 +124,8 @@ const ShippingPolicy = () => {
             <ContactCard 
               icon={<Mail size={24} />} 
               label="EMAIL" 
-              value="gul.fashion.jaipur@gmail.com" 
-              href="mailto:gul.fashion.jaipur@gmail.com"
+              value="rangandcraft.fashion.jaipur@gmail.com" 
+              href="mailto:rangandcraft.fashion.jaipur@gmail.com"
             />
             <ContactCard 
               icon={<MessageCircle size={24} />} 

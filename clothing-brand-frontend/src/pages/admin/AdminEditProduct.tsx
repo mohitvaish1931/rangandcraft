@@ -151,10 +151,10 @@ const AdminEditProduct = () => {
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Category</label>
               <select name="category" defaultValue={localForm.category} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-indigo-600/20 transition-all outline-none">
                 <option value="">Select category</option>
-                <option value="Kurta Sets">Kurta Sets</option>
+                <option value="Short Kurtas">Short Kurtas</option>
                 <option value="Suits">Suits</option>
-                <option value="Tops">Tops</option>
-                <option value="Three Piece Tops">Three Piece Tops</option>
+                <option value="Half Sleeves Shirts">Half Sleeves Shirts</option>
+                <option value="Three Piece Half Sleeves Shirts">Three Piece Half Sleeves Shirts</option>
               </select>
             </div>
           </div>

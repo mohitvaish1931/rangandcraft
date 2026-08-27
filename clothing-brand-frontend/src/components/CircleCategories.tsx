@@ -9,28 +9,28 @@ interface CircleCategoriesProps {
 const CircleCategories = ({ products = [] }: CircleCategoriesProps) => {
   const categoriesList = [
     {
-      name: 'Kurta Sets',
-      path: '/shop?category=Kurta%20Sets',
-      label: 'Kurta Sets',
+      name: 'Short Kurtas',
+      path: '/shop?category=Short%20Kurtas',
+      label: 'Short Kurtas',
       defaultImg: '/images/kurta-category.png'
     },
     {
-      name: 'Suit Sets',
-      path: '/shop?category=Suit%20Sets',
-      label: 'Suit Sets',
+      name: 'Long Kurtas',
+      path: '/shop?category=Long%20Kurtas',
+      label: 'Long Kurtas',
       defaultImg: '/images/suits-category.png'
     },
 
     {
-      name: 'Tops',
-      path: '/shop?category=Tops',
-      label: 'Tops',
+      name: 'Half Sleeves Shirts',
+      path: '/shop?category=Half Sleeves Shirts',
+      label: 'Half Sleeves Shirts',
       defaultImg: '/images/indowestern-category.png'
     },
     {
-      name: 'Maxis & Dresses',
-      path: '/shop?category=Maxis%20%26%20Dresses',
-      label: 'Maxis & Dresses',
+      name: 'Full Sleeves Shirts',
+      path: '/shop?category=Full%20Sleeves%20Shirts',
+      label: 'Full Sleeves Shirts',
       defaultImg: '/images/bridal-edit.png'
     }
   ];

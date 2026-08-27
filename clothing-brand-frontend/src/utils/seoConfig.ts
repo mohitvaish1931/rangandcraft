@@ -5,19 +5,19 @@
 
 export const SEO_CONFIG = {
   // Site Information
-  siteName: 'GUL FASHION',
-  siteUrl: 'https://gulfashion.com',
+  siteName: 'RANG AND CRAFT',
+  siteUrl: 'https://rangandcraft.store',
   siteDescription: 'Premium luxury clothing collection with premium sarees, suits, and ethnic wear and more',
-  siteLogo: 'https://gulfashion.com/logo.png',
+  siteLogo: 'https://rangandcraft.store/logo.png',
   
   // Business Information
   business: {
-    name: 'GUL FASHION',
+    name: 'RANG AND CRAFT',
     type: 'LocalBusiness',
     description: 'Premium Luxury Clothing Retailer',
     priceRange: '₹₹₹',
     areaServed: 'IN',
-    email: 'gulfashionjaipur@gmail.com',
+    email: 'rangandcraft@gmail.com',
     phone: '+91 93513 25459',
     address: {
       streetAddress: 'Pahadiya chowk',
@@ -30,65 +30,65 @@ export const SEO_CONFIG = {
 
   // Social Media
   socialProfiles: {
-    facebook: 'https://www.facebook.com/gulfashionjaipur',
-    instagram: 'https://www.instagram.com/gulfashionjaipur',
-    twitter: 'https://twitter.com/gulfashionjp',
-    linkedin: 'https://www.linkedin.com/company/gul-fashion',
-    youtube: 'https://www.youtube.com/channel/gulfashionjaipur'
+    facebook: 'https://www.facebook.com/rangandcraft',
+    instagram: 'https://www.instagram.com/rangandcraft',
+    twitter: 'https://twitter.com/rangandcraft',
+    linkedin: 'https://www.linkedin.com/company/rangandcraft-fashion',
+    youtube: 'https://www.youtube.com/channel/rangandcraft'
   },
 
   // Default Meta Information
   defaultMeta: {
-    title: 'GUL FASHION - Premium Luxury Clothing Collection | Sarees, Suits & Ethnic Wear',
-    description: 'Shop GUL FASHION\' exquisite luxury clothing collection. Premium sarees, suits, and dresses & more. Timeless elegance with finest craftsmanship. Explore our 100% authentic collection now.',
+    title: 'RANG AND CRAFT - Premium Luxury Clothing Collection | Sarees, Suits & Ethnic Wear',
+    description: 'Shop RANG AND CRAFT\' exquisite luxury clothing collection. Premium sarees, suits, and dresses & more. Timeless elegance with finest craftsmanship. Explore our 100% authentic collection now.',
     keywords: 'luxury clothing, premium sarees, suits, and dresses, fine clothing, designer clothing, luxury accessories, authentic clothing, clothing collection'
   },
 
   // Page-Specific Meta
   pages: {
     home: {
-      title: 'GUL FASHION - Premium Luxury Clothing Collection | Shop Now',
-      description: 'Discover GUL FASHION\' exquisite luxury clothing collection. Premium sarees, suits, and dresses & more. Timeless elegance with finest craftsmanship. Shop 100% authentic clothing today.',
+      title: 'RANG AND CRAFT - Premium Luxury Clothing Collection | Shop Now',
+      description: 'Discover RANG AND CRAFT\' exquisite luxury clothing collection. Premium sarees, suits, and dresses & more. Timeless elegance with finest craftsmanship. Shop 100% authentic clothing today.',
       keywords: 'luxury clothing, premium clothing collection, sarees, suits, and dresses, luxury accessories, designer clothing, fine clothing, authentic clothing'
     },
     products: {
-      title: 'All Products - GUL FASHION Premium Clothing Collection',
-      description: 'Browse our complete collection of premium luxury clothing. Find the perfect sarees, suits, and dresses and more from GUL FASHION.',
+      title: 'All Products - RANG AND CRAFT Premium Clothing Collection',
+      description: 'Browse our complete collection of premium luxury clothing. Find the perfect sarees, suits, and dresses and more from RANG AND CRAFT.',
       keywords: 'all products, clothing collection, sarees, suits, and dresses, luxury clothing, premium accessories'
     },
-    kurtaSets: {
-      title: 'Premium Kurta Sets - GUL FASHION Luxury Ethnic Wear',
-      description: 'Discover our elegant Kurta Sets. Premium designs crafted with finest fabrics, hand-embroidery, and traditional Jaipur prints.',
+    shortKurtas: {
+      title: 'Premium Short Kurtas - RANG AND CRAFT Luxury Ethnic Wear',
+      description: 'Discover our elegant Short Kurtas. Premium designs crafted with finest fabrics, hand-embroidery, and traditional Jaipur prints.',
       keywords: 'kurta sets, luxury kurtas, designer kurta sets, ethnic wear, jaipur kurtas, handcrafted kurta'
     },
     suits: {
-      title: 'Designer Suits Collection - GUL FASHION Luxury Clothing',
-      description: 'Explore GUL FASHION\' stunning collection of designer suits. From gotta patti to zari work, find perfect ensembles for every festive event.',
+      title: 'Designer Suits Collection - RANG AND CRAFT Luxury Clothing',
+      description: 'Explore RANG AND CRAFT\' stunning collection of designer suits. From gotta patti to zari work, find perfect ensembles for every festive event.',
       keywords: 'designer suits, luxury suits, embroidered suits, gotta patti suits, sharara suits, traditional suits'
     },
     sarees: {
-      title: 'Royal Sarees Collection - GUL FASHION Luxury Wear',
+      title: 'Royal Sarees Collection - RANG AND CRAFT Luxury Wear',
       description: 'Shop our royal sarees collection featuring premium silk, georgette, and organza sarees with intricate borders and handloom craftsmanship.',
       keywords: 'sarees, luxury sarees, designer sarees, silk sarees, banarasi sarees, jaipur handloom sarees'
     },
     lehengas: {
-      title: 'Exquisite Bridal Lehengas - GUL FASHION Luxury Bridal Edit',
-      description: 'Find your dream bridal lehenga at GUL FASHION. Intricate zardozi, royal zari, and timeless crimson silhouettes crafted for your precious moments.',
+      title: 'Exquisite Bridal Lehengas - RANG AND CRAFT Luxury Bridal Edit',
+      description: 'Find your dream bridal lehenga at RANG AND CRAFT. Intricate zardozi, royal zari, and timeless crimson silhouettes crafted for your precious moments.',
       keywords: 'bridal lehenga, luxury lehengas, wedding lehenga, crimson lehenga, hand-embroidered lehenga'
     },
     contact: {
-      title: 'Contact Us - GUL FASHION Premium Clothing',
-      description: 'Get in touch with GUL FASHION. We\'re here to help with your clothing inquiries, orders, and customer service.',
-      keywords: 'contact us, customer service, clothing support, GUL FASHION contact'
+      title: 'Contact Us - RANG AND CRAFT Premium Clothing',
+      description: 'Get in touch with RANG AND CRAFT. We\'re here to help with your clothing inquiries, orders, and customer service.',
+      keywords: 'contact us, customer service, clothing support, RANG AND CRAFT contact'
     },
     trackOrder: {
-      title: 'Track Your Order - GUL FASHION Clothing Delivery Status',
-      description: 'Track your GUL FASHION clothing order in real-time. Get live updates on your shipment status, delivery date and package location.',
+      title: 'Track Your Order - RANG AND CRAFT Clothing Delivery Status',
+      description: 'Track your RANG AND CRAFT clothing order in real-time. Get live updates on your shipment status, delivery date and package location.',
       keywords: 'track order, order tracking, clothing delivery, shipment status, order status'
     },
     profile: {
-      title: 'My Profile - GUL FASHION Clothing',
-      description: 'Manage your profile, view orders, cart and wishlist on GUL FASHION.',
+      title: 'My Profile - RANG AND CRAFT Clothing',
+      description: 'Manage your profile, view orders, cart and wishlist on RANG AND CRAFT.',
       keywords: 'profile, orders, wishlist, cart, account management'
     }
   },
@@ -142,7 +142,7 @@ export const SEO_CONFIG = {
   },
 
   // Canonical Base URL
-  canonicalBase: 'https://gulfashion.com',
+  canonicalBase: 'https://rangandcraft.store',
 
   // OpenSearch Description
   openSearchUrl: '/opensearch.xml',

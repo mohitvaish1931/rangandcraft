@@ -31,10 +31,10 @@ interface OrderTrackingResponse {
 
 const TrackOrder = () => {
   useSEO({
-    title: 'Track Your Order - GUL FASHION',
-    description: 'Track your GUL FASHION clothing order in real-time. Get live updates on your shipment status.',
-    keywords: 'track order, clothing delivery status, gul fashion tracking',
-    url: 'https://gulfashion.com/track-order',
+    title: 'Track Your Order - RANG AND CRAFT',
+    description: 'Track your RANG AND CRAFT clothing order in real-time. Get live updates on your shipment status.',
+    keywords: 'track order, clothing delivery status, rang and craft tracking',
+    url: 'https://rangandcraft.store/track-order',
     type: 'website'
   });
 

@@ -35,7 +35,7 @@ function getName(folder) {
 
 const folderConfig = {
   "Folder 1(Three Piece Top)": {
-    category: "Three Piece Tops",
+    category: "Three Piece Half Sleeves Shirts",
     subcategory: "Daily Wear",
     pric
 <truncated 9030 bytes>

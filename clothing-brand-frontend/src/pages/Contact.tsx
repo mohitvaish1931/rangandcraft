@@ -9,10 +9,10 @@ import './Contact.css';
 
 const Contact = () => {
   useSEO({
-    title: 'Contact Us - GUL FASHION Jaipur',
-    description: 'Get in touch with GUL FASHION for custom tailoring, styling guidance, and luxury ethnic wear inquiries.',
-    keywords: 'contact gul fashion, jaipur boutique, ethnic wear contact, custom tailoring jaipur',
-    url: 'https://gulfashion.com/contact',
+    title: 'Contact Us - RANG AND CRAFT Jaipur',
+    description: 'Get in touch with RANG AND CRAFT for custom tailoring, styling guidance, and luxury ethnic wear inquiries.',
+    keywords: 'contact rang and craft, jaipur boutique, ethnic wear contact, custom tailoring jaipur',
+    url: 'https://rangandcraft.store/contact',
     type: 'website'
   });
 
@@ -67,7 +67,7 @@ const Contact = () => {
             <div className="contact-hero-img-wrap animate-fade-in" style={{animationDelay: '0.2s'}}>
               <img 
                 src="/images/clothing_rack_hero.png" 
-                alt="Gul Fashion Atelier" 
+                alt="Rang and Craft Atelier" 
                 className="contact-hero-img"
               />
             </div>
@@ -90,7 +90,7 @@ const Contact = () => {
                 <div className="item-icon-circle"><Mail size={20} /></div>
                 <div className="item-content">
                   <h3>EMAIL</h3>
-                  <p>gul.fashion.jaipur@gmail.com</p>
+                  <p>rangandcraft.fashion.jaipur@gmail.com</p>
                   <p className="sub-info">We reply within 24 hours</p>
                 </div>
               </div>
@@ -237,7 +237,7 @@ const Contact = () => {
               style={{ border: 0 }} 
               allowFullScreen={true} 
               loading="lazy"
-              title="Gul Fashion Studio Location"
+              title="Rang and Craft Studio Location"
             ></iframe>
           </div>
           <div className="map-content">

@@ -10,7 +10,7 @@ const router = express.Router();
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'gul-products',
+    folder: 'rangandcraft-products',
     resource_type: 'image',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
   },
@@ -88,7 +88,7 @@ router.post('/', upload.array('image', 10), async (req, res) => {
       originalPrice: Number(req.body.originalPrice || 0),
       description: req.body.description,
       category: req.body.category,
-      brand: req.body.brand || 'GUL FASHION',
+      brand: req.body.brand || 'RANG AND CRAFT',
       countInStock: Number(req.body.stock || req.body.countInStock || 0),
       stock: Number(req.body.stock || req.body.countInStock || 0),
       image: imageUrls[0] || '/images/placeholder.png',

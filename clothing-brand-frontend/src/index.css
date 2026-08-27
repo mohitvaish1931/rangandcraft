@@ -10,9 +10,9 @@
 @config "../tailwind.config.js";
 
 :root {
-  --primary-purple: #4B0082; /* Royal Purple */
-  --accent-purple: #6A0DAD; /* Vibrant Purple */
-  --gold-primary: #C5A059;
+  --primary-purple: #1a3c34; /* Dark Teal */ /* Royal Purple */
+  --accent-purple: #26554a; /* Lighter Teal */ /* Vibrant Purple */
+  --gold-primary: #a88a53;
   --gold-light: #FBF7E9;
   --luxury-dark: #121212;
   --text-primary: #1A1A1A;

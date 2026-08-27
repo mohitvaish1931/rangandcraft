@@ -420,9 +420,9 @@ const ProductScreen = () => {
           <>
             {/* @ts-ignore */}
             <Helmet>
-              <title>{`${product.name} | Gul Fashion`}</title>
+              <title>{`${product.name} | Rang and Craft`}</title>
               <meta name="description" content={product.description ? product.description.substring(0, 150) + '...' : ''} />
-              <meta property="og:title" content={`${product.name} | Gul Fashion`} />
+              <meta property="og:title" content={`${product.name} | Rang and Craft`} />
               <meta property="og:description" content={product.description ? product.description.substring(0, 150) + '...' : ''} />
               <meta property="og:image" content={product.image} />
               <script type="application/ld+json">
@@ -438,11 +438,11 @@ const ProductScreen = () => {
                     "sku": "${product._id}",
                     "brand": {
                       "@type": "Brand",
-                      "name": "Gul Fashion"
+                      "name": "Rang and Craft"
                     },
                     "offers": {
                       "@type": "Offer",
-                      "url": "https://gulfashion.store/product/${product._id}",
+                      "url": "https://rangandcraft.store/product/${product._id}",
                       "priceCurrency": "INR",
                       "price": "${product.price}",
                       "itemCondition": "https://schema.org/NewCondition",

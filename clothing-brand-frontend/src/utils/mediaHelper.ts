@@ -21,7 +21,7 @@ export const getImageUrl = (imageUrl: string | undefined, width?: number): strin
   // Backwards compatibility for relative paths if any remain
   if (imageUrl.startsWith('/uploads/') || imageUrl.startsWith('uploads/')) {
     const baseUrl = import.meta.env.VITE_API_BASE ?? 
-      (import.meta.env.DEV ? 'http://localhost:5000' : 'https://gul-275k.onrender.com');
+      (import.meta.env.DEV ? 'http://localhost:5000' : 'https://rangandcraft-275k.onrender.com');
     const cleanUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
     return `${baseUrl}${cleanUrl}`;
   }

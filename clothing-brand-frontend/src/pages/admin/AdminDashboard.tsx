@@ -205,7 +205,7 @@ const AdminDashboard = () => {
             Welcome back, <span className="text-[#6B21A8]">Admin</span> 👋
           </h1>
           <p className="text-[15px] text-gray-500 mt-1">
-            Here's what's happening with <span className="font-semibold text-gray-700">Gul Fashion</span> today.
+            Here's what's happening with <span className="font-semibold text-gray-700">Rang and Craft</span> today.
           </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-xl px-5 py-3.5 flex items-center gap-6 shadow-sm">

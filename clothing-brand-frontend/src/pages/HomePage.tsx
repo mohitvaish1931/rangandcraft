@@ -65,21 +65,21 @@ const HomePage = () => {
     .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
     .slice(0, 8);
 
-  const kurtaSets = homepageProducts
-    .filter(p => p.category === 'Kurta Sets')
+  const shortKurtas = homepageProducts
+    .filter(p => p.category === 'Short Kurtas')
     .slice(0, 8);
 
-  const suitSets = homepageProducts
-    .filter(p => p.category === 'Suit Sets')
+  const longKurtas = homepageProducts
+    .filter(p => p.category === 'Long Kurtas')
     .slice(0, 8);
 
-  const topsCoOrds = homepageProducts
-    .filter(p => p.category === 'Tops')
+  const halfSleeves = homepageProducts
+    .filter(p => p.category === 'Half Sleeves Shirts')
     .slice(0, 8);
 
 
-  const maxisDresses = homepageProducts
-    .filter(p => p.category === 'Maxis & Dresses')
+  const fullSleeves = homepageProducts
+    .filter(p => p.category === 'Full Sleeves Shirts')
     .slice(0, 8);
 
   const TrustBadges = () => (
@@ -174,24 +174,24 @@ const HomePage = () => {
     <div className="homepage-wrapper">
       {/* @ts-ignore */}
       <Helmet>
-        <title>Gul Fashion | Premium Women's Ethnic & Casual Wear</title>
-        <meta name="description" content="Shop the latest trends in women's ethnic and casual wear at Gul Fashion. Explore our wide collection of Kurtis, Tops, Co-ord sets, and more with premium quality." />
+        <title>Rang and Craft | Premium Men's Ethnic & Casual Wear</title>
+        <meta name="description" content="Shop the latest trends in men's ethnic and casual wear at Rang and Craft. Explore our wide collection of Kurtas, Half Sleeves Shirts, Co-ord sets, and more with premium quality." />
         <script type="application/ld+json">
           {`
             {
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Gul Fashion",
-              "url": "https://gulfashion.store",
-              "logo": "https://gulfashion.store/favicon.svg",
+              "name": "Rang and Craft",
+              "url": "https://rangandcraft.store",
+              "logo": "https://rangandcraft.store/favicon.svg",
               "contactPoint": {
                 "@type": "ContactPoint",
                 "telephone": "+91-9351325459",
                 "contactType": "customer service"
               },
               "sameAs": [
-                "https://www.facebook.com/gulfashion",
-                "https://www.instagram.com/gulfashion"
+                "https://www.facebook.com/rangandcraft",
+                "https://www.instagram.com/rangandcraft"
               ]
             }
           `}
@@ -217,16 +217,16 @@ const HomePage = () => {
         viewAllLink="/shop"
       />
 
-      <section className="bridal-edit-section reveal-on-scroll">
-        <div className="bridal-split">
-          <div className="bridal-img-side">
-            <img src="/images/bridal-edit.png" alt="Bridal Edit 2026" />
+      <section className="heritage-edit-section reveal-on-scroll">
+        <div className="heritage-split">
+          <div className="heritage-img-side">
+            <img src="/images/heritage-edit.png" alt="Heritage Edit 2026" />
           </div>
-          <div className="bridal-content-side">
-            <span className="gold-capsule">THE BRIDAL EDIT 2026</span>
-            <h2 className="font-serif bridal-title">Dressed for Your<br/>Most Precious Moments</h2>
+          <div className="heritage-content-side">
+            <span className="gold-capsule">THE HERITAGE EDIT 2026</span>
+            <h2 className="font-serif heritage-title">Dressed for Your<br/>Most Precious Moments</h2>
             
-            <div className="bridal-stats-grid">
+            <div className="heritage-stats-grid">
               <div className="stat-item">
                 <h3 className="font-serif" style={{color: 'var(--secondary-color)', fontSize: '2rem'}}>100K+</h3>
                 <p>HAPPY CLIENTS</p>
@@ -237,11 +237,11 @@ const HomePage = () => {
               </div>
               <div className="stat-item">
                 <h3 className="font-serif" style={{color: 'var(--primary-purple)', fontSize: '2rem'}}>21 <span style={{fontSize: '1rem'}}>Yrs</span></h3>
-                <p>OF GUL FASHION</p>
+                <p>OF RANG AND CRAFT</p>
               </div>
             </div>
             
-            <p className="bridal-desc">
+            <p className="heritage-desc">
               Experience the royal legacy of Jaipur's intricate craftsmanship, where every thread weaves a tale of timeless beauty, creating heirlooms meant to be treasured forever.
             </p>
           </div>
@@ -252,8 +252,8 @@ const HomePage = () => {
         tag="BEST SELLING CATEGORY" 
         titleLight="KURTA" 
         titleItalic="SETS" 
-        items={kurtaSets} 
-        viewAllLink="/shop?category=Kurta%20Sets"
+        items={shortKurtas} 
+        viewAllLink="/shop?category=Short%20Kurtas"
       />
 
       <TrustBadges />
@@ -262,8 +262,8 @@ const HomePage = () => {
         tag="TOP CATEGORY" 
         titleLight="SUIT" 
         titleItalic="SETS" 
-        items={suitSets} 
-        viewAllLink="/shop?category=Suit%20Sets"
+        items={longKurtas} 
+        viewAllLink="/shop?category=Long%20Kurtas"
       />
 
 
@@ -271,16 +271,16 @@ const HomePage = () => {
         tag="DAILY CHIC" 
         titleLight="TOPS" 
         titleItalic="" 
-        items={topsCoOrds} 
-        viewAllLink="/shop?category=Tops"
+        items={halfSleeves} 
+        viewAllLink="/shop?category=Half Sleeves Shirts"
       />
 
       <CarouselSection 
         tag="ELEGANT FLOW" 
         titleLight="MAXIS &" 
         titleItalic="DRESSES" 
-        items={maxisDresses} 
-        viewAllLink="/shop?category=Maxis%20%26%20Dresses"
+        items={fullSleeves} 
+        viewAllLink="/shop?category=Full%20Sleeves%20Shirts"
       />
 
 
@@ -321,7 +321,7 @@ const HomePage = () => {
         <h2 className="title font-serif" style={{fontSize: '2.5rem', marginBottom: '40px'}}>What Our <i style={{color: 'var(--primary-purple)'}}>Patrons Say</i></h2>
         <div style={{maxWidth: '800px', margin: '0 auto'}}>
            <p className="font-serif italic" style={{fontSize: '1.5rem', lineHeight: '1.8', color: '#444'}}>
-             "The craftsmanship is unparalleled. I wore a GUL FASHION kurta set for my wedding and it made me feel like royalty. Every thread is intricately woven with magic."
+             "The craftsmanship is unparalleled. I wore a RANG AND CRAFT kurta set for my wedding and it made me feel like royalty. Every thread is intricately woven with magic."
            </p>
            <p style={{marginTop: '20px', letterSpacing: '2px', fontWeight: 'bold'}}>- PRIYANKA SHARMA</p>
         </div>

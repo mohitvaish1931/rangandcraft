@@ -80,17 +80,17 @@ const runSeed = async () => {
   console.log('Target folders found:', targetFolders);
 
   const productNames = {
-      7: 'Aisha Floral Print One Piece Kurti Set',
+      7: 'Aisha Floral Print One Piece Kurta Set',
       8: 'Kiara Maroon Cotton Floral Print Top',
       9: 'Myra Black Cotton Floral Print Top',
       10: 'Zoya Elegant Daily Wear Top'
   };
 
   const productCategories = {
-      7: 'Kurti Sets',
-      8: 'Tops & Co-ord Sets',
-      9: 'Tops & Co-ord Sets',
-      10: 'Tops & Co-ord Sets'
+      7: 'Short Kurtas',
+      8: 'Half Sleeves Shirts & Co-ord Sets',
+      9: 'Half Sleeves Shirts & Co-ord Sets',
+      10: 'Half Sleeves Shirts & Co-ord Sets'
   };
 
   for (const folderName of targetFolders) {
@@ -120,7 +120,7 @@ const runSeed = async () => {
             name: productNames[folderNum],
             image: uploadedUrls[0],
             images: uploadedUrls,
-            brand: 'GUL FASHION',
+            brand: 'RANG AND CRAFT',
             category: productCategories[folderNum],
             description: '✨ Stylish Top with Full Sleeves ✨\n🌿 Fabric: cotton printed\n⭐ Size: S To xxL\n⭐ Sleeves: Full Sleeves\n⭐ Type: Fully Stitched\n🎨 Colors: Maroon & Black\n😍 Perfect for Daily Wear, College Wear & Casual Outings\n🤩 Price :-250/- No Less\n✈️ Ready to Dispatch\n💯 Best Quality Guaranteed',
             price: 250,

@@ -95,10 +95,10 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Kurta Sets', path: '/shop?category=Kurta%20Sets' },
-    { name: 'Suit Sets', path: '/shop?category=Suit%20Sets' },
-    { name: 'Tops', path: '/shop?category=Tops' },
-    { name: 'Maxis & Dresses', path: '/shop?category=Maxis%20%26%20Dresses' },
+    { name: 'Short Kurtas', path: '/shop?category=Short%20Kurtas' },
+    { name: 'Long Kurtas', path: '/shop?category=Long%20Kurtas' },
+    { name: 'Half Sleeves Shirts', path: '/shop?category=Half Sleeves Shirts' },
+    { name: 'Full Sleeves Shirts', path: '/shop?category=Full%20Sleeves%20Shirts' },
     { name: 'Track Order', path: '/track-order', icon: <Truck size={14} /> },
     { name: 'Contact Us', path: '/contact', icon: <Phone size={14} /> }
   ];
@@ -120,7 +120,7 @@ const Header = () => {
             {/* Left: Logo */}
             <div className="header-left">
               <Link to="/" className="main-logo">
-                <img src={logoImg} alt="Gul Fashion Logo" className="logo-img" />
+                <img src={logoImg} alt="Rang and Craft Logo" className="logo-img" />
               </Link>
             </div>
 
@@ -257,7 +257,7 @@ const Header = () => {
         <div className="container nav-container">
           {isScrolled && (
             <Link to="/" className="mini-logo">
-                <img src={logoImg} alt="Gul Fashion Logo" className="logo-img-mini" />
+                <img src={logoImg} alt="Rang and Craft Logo" className="logo-img-mini" />
             </Link>
           )}
           
@@ -287,7 +287,7 @@ const Header = () => {
       <div className={`mobile-nav-overlay ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
       <div className={`mobile-nav-menu ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-nav-header">
-           <img src={logoImg} alt="Gul Fashion Logo" className="logo-img-mobile" />
+           <img src={logoImg} alt="Rang and Craft Logo" className="logo-img-mobile" />
            <button onClick={() => setMobileMenuOpen(false)}><X size={24} /></button>
         </div>
         <ul className="mobile-nav-list">

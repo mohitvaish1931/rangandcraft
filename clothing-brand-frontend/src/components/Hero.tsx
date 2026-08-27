@@ -13,9 +13,9 @@ const Hero = ({ products = [] }: HeroProps) => {
 
   // Dynamic slides from database collections with array checks
   const list = Array.isArray(products) ? products : [];
-  const suitsProduct = list.find(p => p.category === 'Suit Sets');
-  const kurtaProduct = list.find(p => p.category === 'Kurta Sets');
-  const topsProduct = list.find(p => p.category === 'Tops');
+  const suitsProduct = list.find(p => p.category === 'Long Kurtas');
+  const kurtaProduct = list.find(p => p.category === 'Short Kurtas');
+  const topsProduct = list.find(p => p.category === 'Half Sleeves Shirts');
 
   const slides = [
     suitsProduct ? {
@@ -23,7 +23,7 @@ const Hero = ({ products = [] }: HeroProps) => {
       src: suitsProduct.image,
       title: suitsProduct.name,
       subtitle: suitsProduct.description,
-      btnPrimary: 'SHOP SUIT SETS',
+      btnPrimary: 'SHOP LONG KURTAS',
       btnOutline: 'OUR STORY',
       link: `/product/${suitsProduct._id}`
     } : null,

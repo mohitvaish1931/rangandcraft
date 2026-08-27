@@ -16,7 +16,7 @@ const resetAdmin = async () => {
 
     // Use findOneAndUpdate to bypass the pre-save hook
     const result = await User.findOneAndUpdate(
-      { email: 'admin@gulfashion.com' },
+      { email: 'admin@rangandcraft.store' },
       { 
         $set: { 
           password: hashedPassword, 
@@ -31,7 +31,7 @@ const resetAdmin = async () => {
       // Use insertOne directly to bypass pre-save hook
       await User.collection.insertOne({
         name: 'Admin',
-        email: 'admin@gulfashion.com',
+        email: 'admin@rangandcraft.store',
         password: hashedPassword,
         isAdmin: true,
         createdAt: new Date(),
@@ -43,11 +43,11 @@ const resetAdmin = async () => {
     }
 
     // Verify
-    const verifyUser = await User.findOne({ email: 'admin@gulfashion.com' });
+    const verifyUser = await User.findOne({ email: 'admin@rangandcraft.store' });
     const isMatch = await bcrypt.compare(newPassword, verifyUser.password);
     console.log(`Login verification: ${isMatch ? '✅ Password matches!' : '❌ Password does NOT match!'}`);
     console.log(`\nCredentials:`);
-    console.log(`  Email:    admin@gulfashion.com`);
+    console.log(`  Email:    admin@rangandcraft.store`);
     console.log(`  Password: ${newPassword}`);
 
     process.exit(0);

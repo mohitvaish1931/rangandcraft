@@ -69,7 +69,7 @@ const ShowcaseVideos: React.FC = () => {
             <p className="text-text-secondary text-sm font-light italic tracking-wide">Witness the artistry in motion</p>
           </div>
           <div className="flex items-center gap-4">
-            {state.user && state.user.email === 'admin@GUL FASHION.com' && (
+            {state.user && state.user.email === 'admin@RANG AND CRAFT.com' && (
               <button 
                 onClick={() => setShowInput(!showInput)} 
                 className="px-6 py-2.5 bg-primary-purple text-white rounded-full text-xs tracking-widest luxury-serif hover:bg-text-primary transition-all duration-300 shadow-lg hover:shadow-primary-purple/20"

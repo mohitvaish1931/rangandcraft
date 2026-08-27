@@ -5,7 +5,7 @@ import { useAppContext } from '../context/AppContext';
 import { API_ENDPOINTS } from '../utils/api';
 
 const SUBCATEGORIES: Record<string, string[]> = {
-  'Kurta Sets': ['Daily Wear', 'Festive', 'Hand-embroidered', 'Printed'],
+  'Short Kurtas': ['Daily Wear', 'Festive', 'Hand-embroidered', 'Printed'],
   Suits: ['Anarkali', 'Straight Cut', 'Sharara', 'Palazzo Set', 'Gown Style']
 };
 
@@ -330,7 +330,7 @@ const EditProduct = () => {
                   className="w-full px-4 py-3 bg-white/10 border border-gold-primary/10 rounded-xl text-text-primary focus:ring-2 focus:ring-primary-purple/20 outline-none transition-all"
                 >
                   <option value="">Select category</option>
-                  <option value="Kurta Sets">Kurta Sets</option>
+                  <option value="Short Kurtas">Short Kurtas</option>
                   <option value="Suits">Suits</option>
                 </select>
               </div>

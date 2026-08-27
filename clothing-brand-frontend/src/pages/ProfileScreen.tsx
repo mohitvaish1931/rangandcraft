@@ -135,7 +135,7 @@ const ProfileScreen = () => {
                 </div>
                 <h3 className="font-serif" style={{ fontSize: '1.8rem', color: '#2D0A4E', marginBottom: '15px' }}>Your Collection Journey</h3>
                 <p style={{ color: '#666', lineHeight: '1.8', marginBottom: '35px', maxWidth: '400px', margin: '0 auto 35px' }}>
-                   It seems your wardrobe is awaiting its first Gul Fashion masterpiece. Our latest collection of handcrafted ethnic wear is ready for discovery.
+                   It seems your wardrobe is awaiting its first Rang and Craft masterpiece. Our latest collection of handcrafted ethnic wear is ready for discovery.
                 </p>
                 <Link to="/shop" style={{ 
                   display: 'inline-flex', 

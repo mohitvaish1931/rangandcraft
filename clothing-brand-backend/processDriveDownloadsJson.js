@@ -46,7 +46,7 @@ const runSeed = async () => {
   }
 
   // Delete previous test products generated manually and with bad timestamps
-  await Product.deleteMany({ name: { $regex: /Style \d+|Floral Print One Piece Kurti|Cotton Floral Print Top|Daily Wear Top/i }});
+  await Product.deleteMany({ name: { $regex: /Style \d+|Floral Print One Piece Kurta|Cotton Floral Print Top|Daily Wear Top/i }});
   console.log('Cleaned up previous grouped products.');
 
   const groupsFile = 'local_groups.json';
@@ -58,17 +58,17 @@ const runSeed = async () => {
   const allGroups = JSON.parse(fs.readFileSync(groupsFile, 'utf-8'));
   
   const productNames = {
-      7: 'Floral Print One Piece Kurti',
+      7: 'Floral Print One Piece Kurta',
       8: 'Maroon Cotton Floral Print Top',
       9: 'Black Cotton Floral Print Top',
       10: 'Elegant Daily Wear Top'
   };
 
   const productCategories = {
-      7: 'Kurti Sets',
-      8: 'Tops & Co-ord Sets',
-      9: 'Tops & Co-ord Sets',
-      10: 'Tops & Co-ord Sets'
+      7: 'Short Kurtas',
+      8: 'Half Sleeves Shirts & Co-ord Sets',
+      9: 'Half Sleeves Shirts & Co-ord Sets',
+      10: 'Half Sleeves Shirts & Co-ord Sets'
   };
 
   for (const [folderName, groups] of Object.entries(allGroups)) {
@@ -96,7 +96,7 @@ const runSeed = async () => {
                 name: productName,
                 image: uploadedUrls[0],
                 images: uploadedUrls,
-                brand: 'GUL FASHION',
+                brand: 'RANG AND CRAFT',
                 category: productCategories[folderNum],
                 description: '✨ Stylish Top with Full Sleeves ✨\n🌿 Fabric: cotton printed\n⭐ Size: S To xxL\n⭐ Sleeves: Full Sleeves\n⭐ Type: Fully Stitched\n😍 Perfect for Daily Wear, College Wear & Casual Outings\n🤩 Price :-250/- No Less\n✈️ Ready to Dispatch\n💯 Best Quality Guaranteed',
                 price: 250,

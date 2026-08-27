@@ -11,7 +11,7 @@ import { API_ENDPOINTS } from '../utils/api';
 import { getImageUrl } from '../utils/mediaHelper';
 
 const SUBCATEGORIES: Record<string, string[]> = {
-  'Kurta Sets': ['Daily Wear', 'Festive', 'Hand-embroidered', 'Printed'],
+  'Short Kurtas': ['Daily Wear', 'Festive', 'Hand-embroidered', 'Printed'],
   Suits: ['Anarkali', 'Straight Cut', 'Sharara', 'Palazzo Set', 'Gown Style']
 };
 
@@ -327,7 +327,7 @@ const Admin = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
                 <option value="">Select category</option>
-                <option value="Kurta Sets">Kurta Sets</option>
+                <option value="Short Kurtas">Short Kurtas</option>
                 <option value="Suits">Suits</option>
               </select>
             </div>
@@ -1505,7 +1505,7 @@ const Admin = () => {
             </div>
             {isSidebarOpen && (
               <div className="flex flex-col">
-                <span className="font-serif text-3xl font-black text-primary-purple tracking-tight leading-none">Gul</span>
+                <span className="font-serif text-3xl font-black text-primary-purple tracking-tight leading-none">Rang and Craft</span>
                 <span className="text-[10px] font-black tracking-[0.4em] text-gray-400 uppercase">Fashion</span>
               </div>
             )}
@@ -1636,7 +1636,7 @@ const Admin = () => {
                   Welcome back, <span className="text-primary-purple">Admin</span>
                 </h1>
                 <p className="text-text-muted text-sm font-medium">
-                  Here's what's happening with <span className="text-gold-primary font-bold">Gul Fashion</span> today.
+                  Here's what's happening with <span className="text-gold-primary font-bold">Rang and Craft</span> today.
                 </p>
               </div>
               <div className="flex items-center gap-3 relative z-10">

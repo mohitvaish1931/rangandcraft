@@ -21,9 +21,9 @@ const prefixes = [
 ];
 
 const suffixes = [
-    "for Women", "with Full Sleeves", "for Daily Wear", "for College Wear", 
+    "for Men", "with Full Sleeves", "for Daily Wear", "for College Wear", 
     "Summer Collection", "Office Wear", "Casual Wear", "- Premium Quality",
-    "for Girls & Women", "Ethnic Wear", "Western Wear", "Party Wear",
+    "for Girls & Men", "Ethnic Wear", "Western Wear", "Party Wear",
     "with Beautiful Print", "Comfort Fit", "Regular Fit"
 ];
 

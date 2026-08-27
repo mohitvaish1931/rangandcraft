@@ -4,10 +4,10 @@ import { ShieldCheck, Eye, Lock, FileText, Globe, Mail, RefreshCcw } from 'lucid
 
 const PrivacyPolicy = () => {
   useSEO({
-    title: 'Privacy Policy - GUL FASHION',
+    title: 'Privacy Policy - RANG AND CRAFT',
     description: 'How we collect, use, and protect your personal information.',
-    keywords: 'privacy policy, data protection, security, GUL FASHION',
-    url: 'https://gulfashion.com/privacy-policy',
+    keywords: 'privacy policy, data protection, security, RANG AND CRAFT',
+    url: 'https://rangandcraft.store/privacy-policy',
     type: 'website'
   });
 
@@ -105,8 +105,8 @@ const PrivacyPolicy = () => {
             <ContactCard 
               icon={<Mail size={24} />} 
               label="EMAIL" 
-              value="gul.fashion.jaipur@gmail.com" 
-              href="mailto:gul.fashion.jaipur@gmail.com"
+              value="rangandcraft.fashion.jaipur@gmail.com" 
+              href="mailto:rangandcraft.fashion.jaipur@gmail.com"
             />
           </div>
         </div>

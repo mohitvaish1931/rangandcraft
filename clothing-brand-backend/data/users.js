@@ -1,7 +1,7 @@
 const users = [
   {
     name: 'Admin User',
-    email: 'admin@gulfashion.com',
+    email: 'admin@rangandcraft.store',
     password: 'adminpassword123',
     isAdmin: true,
   },

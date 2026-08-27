@@ -4,10 +4,10 @@ import { Scale, ShieldAlert, Gavel, Mail, ShieldCheck, Lock, RefreshCcw, Globe }
 
 const TermsConditions = () => {
   useSEO({
-    title: 'Terms & Conditions - GUL FASHION',
+    title: 'Terms & Conditions - RANG AND CRAFT',
     description: 'Read our terms of service and business guidelines.',
-    keywords: 'terms and conditions, service agreement, GUL FASHION rules',
-    url: 'https://gulfashion.com/terms-conditions',
+    keywords: 'terms and conditions, service agreement, RANG AND CRAFT rules',
+    url: 'https://rangandcraft.store/terms-conditions',
     type: 'website'
   });
 
@@ -25,7 +25,7 @@ const TermsConditions = () => {
     {
       icon: <ShieldAlert size={30} />,
       title: "INTELLECTUAL PROPERTY",
-      text: "All content, designs, and images on this website are the intellectual property of GUL FASHION. Unauthorized use or reproduction is strictly prohibited and may lead to legal action."
+      text: "All content, designs, and images on this website are the intellectual property of RANG AND CRAFT. Unauthorized use or reproduction is strictly prohibited and may lead to legal action."
     }
   ];
 
@@ -105,8 +105,8 @@ const TermsConditions = () => {
             <ContactCard 
               icon={<Mail size={24} />} 
               label="EMAIL" 
-              value="gul.fashion.jaipur@gmail.com" 
-              href="mailto:gul.fashion.jaipur@gmail.com"
+              value="rangandcraft.fashion.jaipur@gmail.com" 
+              href="mailto:rangandcraft.fashion.jaipur@gmail.com"
             />
           </div>
         </div>

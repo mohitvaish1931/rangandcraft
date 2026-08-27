@@ -82,7 +82,7 @@ const LoginScreen = () => {
         }}>WELCOME BACK</span>
         
         <h1 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#2D0A4E' }}>Sign In</h1>
-        <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.95rem' }}>Experience the heritage of GUL FASHION</p>
+        <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.95rem' }}>Experience the heritage of RANG AND CRAFT</p>
 
         {error && (
           <div style={{ 
@@ -162,7 +162,7 @@ const LoginScreen = () => {
         </form>
 
         <div style={{ marginTop: '30px', fontSize: '0.9rem', color: '#666' }}>
-          New to Gul Fashion? <Link to="/register" style={{ color: '#D4AF37', fontWeight: '800', textDecoration: 'none' }}>Create Account</Link>
+          New to Rang and Craft? <Link to="/register" style={{ color: '#D4AF37', fontWeight: '800', textDecoration: 'none' }}>Create Account</Link>
         </div>
       </div>
     </div>

@@ -53,7 +53,7 @@ const runSeed = async () => {
     process.exit(1);
   }
 
-  const baseDir = path.join('..', 'Gul Fashion');
+  const baseDir = path.join('..', 'Rang and Craft');
   console.log('Looking in base dir:', baseDir);
   
   let folders = [];
@@ -72,8 +72,8 @@ const runSeed = async () => {
         name: 'TRENDY FLORAL PRINT TOP',
         image: '/images/placeholder.png', // placeholder
         images: ['/images/placeholder.png'],
-        brand: 'GUL FASHION',
-        category: 'Tops & Co-ord Sets',
+        brand: 'RANG AND CRAFT',
+        category: 'Half Sleeves Shirts & Co-ord Sets',
         description: '✨ Stylish Top with Full Sleeves ✨\\n🌿 Fabric: cotton printed\\n⭐ Size: S To xxL\\n⭐ Sleeves: Full Sleeves\\n⭐ Type: Fully Stitched\\n🎨 Colors: Maroon & Black\\n😍 Perfect for Daily Wear, College Wear & Casual Outings\\n🤩 Price :-250/- No Less\\n✈️ Ready to Dispatch\\n💯 Best Quality Guaranteed',
         price: 250,
         originalPrice: 250,
@@ -102,8 +102,8 @@ const runSeed = async () => {
                 name: 'TRENDY FLORAL PRINT TOP',
                 image: uploadedUrls[0],
                 images: uploadedUrls,
-                brand: 'GUL FASHION',
-                category: 'Tops & Co-ord Sets',
+                brand: 'RANG AND CRAFT',
+                category: 'Half Sleeves Shirts & Co-ord Sets',
                 description: '✨ Stylish Top with Full Sleeves ✨\\n🌿 Fabric: cotton printed\\n⭐ Size: S To xxL\\n⭐ Sleeves: Full Sleeves\\n⭐ Type: Fully Stitched\\n🎨 Colors: Maroon & Black\\n😍 Perfect for Daily Wear, College Wear & Casual Outings\\n🤩 Price :-250/- No Less\\n✈️ Ready to Dispatch\\n💯 Best Quality Guaranteed',
                 price: 250,
                 originalPrice: 250,

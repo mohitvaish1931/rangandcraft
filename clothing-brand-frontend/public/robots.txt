@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gulfashion.store/api/sitemap.xml
+Sitemap: https://rangandcraft.store/api/sitemap.xml

@@ -14,24 +14,24 @@ const Categories = ({ products = [] }: CategoriesProps) => {
         {(() => {
           const categoriesList = [
             {
-              name: 'Kurta Sets',
-              path: '/shop?category=Kurta%20Sets',
+              name: 'Short Kurtas',
+              path: '/shop?category=Short%20Kurtas',
               tag: 'THE ETHNIC EDIT',
-              title: 'Kurta Sets',
+              title: 'Short Kurtas',
               desc: 'Timeless craftsmanship meets modern silhouettes.'
             },
             {
-              name: 'Suit Sets',
-              path: '/shop?category=Suit%20Sets',
+              name: 'Long Kurtas',
+              path: '/shop?category=Long%20Kurtas',
               tag: 'DESIGNER FAVORITES',
-              title: 'Suit Sets',
+              title: 'Long Kurtas',
               desc: 'Regal elegance for every precious occasion.'
             },
             {
-              name: 'Tops',
-              path: '/shop?category=Tops',
+              name: 'Half Sleeves Shirts',
+              path: '/shop?category=Half%20Sleeves%20Shirts',
               tag: 'CASUAL CHIC',
-              title: 'Tops',
+              title: 'Half Sleeves Shirts',
               desc: 'Charming everyday comfort in breathable cotton.'
             }
           ];

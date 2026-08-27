@@ -87,7 +87,7 @@ const RegisterScreen = () => {
         }}>JOIN THE LEGACY</span>
         
         <h1 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#2D0A4E' }}>Register</h1>
-        <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.95rem' }}>Create your GUL FASHION account</p>
+        <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.95rem' }}>Create your RANG AND CRAFT account</p>
 
         {error && (
           <div style={{ 

@@ -4,10 +4,10 @@ import { ShieldCheck, Globe, Award, Lock, RefreshCcw } from 'lucide-react';
 
 const AboutUs = () => {
   useSEO({
-    title: 'Our Story - GUL FASHION Jaipur',
-    description: 'Experience the regal legacy of GUL FASHION. Handcrafted elegance from the heart of Jaipur since 2005.',
-    keywords: 'about us, brand story, clothing heritage, craftsmanship, GUL FASHION Jaipur, luxury ethnic wear',
-    url: 'https://gulfashion.com/about-us',
+    title: 'Our Story - RANG AND CRAFT Jaipur',
+    description: 'Experience the regal legacy of RANG AND CRAFT. Handcrafted elegance from the heart of Jaipur since 2005.',
+    keywords: 'about us, brand story, clothing heritage, craftsmanship, RANG AND CRAFT Jaipur, luxury ethnic wear',
+    url: 'https://rangandcraft.store/about-us',
     type: 'website'
   });
 
@@ -35,7 +35,7 @@ const AboutUs = () => {
         
         <div className="container" style={{ position: 'relative', maxWidth: '900px', margin: '0 auto' }}>
           <span style={{ color: '#D4AF37', letterSpacing: '6px', fontWeight: '800', fontSize: '0.75rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>ESTABLISHED 2005</span>
-          <h1 className="font-serif" style={{ fontSize: '4.5rem', marginBottom: '30px', lineHeight: '1' }}>The Soul of <br /><i style={{ color: '#D4AF37' }}>Gul Fashion</i></h1>
+          <h1 className="font-serif" style={{ fontSize: '4.5rem', marginBottom: '30px', lineHeight: '1' }}>The Soul of <br /><i style={{ color: '#D4AF37' }}>Rang and Craft</i></h1>
           <p style={{ fontSize: '1.25rem', opacity: 0.8, lineHeight: '1.8', maxWidth: '700px', margin: '0 auto' }}>
             Where ancient Jaipur artistry meets contemporary silhouettes. We don't just create apparel; we weave heirlooms for your most precious moments.
           </p>
@@ -78,10 +78,10 @@ const AboutUs = () => {
             <span className="small-gold-tag">OUR HERITAGE</span>
             <h2 className="font-serif" style={{ fontSize: '3rem', color: '#2D0A4E', marginBottom: '30px' }}>Born in the <br /> Pink City</h2>
             <p style={{ color: '#444', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '25px' }}>
-              Gul Fashion was born amidst the vibrant hues and architectural splendor of Jaipur. Inspired by the "Gul" (Rose) that characterizes the city's palette, our journey began with a vision to bring royal Rajputana aesthetics to the modern woman.
+              Rang and Craft was born amidst the vibrant hues and architectural splendor of Jaipur. Inspired by the "Rang and Craft" (Rose) that characterizes the city's palette, our journey began with a vision to bring royal Rajputana aesthetics to the modern woman.
             </p>
             <p style={{ color: '#444', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '35px' }}>
-              Every stitch in a Gul Fashion garment is a tribute to the master craftsmen of Rajasthan, whose hands carry the legacy of centuries. We pride ourselves on being a bridge between tradition and the future.
+              Every stitch in a Rang and Craft garment is a tribute to the master craftsmen of Rajasthan, whose hands carry the legacy of centuries. We pride ourselves on being a bridge between tradition and the future.
             </p>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>

@@ -5,11 +5,11 @@ import Product from './models/Product.js';
 dotenv.config();
 
 const groupSizes = {
-  "Tops": [4, 2, 1, 2, 2, 1, 3, 2, 1, 2, 1, 1, 3, 3, 1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 2],
-  "Kurtis": [4, 2, 3, 3, 4],
+  "Half Sleeves Shirts": [4, 2, 1, 2, 2, 1, 3, 2, 1, 2, 1, 1, 3, 3, 1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 2],
+  "Kurtas": [4, 2, 3, 3, 4],
   "Suits": [2, 2, 2, 4, 1, 1, 1, 1],
-  "Kurta Sets 590": [6, 2, 5, 2, 2, 4, 2, 3],
-  "Kurta Sets 450": [2, 3, 1, 1, 3, 2, 3, 2, 1, 2, 2, 1, 2, 1, 4, 1, 1, 1]
+  "Short Kurtas 590": [6, 2, 5, 2, 2, 4, 2, 3],
+  "Short Kurtas 450": [2, 3, 1, 1, 3, 2, 3, 2, 1, 2, 2, 1, 2, 1, 4, 1, 1, 1]
 };
 
 const run = async () => {
@@ -25,30 +25,30 @@ const run = async () => {
     let totalDeleted = 0;
     let totalUpdated = 0;
 
-    // Process Tops (Folder 1 & 2)
-    const tops = allProducts.filter(p => p.category === "Tops");
+    // Process Half Sleeves Shirts (Folder 1 & 2)
+    const tops = allProducts.filter(p => p.category === "Half Sleeves Shirts");
     tops.sort((a, b) => a.displayOrder - b.displayOrder);
-    await processCategoryBlocks("Tops", tops, groupSizes["Tops"]);
+    await processCategoryBlocks("Half Sleeves Shirts", tops, groupSizes["Half Sleeves Shirts"]);
 
-    // Process Kurtis (Folder 3)
-    const kurtis = allProducts.filter(p => p.category === "Kurtis");
-    kurtis.sort((a, b) => a.displayOrder - b.displayOrder);
-    await processCategoryBlocks("Kurtis", kurtis, groupSizes["Kurtis"]);
+    // Process Kurtas (Folder 3)
+    const kurtas = allProducts.filter(p => p.category === "Kurtas");
+    kurtas.sort((a, b) => a.displayOrder - b.displayOrder);
+    await processCategoryBlocks("Kurtas", kurtas, groupSizes["Kurtas"]);
 
     // Process Suits (Folder 6)
     const suits = allProducts.filter(p => p.category === "Suits");
     suits.sort((a, b) => a.displayOrder - b.displayOrder);
     await processCategoryBlocks("Suits", suits, groupSizes["Suits"]);
 
-    // Process Kurta Sets 590 (Folder 4)
-    const kurtaSets590 = allProducts.filter(p => p.category === "Kurta Sets" && p.price === 590);
-    kurtaSets590.sort((a, b) => a.displayOrder - b.displayOrder);
-    await processCategoryBlocks("Kurta Sets 590", kurtaSets590, groupSizes["Kurta Sets 590"]);
+    // Process Short Kurtas 590 (Folder 4)
+    const shortKurtas590 = allProducts.filter(p => p.category === "Short Kurtas" && p.price === 590);
+    shortKurtas590.sort((a, b) => a.displayOrder - b.displayOrder);
+    await processCategoryBlocks("Short Kurtas 590", shortKurtas590, groupSizes["Short Kurtas 590"]);
 
-    // Process Kurta Sets 450 (Folder 5)
-    const kurtaSets450 = allProducts.filter(p => p.category === "Kurta Sets" && p.price === 450);
-    kurtaSets450.sort((a, b) => a.displayOrder - b.displayOrder);
-    await processCategoryBlocks("Kurta Sets 450", kurtaSets450, groupSizes["Kurta Sets 450"]);
+    // Process Short Kurtas 450 (Folder 5)
+    const shortKurtas450 = allProducts.filter(p => p.category === "Short Kurtas" && p.price === 450);
+    shortKurtas450.sort((a, b) => a.displayOrder - b.displayOrder);
+    await processCategoryBlocks("Short Kurtas 450", shortKurtas450, groupSizes["Short Kurtas 450"]);
 
     async function processCategoryBlocks(label, items, blocks) {
       const sum = blocks.reduce((a, b) => a + b, 0);

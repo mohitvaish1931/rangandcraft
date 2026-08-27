@@ -101,7 +101,7 @@ const AdminLayout = () => {
               <circle cx="50" cy="50" r="15" fill="white"/>
             </svg>
             <div className="flex flex-col">
-              <span className="font-serif text-2xl font-bold text-white tracking-wide leading-none">Gul</span>
+              <span className="font-serif text-2xl font-bold text-white tracking-wide leading-none">Rang and Craft</span>
               <span className="text-[10px] font-medium tracking-[0.3em] text-white/80 uppercase mt-0.5">FASHION</span>
             </div>
           </div>

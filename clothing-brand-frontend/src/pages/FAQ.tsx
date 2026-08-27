@@ -5,16 +5,16 @@ import { Link } from 'react-router-dom';
 
 const FAQ = () => {
   useSEO({
-    title: 'FAQs - GUL FASHION',
+    title: 'FAQs - RANG AND CRAFT',
     description: 'Find answers to common questions about our products and services.',
-    keywords: 'faq, questions, help, GUL FASHION',
-    url: 'https://gulfashion.com/faq',
+    keywords: 'faq, questions, help, RANG AND CRAFT',
+    url: 'https://rangandcraft.store/faq',
     type: 'website'
   });
 
   const faqs = [
     {
-      question: "How do I care for my GUL FASHION clothing?",
+      question: "How do I care for my RANG AND CRAFT clothing?",
       answer: "Most of our ethnic wear requires professional dry cleaning to maintain the fabric and embroidery quality. Please refer to our Garment Care Guide for detailed instructions on storage and maintenance."
     },
     {
@@ -27,7 +27,7 @@ const FAQ = () => {
     },
     {
       question: "Do you offer international shipping?",
-      answer: "Currently, we only ship within India. We are working on bringing Gul Fashion to our international customers very soon."
+      answer: "Currently, we only ship within India. We are working on bringing Rang and Craft to our international customers very soon."
     },
     {
       question: "Can I return or exchange a product?",

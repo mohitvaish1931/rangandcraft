@@ -128,23 +128,23 @@
 }
 
 /* Bridal Edit Split Section */
-.bridal-split {
+.heritage-split {
   display: flex;
   min-height: 700px;
 }
 
-.bridal-img-side {
+.heritage-img-side {
   flex: 1;
   overflow: hidden;
 }
 
-.bridal-img-side img {
+.heritage-img-side img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.bridal-content-side {
+.heritage-content-side {
   flex: 1;
   background-color: var(--gold-light);
   color: var(--text-primary);
@@ -166,13 +166,13 @@
   margin-bottom: 30px;
 }
 
-.bridal-title {
+.heritage-title {
   font-size: 3.5rem;
   line-height: 1.1;
   margin-bottom: 50px;
 }
 
-.bridal-stats-grid {
+.heritage-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
@@ -189,7 +189,7 @@
   margin-top: 5px;
 }
 
-.bridal-desc {
+.heritage-desc {
   color: var(--text-secondary);
   line-height: 1.8;
   font-size: 1.1rem;
@@ -322,13 +322,13 @@
 }
 
 @media (max-width: 992px) {
-  .bridal-split {
+  .heritage-split {
     flex-direction: column;
   }
   .products-carousel-grid, .badges-grid, .craft-grid, .social-proof-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .bridal-title {
+  .heritage-title {
     font-size: 2.5rem;
   }
 }
@@ -364,7 +364,7 @@
   .social-proof-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .bridal-title {
+  .heritage-title {
     font-size: 1.8rem;
   }
   .carousel-img-wrapper {

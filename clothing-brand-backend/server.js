@@ -30,7 +30,7 @@ app.use(cors({
     // Explicitly allow the origin that is making the request.
     // If no origin is provided or it is 'null' (e.g. Google Search App on iOS), fallback to main domain.
     if (!origin || origin === 'null') {
-      callback(null, 'https://gulfashion.store');
+      callback(null, 'https://rangandcraft.store');
     } else {
       callback(null, origin);
     }

@@ -32,10 +32,10 @@ const topsNames = [
 ];
 
 const gownNames = [
-  "Rooh Cotton Flared Gown", "Jaipur Heritage Anarkali Gown", "Desert Rose Tiered Gown", "Miraya Flared Maxi Gown", "Radhika Cotton Gown Kurti",
-  "Vaidehi Traditional Anarkali", "Nisha Cotton Gown Kurti", "Saira Festive Anarkali Gown", "Maya Indigo Flared Gown", "Tara Ethnic Gown Kurti",
-  "Aisha Tiered Maxi Gown", "Heera Royal Cotton Gown", "Gitanjali Embroidered Gown", "Bahaar Flared Cotton Gown", "Aarohi Indigo Gown Kurti",
-  "Zoya Crimson Anarkali Gown", "Sia Tiered Cotton Gown", "Avani Flared Gown", "Charu Printed Gown Kurti", "Esha Indigo Gown"
+  "Rooh Cotton Flared Gown", "Jaipur Heritage Anarkali Gown", "Desert Rose Tiered Gown", "Miraya Flared Maxi Gown", "Radhika Cotton Gown Kurta",
+  "Vaidehi Traditional Anarkali", "Nisha Cotton Gown Kurta", "Saira Festive Anarkali Gown", "Maya Indigo Flared Gown", "Tara Ethnic Gown Kurta",
+  "Aisha Tiered Maxi Gown", "Heera Royal Cotton Gown", "Gitanjali Embroidered Gown", "Bahaar Flared Cotton Gown", "Aarohi Indigo Gown Kurta",
+  "Zoya Crimson Anarkali Gown", "Sia Tiered Cotton Gown", "Avani Flared Gown", "Charu Printed Gown Kurta", "Esha Indigo Gown"
 ];
 
 const kurtaSet4Names = [
@@ -110,7 +110,7 @@ function getSeoName(baseName, folder) {
       seoName = `${cleanName} Casual Printed Cotton Top`;
     }
   } else if (folder.includes("Folder 3")) {
-    seoName = `${cleanName} Cotton Flared Anarkali Gown Kurti`;
+    seoName = `${cleanName} Cotton Flared Anarkali Gown Kurta`;
   } else if (folder.includes("Folder 4")) {
     seoName = `${cleanName} Premium Embroidered Cotton Angrakha Kurta Pant Set`;
   } else if (folder.includes("Folder 5")) {
@@ -126,7 +126,7 @@ function getSeoName(baseName, folder) {
 
 const folderConfig = {
   "Folder 1(Three Piece Top)": {
-    category: "Three Piece Tops",
+    category: "Three Piece Half Sleeves Shirts",
     subcategory: "Daily Wear",
     price: 250,
     originalPrice: 499,
@@ -136,7 +136,7 @@ const folderConfig = {
     description: "Enhance your daily wardrobe with this beautiful daily wear cotton top. Made from premium 60x60 cotton fabric, it features a comfortable fit with a length of 30 inches. Perfect for everyday casual outings."
   },
   "Folder 2 (Top": {
-    category: "Tops",
+    category: "Half Sleeves Shirts",
     subcategory: "Daily Wear",
     price: 250,
     originalPrice: 499,
@@ -145,39 +145,39 @@ const folderConfig = {
     specifications: ['Length: 30 inches', 'Premium 60x60 Cotton Fabric', 'Comfortable Daily Wear fit'],
     description: "Enhance your daily wardrobe with this beautiful daily wear cotton top. Made from premium 60x60 cotton fabric, it features a comfortable fit with a length of 30 inches. Perfect for everyday casual outings."
   },
-  "Folder 3 (Long single piece kurti)": {
-    category: "Kurtis",
+  "Folder 3 (Long single piece kurta)": {
+    category: "Kurtas",
     subcategory: "Gowns",
     price: 550,
     originalPrice: 999,
     sizes: ['M', 'L', 'XL', 'XXL'],
     materials: ['Cotton'],
     specifications: ['Gown Length: 46 inches', 'Premium 60/60 Cotton Fabric', 'Elegant Flared Fit'],
-    description: "An elegant single-piece flared cotton gown kurti, measuring 46 inches in length. Crafted from high-quality 60/60 cotton fabric, it is designed for a graceful ethnic look and all-day comfort."
+    description: "An elegant single-piece flared cotton gown kurta, measuring 46 inches in length. Crafted from high-quality 60/60 cotton fabric, it is designed for a graceful ethnic look and all-day comfort."
   },
-  "Folder 4 (Two Piece Kurti Set)": {
-    category: "Kurta Sets",
+  "Folder 4 (Two Piece Kurta Set)": {
+    category: "Short Kurtas",
     subcategory: "Angrakha Sets",
     price: 590,
     originalPrice: 1199,
     sizes: ['M', 'L', 'XL', 'XXL', '4XL', '5XL'],
     colors: ['Purple', 'Red', 'Blue'],
     materials: ['Cotton'],
-    specifications: ['Detailed Embroidery Work', 'Kurti Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
-    description: "A stunning Angrakha Kurta Set featuring detailed embroidery work. This two-piece set includes a kurti (48\" length) and matching pants (38\" length) with 3/4 sleeves. Made from breathable cotton, it's perfect for both festive occasions and casual get-togethers."
+    specifications: ['Detailed Embroidery Work', 'Kurta Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
+    description: "A stunning Angrakha Kurta Set featuring detailed embroidery work. This two-piece set includes a kurta (48\" length) and matching pants (38\" length) with 3/4 sleeves. Made from breathable cotton, it's perfect for both festive occasions and casual get-togethers."
   },
-  "Folder 5 (Two Piece Kurti Set)": {
-    category: "Kurta Sets",
+  "Folder 5 (Two Piece Kurta Set)": {
+    category: "Short Kurtas",
     subcategory: "Angrakha Sets",
     price: 450,
     originalPrice: 899,
     sizes: ['M', 'L', 'XL', 'XXL'],
     colors: ['Purple', 'Red', 'Blue'],
     materials: ['Cotton'],
-    specifications: ['Kurti Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
-    description: "A classic cotton Angrakha Kurta Set designed for style and comfort. The set features a kurti of 48 inches length and pants of 38 inches length with elegant 3/4 sleeves."
+    specifications: ['Kurta Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
+    description: "A classic cotton Angrakha Kurta Set designed for style and comfort. The set features a kurta of 48 inches length and pants of 38 inches length with elegant 3/4 sleeves."
   },
-  "Folder 6 (Two Piece Kurti Set)": {
+  "Folder 6 (Two Piece Kurta Set)": {
     category: "Suits",
     subcategory: "Angrakha Suits",
     price: 690,
@@ -185,8 +185,8 @@ const folderConfig = {
     sizes: ['M', 'L', 'XL', 'XXL'],
     colors: ['Purple', 'Red', 'Blue'],
     materials: ['Cotton'],
-    specifications: ['Kurti Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
-    description: "A premium Cotton Angrakha Suit Set, featuring beautiful traditional cuts. It includes a 48-inch long kurti, a 38-inch matching pant, and 3/4 sleeves, offering a sophisticated look."
+    specifications: ['Kurta Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
+    description: "A premium Cotton Angrakha Suit Set, featuring beautiful traditional cuts. It includes a 48-inch long kurta, a 38-inch matching pant, and 3/4 sleeves, offering a sophisticated look."
   }
 };
 
@@ -202,9 +202,9 @@ const runSeeding = async () => {
     console.log('Products cleared!');
 
     // Get admin user
-    const adminUser = await User.findOne({ email: 'admin@gulfashion.com' });
+    const adminUser = await User.findOne({ email: 'admin@rangandcraft.store' });
     if (!adminUser) {
-      throw new Error("Admin user admin@gulfashion.com not found.");
+      throw new Error("Admin user admin@rangandcraft.store not found.");
     }
     const adminId = adminUser._id;
 
@@ -215,7 +215,7 @@ const runSeeding = async () => {
     // Group files by product (folder + base timestamp name)
     const grouped = {};
     rawData.forEach(item => {
-      if (item.path === 'Rate List For Kurtis.pdf') return;
+      if (item.path === 'Rate List For Kurtas.pdf') return;
       
       const parts = item.path.split('/');
       const folder = parts[0];
@@ -285,7 +285,7 @@ const runSeeding = async () => {
             name: finalName,
             image: imageUrls[0],
             images: imageUrls,
-            brand: 'GUL FASHION',
+            brand: 'RANG AND CRAFT',
             category: config.category,
             subcategory: config.subcategory || '',
             description: config.description,

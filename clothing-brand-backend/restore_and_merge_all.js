@@ -24,10 +24,10 @@ const topsNames = [
 ];
 
 const gownNames = [
-  "Rooh Cotton Flared Gown", "Jaipur Heritage Anarkali Gown", "Desert Rose Tiered Gown", "Miraya Flared Maxi Gown", "Radhika Cotton Gown Kurti",
-  "Vaidehi Traditional Anarkali", "Nisha Cotton Gown Kurti", "Saira Festive Anarkali Gown", "Maya Indigo Flared Gown", "Tara Ethnic Gown Kurti",
-  "Aisha Tiered Maxi Gown", "Heera Royal Cotton Gown", "Gitanjali Embroidered Gown", "Bahaar Flared Cotton Gown", "Aarohi Indigo Gown Kurti",
-  "Zoya Crimson Anarkali Gown", "Sia Tiered Cotton Gown", "Avani Flared Gown", "Charu Printed Gown Kurti", "Esha Indigo Gown"
+  "Rooh Cotton Flared Gown", "Jaipur Heritage Anarkali Gown", "Desert Rose Tiered Gown", "Miraya Flared Maxi Gown", "Radhika Cotton Gown Kurta",
+  "Vaidehi Traditional Anarkali", "Nisha Cotton Gown Kurta", "Saira Festive Anarkali Gown", "Maya Indigo Flared Gown", "Tara Ethnic Gown Kurta",
+  "Aisha Tiered Maxi Gown", "Heera Royal Cotton Gown", "Gitanjali Embroidered Gown", "Bahaar Flared Cotton Gown", "Aarohi Indigo Gown Kurta",
+  "Zoya Crimson Anarkali Gown", "Sia Tiered Cotton Gown", "Avani Flared Gown", "Charu Printed Gown Kurta", "Esha Indigo Gown"
 ];
 
 const kurtaSet4Names = [
@@ -70,7 +70,7 @@ function getSeoName(baseName, folder) {
       seoName = `${cleanName} Casual Printed Cotton Top`;
     }
   } else if (folder.includes("Folder 3")) {
-    seoName = `${cleanName} Cotton Flared Anarkali Gown Kurti`;
+    seoName = `${cleanName} Cotton Flared Anarkali Gown Kurta`;
   } else if (folder.includes("Folder 4")) {
     seoName = `${cleanName} Premium Embroidered Cotton Angrakha Kurta Pant Set`;
   } else if (folder.includes("Folder 5")) {
@@ -86,7 +86,7 @@ function getSeoName(baseName, folder) {
 
 const folderConfig = {
   "Folder 1(Three Piece Top)": {
-    category: "Three Piece Tops",
+    category: "Three Piece Half Sleeves Shirts",
     subcategory: "Daily Wear",
     price: 250,
     originalPrice: 499,
@@ -96,7 +96,7 @@ const folderConfig = {
     description: "Enhance your daily wardrobe with this beautiful three-piece cotton top. Made from premium 60x60 cotton fabric, it features a comfortable fit with a length of 30 inches. Perfect for everyday casual outings."
   },
   "Folder 2 (Top": {
-    category: "Tops",
+    category: "Half Sleeves Shirts",
     subcategory: "Daily Wear",
     price: 250,
     originalPrice: 499,
@@ -105,39 +105,39 @@ const folderConfig = {
     specifications: ['Length: 30 inches', 'Premium 60x60 Cotton Fabric', 'Comfortable Daily Wear fit'],
     description: "Enhance your daily wardrobe with this beautiful daily wear cotton top. Made from premium 60x60 cotton fabric, it features a comfortable fit with a length of 30 inches. Perfect for everyday casual outings."
   },
-  "Folder 3 (Long single piece kurti)": {
-    category: "Kurtis",
+  "Folder 3 (Long single piece kurta)": {
+    category: "Kurtas",
     subcategory: "Gowns",
     price: 550,
     originalPrice: 999,
     sizes: ['M', 'L', 'XL', 'XXL'],
     materials: ['Cotton'],
     specifications: ['Gown Length: 46 inches', 'Premium 60/60 Cotton Fabric', 'Elegant Flared Fit'],
-    description: "An elegant single-piece flared cotton gown kurti, measuring 46 inches in length. Crafted from high-quality 60/60 cotton fabric, it is designed for a graceful ethnic look and all-day comfort."
+    description: "An elegant single-piece flared cotton gown kurta, measuring 46 inches in length. Crafted from high-quality 60/60 cotton fabric, it is designed for a graceful ethnic look and all-day comfort."
   },
-  "Folder 4 (Two Piece Kurti Set)": {
-    category: "Kurta Sets",
+  "Folder 4 (Two Piece Kurta Set)": {
+    category: "Short Kurtas",
     subcategory: "Angrakha Sets",
     price: 590,
     originalPrice: 1199,
     sizes: ['M', 'L', 'XL', 'XXL', '4XL', '5XL'],
     colors: ['Purple', 'Red', 'Blue'],
     materials: ['Cotton'],
-    specifications: ['Detailed Embroidery Work', 'Kurti Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
-    description: "A stunning Angrakha Kurta Set featuring detailed embroidery work. This two-piece set includes a kurti (48\" length) and matching pants (38\" length) with 3/4 sleeves. Made from breathable cotton, it's perfect for both festive occasions and casual get-togethers."
+    specifications: ['Detailed Embroidery Work', 'Kurta Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
+    description: "A stunning Angrakha Kurta Set featuring detailed embroidery work. This two-piece set includes a kurta (48\" length) and matching pants (38\" length) with 3/4 sleeves. Made from breathable cotton, it's perfect for both festive occasions and casual get-togethers."
   },
-  "Folder 5 (Two Piece Kurti Set)": {
-    category: "Kurta Sets",
+  "Folder 5 (Two Piece Kurta Set)": {
+    category: "Short Kurtas",
     subcategory: "Angrakha Sets",
     price: 450,
     originalPrice: 899,
     sizes: ['M', 'L', 'XL', 'XXL'],
     colors: ['Purple', 'Red', 'Blue'],
     materials: ['Cotton'],
-    specifications: ['Kurti Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
-    description: "A classic cotton Angrakha Kurta Set designed for style and comfort. The set features a kurti of 48 inches length and pants of 38 inches length with elegant 3/4 sleeves."
+    specifications: ['Kurta Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
+    description: "A classic cotton Angrakha Kurta Set designed for style and comfort. The set features a kurta of 48 inches length and pants of 38 inches length with elegant 3/4 sleeves."
   },
-  "Folder 6 (Two Piece Kurti Set)": {
+  "Folder 6 (Two Piece Kurta Set)": {
     category: "Suits",
     subcategory: "Angrakha Suits",
     price: 690,
@@ -145,8 +145,8 @@ const folderConfig = {
     sizes: ['M', 'L', 'XL', 'XXL'],
     colors: ['Purple', 'Red', 'Blue'],
     materials: ['Cotton'],
-    specifications: ['Kurti Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
-    description: "A premium Cotton Angrakha Suit Set, featuring beautiful traditional cuts. It includes a 48-inch long kurti, a 38-inch matching pant, and 3/4 sleeves, offering a sophisticated look."
+    specifications: ['Kurta Length: 48 inches', 'Pant Length: 38 inches', '3/4 Sleeves'],
+    description: "A premium Cotton Angrakha Suit Set, featuring beautiful traditional cuts. It includes a 48-inch long kurta, a 38-inch matching pant, and 3/4 sleeves, offering a sophisticated look."
   }
 };
 
@@ -154,10 +154,10 @@ const folderConfig = {
 const originalBlockSizes = {
   "Folder 1(Three Piece Top)": [4, 2, 1, 2, 2, 1, 3, 2, 1, 2, 1, 1, 3, 3], // sum 28
   "Folder 2 (Top": [1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 2], // sum 18 (Note: first 14 blocks in deduplicate_db.js were Folder 1, next 12 blocks were Folder 2)
-  "Folder 3 (Long single piece kurti)": [4, 2, 3, 3, 4], // sum 16
-  "Folder 4 (Two Piece Kurti Set)": [6, 2, 5, 2, 2, 4, 2, 3], // sum 26
-  "Folder 5 (Two Piece Kurti Set)": [2, 3, 1, 1, 3, 2, 3, 2, 1, 2, 2, 1, 2, 1, 4, 1, 1, 1], // sum 33
-  "Folder 6 (Two Piece Kurti Set)": [2, 2, 2, 4, 1, 1, 1, 1] // sum 14
+  "Folder 3 (Long single piece kurta)": [4, 2, 3, 3, 4], // sum 16
+  "Folder 4 (Two Piece Kurta Set)": [6, 2, 5, 2, 2, 4, 2, 3], // sum 26
+  "Folder 5 (Two Piece Kurta Set)": [2, 3, 1, 1, 3, 2, 3, 2, 1, 2, 2, 1, 2, 1, 4, 1, 1, 1], // sum 33
+  "Folder 6 (Two Piece Kurta Set)": [2, 2, 2, 4, 1, 1, 1, 1] // sum 14
 };
 
 // Defined correct merge groups from similarity analysis
@@ -179,7 +179,7 @@ const correctMergeGroups = {
     [13, 14, 15],
     [16, 17]
   ],
-  "Folder 3 (Long single piece kurti)": [
+  "Folder 3 (Long single piece kurta)": [
     [0, 1, 2, 3],
     [4, 5],
     [6, 7, 8],
@@ -187,7 +187,7 @@ const correctMergeGroups = {
     [12, 13],
     [14, 15]
   ],
-  "Folder 4 (Two Piece Kurti Set)": [
+  "Folder 4 (Two Piece Kurta Set)": [
     [0, 1, 2, 3, 4, 5],
     [6, 7],
     [8, 9, 10, 11, 12],
@@ -196,7 +196,7 @@ const correctMergeGroups = {
     [21, 22],
     [23, 24, 25]
   ],
-  "Folder 5 (Two Piece Kurti Set)": [
+  "Folder 5 (Two Piece Kurta Set)": [
     [0, 1, 2, 3],
     [4, 5, 6, 7, 8, 9],
     [10, 11],
@@ -208,7 +208,7 @@ const correctMergeGroups = {
     [25, 26, 27, 28, 29],
     [30, 31, 32]
   ],
-  "Folder 6 (Two Piece Kurti Set)": [
+  "Folder 6 (Two Piece Kurta Set)": [
     [0, 1],
     [2, 3, 4],
     [5, 13],
@@ -224,7 +224,7 @@ const run = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB!");
 
-    const adminUser = await User.findOne({ email: 'admin@gulfashion.com' });
+    const adminUser = await User.findOne({ email: 'admin@rangandcraft.store' });
     const adminId = adminUser._id;
 
     // 2. Load drive contents
@@ -234,7 +234,7 @@ const run = async () => {
     // Group files by product (folder + base timestamp name)
     const grouped = {};
     rawData.forEach(item => {
-      if (item.path === 'Rate List For Kurtis.pdf') return;
+      if (item.path === 'Rate List For Kurtas.pdf') return;
       
       const parts = item.path.split('/');
       const folder = parts[0];
@@ -274,15 +274,15 @@ const run = async () => {
       // Fetch current database master products for this folder
       let dbProducts = [];
       if (folder.includes("Folder 1")) {
-        dbProducts = await Product.find({ category: "Three Piece Tops" }).sort({ displayOrder: 1 });
+        dbProducts = await Product.find({ category: "Three Piece Half Sleeves Shirts" }).sort({ displayOrder: 1 });
       } else if (folder.includes("Folder 2")) {
-        dbProducts = await Product.find({ category: "Tops" }).sort({ displayOrder: 1 });
+        dbProducts = await Product.find({ category: "Half Sleeves Shirts" }).sort({ displayOrder: 1 });
       } else if (folder.includes("Folder 3")) {
-        dbProducts = await Product.find({ category: "Kurtis" }).sort({ displayOrder: 1 });
+        dbProducts = await Product.find({ category: "Kurtas" }).sort({ displayOrder: 1 });
       } else if (folder.includes("Folder 4")) {
-        dbProducts = await Product.find({ category: "Kurta Sets", price: 590 }).sort({ displayOrder: 1 });
+        dbProducts = await Product.find({ category: "Short Kurtas", price: 590 }).sort({ displayOrder: 1 });
       } else if (folder.includes("Folder 5")) {
-        dbProducts = await Product.find({ category: "Kurta Sets", price: 450 }).sort({ displayOrder: 1 });
+        dbProducts = await Product.find({ category: "Short Kurtas", price: 450 }).sort({ displayOrder: 1 });
       } else if (folder.includes("Folder 6")) {
         dbProducts = await Product.find({ category: "Suits" }).sort({ displayOrder: 1 });
       }
@@ -445,7 +445,7 @@ const run = async () => {
         finalProductsToInsert.push({
           user: adminId,
           name: seoName,
-          brand: 'GUL FASHION',
+          brand: 'RANG AND CRAFT',
           category: config.category,
           subcategory: config.subcategory || '',
           description: config.description,
@@ -484,11 +484,11 @@ const run = async () => {
     console.log(`Successfully inserted ${createdProducts.length} unique products!`);
 
     // Verify category counts
-    const categories = ["Three Piece Tops", "Tops", "Kurtis", "Kurta Sets", "Suits"];
+    const categories = ["Three Piece Half Sleeves Shirts", "Half Sleeves Shirts", "Kurtas", "Short Kurtas", "Suits"];
     console.log(`\n=== Verification ===`);
     for (const cat of categories) {
       let count = 0;
-      if (cat === "Kurta Sets") {
+      if (cat === "Short Kurtas") {
         const count590 = await Product.countDocuments({ category: cat, price: 590 });
         const count450 = await Product.countDocuments({ category: cat, price: 450 });
         console.log(`Category "${cat}": 590 price = ${count590}, 450 price = ${count450}`);

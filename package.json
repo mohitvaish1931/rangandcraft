@@ -1,5 +1,5 @@
 {
-  "name": "gul-root",
+  "name": "rangandcraft-root",
   "private": true,
   "workspaces": [
     "clothing-brand-frontend",

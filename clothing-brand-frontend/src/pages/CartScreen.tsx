@@ -197,7 +197,7 @@ const CartScreen = () => {
         key: keyId,
         amount: rzpData.amount,
         currency: rzpData.currency,
-        name: "Gul Fashion",
+        name: "Rang and Craft",
         description: "Premium Ethnic Wear",
         order_id: rzpData.id,
         handler: async function (response: any) {

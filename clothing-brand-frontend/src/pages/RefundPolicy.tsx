@@ -4,10 +4,10 @@ import { RotateCcw, ShieldAlert, CheckCircle, HelpCircle, Mail, MessageCircle, H
 
 const RefundPolicy = () => {
   useSEO({
-    title: 'Refund Policy - GUL FASHION',
+    title: 'Refund Policy - RANG AND CRAFT',
     description: 'Understand our return and exchange process for your luxury ethnic wear.',
-    keywords: 'refund policy, returns, exchanges, GUL FASHION policies',
-    url: 'https://gulfashion.com/refund-policy',
+    keywords: 'refund policy, returns, exchanges, RANG AND CRAFT policies',
+    url: 'https://rangandcraft.store/refund-policy',
     type: 'website'
   });
 
@@ -25,7 +25,7 @@ const RefundPolicy = () => {
     {
       icon: <CheckCircle size={30} />,
       title: "QUALITY ASSURANCE",
-      text: "Every GUL FASHION garment undergoes multiple quality checks before being dispatched to ensure you receive only the finest handcrafted quality."
+      text: "Every RANG AND CRAFT garment undergoes multiple quality checks before being dispatched to ensure you receive only the finest handcrafted quality."
     },
     {
       icon: <HelpCircle size={30} />,
@@ -115,8 +115,8 @@ const RefundPolicy = () => {
             <ContactCard 
               icon={<Mail size={24} />} 
               label="EMAIL" 
-              value="gul.fashion.jaipur@gmail.com" 
-              href="mailto:gul.fashion.jaipur@gmail.com"
+              value="rangandcraft.fashion.jaipur@gmail.com" 
+              href="mailto:rangandcraft.fashion.jaipur@gmail.com"
             />
             <ContactCard 
               icon={<MessageCircle size={24} />} 

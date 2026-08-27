@@ -10,7 +10,7 @@ const driveContents = JSON.parse(fs.readFileSync(path.join(__dirname, '../drive_
 // Group files by folder and base timestamp
 const grouped = {};
 driveContents.forEach(item => {
-  if (item.path === 'Rate List For Kurtis.pdf') return;
+  if (item.path === 'Rate List For Kurtas.pdf') return;
   
   const parts = item.path.split('/');
   const folder = parts[0];
@@ -67,7 +67,7 @@ let existCount = 0;
 let missingCount = 0;
 const missingFiles = [];
 driveContents.forEach(item => {
-  if (item.path === 'Rate List For Kurtis.pdf') return;
+  if (item.path === 'Rate List For Kurtas.pdf') return;
   const localPath = path.join(uploadBase, ...item.path.split('/'));
   if (fs.existsSync(localPath)) {
     existCount++;

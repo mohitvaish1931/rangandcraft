@@ -144,10 +144,10 @@ const AdminAddProduct = () => {
                 onChange={() => {}}
               >
                 <option value="">Select category</option>
-                <option value="Kurta Sets">Kurta Sets</option>
+                <option value="Short Kurtas">Short Kurtas</option>
                 <option value="Suits">Suits</option>
-                <option value="Tops">Tops</option>
-                <option value="Three Piece Tops">Three Piece Tops</option>
+                <option value="Half Sleeves Shirts">Half Sleeves Shirts</option>
+                <option value="Three Piece Half Sleeves Shirts">Three Piece Half Sleeves Shirts</option>
                 <option value="Sarees">Sarees</option>
                 <option value="Lehengas">Lehengas</option>
               </select>

@@ -45,7 +45,7 @@ export const generateProductSchema = (product: ProductSchema) => {
     image: Array.isArray(product.image) ? product.image : [product.image],
     brand: {
       '@type': 'Brand',
-      name: product.brand || 'GUL FASHION'
+      name: product.brand || 'RANG AND CRAFT'
     },
     offers: {
       '@type': 'Offer',
