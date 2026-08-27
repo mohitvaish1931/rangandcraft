@@ -72,9 +72,9 @@ export const SEO_CONFIG = {
       keywords: 'sarees, luxury sarees, designer sarees, silk sarees, banarasi sarees, jaipur handloom sarees'
     },
     lehengas: {
-      title: 'Exquisite Bridal Lehengas - RANG AND CRAFT Luxury Bridal Edit',
-      description: 'Find your dream bridal lehenga at RANG AND CRAFT. Intricate zardozi, royal zari, and timeless crimson silhouettes crafted for your precious moments.',
-      keywords: 'bridal lehenga, luxury lehengas, wedding lehenga, crimson lehenga, hand-embroidered lehenga'
+      title: 'Exquisite Men's Suits - RANG AND CRAFT Luxury Ethnic Edit',
+      description: 'Find your dream wedding suit at RANG AND CRAFT. Intricate embroidery, royal textures, and timeless ethnic silhouettes crafted for your precious moments.',
+      keywords: 'wedding suits, luxury sherwanis, ethnic wear, men's kurtas, hand-embroidered suits'
     },
     contact: {
       title: 'Contact Us - RANG AND CRAFT Premium Clothing',

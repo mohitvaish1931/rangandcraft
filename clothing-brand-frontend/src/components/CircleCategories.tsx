@@ -12,26 +12,26 @@ const CircleCategories = ({ products = [] }: CircleCategoriesProps) => {
       name: 'Short Kurtas',
       path: '/shop?category=Short%20Kurtas',
       label: 'Short Kurtas',
-      defaultImg: '/images/kurta-category.png'
+      defaultImg: '/images/kurta-men.jpg'
     },
     {
       name: 'Long Kurtas',
       path: '/shop?category=Long%20Kurtas',
       label: 'Long Kurtas',
-      defaultImg: '/images/suits-category.png'
+      defaultImg: '/images/suits-men.jpg'
     },
 
     {
       name: 'Half Sleeves Shirts',
       path: '/shop?category=Half Sleeves Shirts',
       label: 'Half Sleeves Shirts',
-      defaultImg: '/images/indowestern-category.png'
+      defaultImg: '/images/indowestern-men.jpg'
     },
     {
       name: 'Full Sleeves Shirts',
       path: '/shop?category=Full%20Sleeves%20Shirts',
       label: 'Full Sleeves Shirts',
-      defaultImg: '/images/bridal-edit.png'
+      defaultImg: '/images/saree-men.jpg'
     }
   ];
 

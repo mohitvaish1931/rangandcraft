@@ -110,7 +110,7 @@
 }
 
 .suggestion-item:hover {
-  background-color: #fdfbff;
+  background-color: #f9fafa;
 }
 
 .suggestion-item img {
@@ -420,7 +420,7 @@
   align-items: center;
   width: 100%;
   position: relative;
-  background: #fdfbff;
+  background: #f9fafa;
   border: 1px solid #f0e6ff;
   border-radius: 12px;
   padding: 8px 15px;

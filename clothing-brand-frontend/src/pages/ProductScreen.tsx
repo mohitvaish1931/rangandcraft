@@ -31,12 +31,12 @@ const StarRating = ({ rating, size = 16, interactive = false, onChange }: { rati
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: fill ? '#D4AF37' : '#E2E8F0',
+              color: fill ? '#c48f56' : '#E2E8F0',
               transition: 'color 0.1s ease',
               outline: 'none'
             }}
           >
-            <Star size={size} fill={fill ? '#D4AF37' : 'none'} strokeWidth={1.5} />
+            <Star size={size} fill={fill ? '#c48f56' : 'none'} strokeWidth={1.5} />
           </button>
         );
       })}
@@ -142,8 +142,8 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '40px', marginBottom: '40px' }}>
         {/* Rating Summary */}
         <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '20px', border: '1px solid #f0f0f0', textAlign: 'center' }}>
-          <h4 style={{ fontSize: '1.1rem', color: '#2D0A4E', fontWeight: '800', marginBottom: '15px', letterSpacing: '1px' }}>AVERAGE RATING</h4>
-          <span style={{ fontSize: '3.5rem', fontWeight: '800', color: '#2D0A4E', display: 'block', lineHeight: '1' }}>{averageRating}</span>
+          <h4 style={{ fontSize: '1.1rem', color: '#295454', fontWeight: '800', marginBottom: '15px', letterSpacing: '1px' }}>AVERAGE RATING</h4>
+          <span style={{ fontSize: '3.5rem', fontWeight: '800', color: '#295454', display: 'block', lineHeight: '1' }}>{averageRating}</span>
           <div style={{ margin: '10px 0' }}>
             <StarRating rating={Math.round(parseFloat(averageRating))} size={20} />
           </div>
@@ -152,16 +152,16 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
 
         {/* Rating Breakdown */}
         <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '20px', border: '1px solid #f0f0f0' }}>
-          <h4 style={{ fontSize: '1rem', color: '#2D0A4E', fontWeight: '800', marginBottom: '15px', letterSpacing: '1px' }}>RATING DISTRIBUTION</h4>
+          <h4 style={{ fontSize: '1rem', color: '#295454', fontWeight: '800', marginBottom: '15px', letterSpacing: '1px' }}>RATING DISTRIBUTION</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[5, 4, 3, 2, 1].map((stars) => {
               const count = ratingDistribution[stars] || 0;
               const percent = getPercentage(count);
               return (
                 <div key={stars} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem' }}>
-                  <span style={{ width: '45px', color: '#2D0A4E', fontWeight: '700' }}>{stars} Star</span>
+                  <span style={{ width: '45px', color: '#295454', fontWeight: '700' }}>{stars} Star</span>
                   <div style={{ flex: 1, height: '8px', backgroundColor: '#F3F4F6', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${percent}%`, backgroundColor: '#D4AF37', borderRadius: '4px' }}></div>
+                    <div style={{ height: '100%', width: `${percent}%`, backgroundColor: '#c48f56', borderRadius: '4px' }}></div>
                   </div>
                   <span style={{ width: '30px', color: '#888', textAlign: 'right' }}>{count}</span>
                 </div>
@@ -173,13 +173,13 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
 
       {/* Write a Review Toggle */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid #f0f0f0', paddingBottom: '20px' }}>
-        <h3 className="font-serif" style={{ fontSize: '1.8rem', color: '#2D0A4E', margin: 0 }}>Customer Reviews</h3>
+        <h3 className="font-serif" style={{ fontSize: '1.8rem', color: '#295454', margin: 0 }}>Customer Reviews</h3>
         {!writeReviewOpen && (
           <button
             onClick={() => setWriteReviewOpen(true)}
             style={{
               padding: '12px 24px',
-              backgroundColor: '#2D0A4E',
+              backgroundColor: '#295454',
               color: '#fff',
               border: 'none',
               borderRadius: '8px',
@@ -202,7 +202,7 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
       {writeReviewOpen && (
         <div style={{ backgroundColor: '#fff', padding: '40px', borderRadius: '24px', border: '1px solid #f0f0f0', marginBottom: '40px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-            <h4 style={{ fontSize: '1.2rem', color: '#2D0A4E', fontWeight: '800', letterSpacing: '1px' }}>SHARE YOUR EXPERIENCE</h4>
+            <h4 style={{ fontSize: '1.2rem', color: '#295454', fontWeight: '800', letterSpacing: '1px' }}>SHARE YOUR EXPERIENCE</h4>
             <button 
               onClick={() => { setWriteReviewOpen(false); setSubmitSuccess(false); setSubmitError(null); }}
               style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#999' }}
@@ -212,14 +212,14 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
           </div>
 
           {!state.user ? (
-            <div style={{ textAlign: 'center', padding: '30px', backgroundColor: '#FDFBFD', borderRadius: '16px', border: '1px dashed #ddd' }}>
+            <div style={{ textAlign: 'center', padding: '30px', backgroundColor: '#f9f9f9', borderRadius: '16px', border: '1px dashed #ddd' }}>
               <p style={{ color: '#666', marginBottom: '20px' }}>You must be signed in to submit a product review.</p>
               <Link
                 to="/login"
                 style={{
                   display: 'inline-block',
                   padding: '12px 30px',
-                  backgroundColor: '#2D0A4E',
+                  backgroundColor: '#295454',
                   color: '#fff',
                   textDecoration: 'none',
                   borderRadius: '8px',
@@ -245,12 +245,12 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
               )}
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.75rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>YOUR RATING</label>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.75rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>YOUR RATING</label>
                 <StarRating rating={formRating} size={24} interactive={true} onChange={setFormRating} />
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.75rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>REVIEW TITLE</label>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.75rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>REVIEW TITLE</label>
                 <input
                   type="text"
                   required
@@ -262,7 +262,7 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
               </div>
 
               <div style={{ marginBottom: '30px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.75rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>REVIEW DETAILS</label>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.75rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>REVIEW DETAILS</label>
                 <textarea
                   required
                   rows={4}
@@ -278,7 +278,7 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
                 disabled={submitLoading}
                 style={{
                   padding: '15px 30px',
-                  backgroundColor: '#2D0A4E',
+                  backgroundColor: '#295454',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '8px',
@@ -299,7 +299,7 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
       {/* Reviews List */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '30px' }}>
-          <div className="loader-spinner" style={{ border: '3px solid #f3f3f3', borderTop: '3px solid #2D0A4E', borderRadius: '50%', width: '30px', height: '30px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
+          <div className="loader-spinner" style={{ border: '3px solid #f3f3f3', borderTop: '3px solid #295454', borderRadius: '50%', width: '30px', height: '30px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
         </div>
       ) : error ? (
         <p style={{ color: '#C53030', textAlign: 'center' }}>Error loading reviews: {error}</p>
@@ -313,10 +313,10 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
             <div key={rev._id} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '25px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '10px' }}>
                 <div>
-                  <h5 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#2D0A4E', margin: '0 0 5px' }}>{rev.title}</h5>
+                  <h5 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#295454', margin: '0 0 5px' }}>{rev.title}</h5>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <StarRating rating={rev.rating} size={14} />
-                    <span style={{ fontSize: '0.85rem', color: '#2D0A4E', fontWeight: '700' }}>by {rev.userName || 'Anonymous'}</span>
+                    <span style={{ fontSize: '0.85rem', color: '#295454', fontWeight: '700' }}>by {rev.userName || 'Anonymous'}</span>
                   </div>
                 </div>
                 <span style={{ fontSize: '0.8rem', color: '#999' }}>{new Date(rev.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
@@ -391,13 +391,13 @@ const ProductScreen = () => {
   const productReviewsCount = product.numReviews !== undefined ? product.numReviews : (product.reviewCount || 0);
 
   return (
-    <div className="product-page-detail" style={{ backgroundColor: '#FDFBFD', minHeight: '100vh', padding: '60px 20px 100px' }}>
+    <div className="product-page-detail" style={{ backgroundColor: '#f9f9f9', minHeight: '100vh', padding: '60px 20px 100px' }}>
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <Link to="/shop" style={{ 
           display: 'inline-flex', 
           alignItems: 'center', 
           gap: '10px', 
-          color: '#2D0A4E', 
+          color: '#295454', 
           textDecoration: 'none', 
           fontWeight: '800', 
           fontSize: '0.75rem', 
@@ -410,7 +410,7 @@ const ProductScreen = () => {
         
         {loading ? (
           <div style={{ textAlign: 'center', padding: '100px 0' }}>
-             <div className="loader-spinner" style={{ border: '3px solid #f3f3f3', borderTop: '3px solid #2D0A4E', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
+             <div className="loader-spinner" style={{ border: '3px solid #f3f3f3', borderTop: '3px solid #295454', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
           </div>
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '50px', backgroundColor: '#FFF5F5', borderRadius: '24px', border: '1px solid #FED7D7' }}>
@@ -459,7 +459,7 @@ const ProductScreen = () => {
                    <img src={getImageUrl(selectedImage || product.image, 1200)} alt={product.name} style={{ width: '100%', display: 'block' }} loading="eager" fetchPriority="high" />
                    {product.countInStock === 0 && (
                      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ backgroundColor: '#2D0A4E', color: '#fff', padding: '10px 25px', borderRadius: '50px', fontWeight: '800', fontSize: '0.8rem', letterSpacing: '2px' }}>SOLD OUT</span>
+                        <span style={{ backgroundColor: '#295454', color: '#fff', padding: '10px 25px', borderRadius: '50px', fontWeight: '800', fontSize: '0.8rem', letterSpacing: '2px' }}>SOLD OUT</span>
                      </div>
                    )}
                 </div>
@@ -473,14 +473,14 @@ const ProductScreen = () => {
                     overflowX: 'auto', 
                     paddingBottom: '10px',
                     scrollbarWidth: 'thin',
-                    scrollbarColor: '#2D0A4E #FDFBFD'
+                    scrollbarColor: '#295454 #f9f9f9'
                   }}>
                     {product.images.map((imgUrl: string, idx: number) => (
                       <button 
                         key={idx}
                         onClick={() => setSelectedImage(imgUrl)}
                         style={{
-                          border: selectedImage === imgUrl ? '2px solid #2D0A4E' : '2px solid transparent',
+                          border: selectedImage === imgUrl ? '2px solid #295454' : '2px solid transparent',
                           borderRadius: '12px',
                           overflow: 'hidden',
                           padding: 0,
@@ -513,8 +513,8 @@ const ProductScreen = () => {
               
               {/* Info Section */}
               <div className="product-info-section">
-                <span style={{ color: '#D4AF37', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '15px' }}>{product.category}</span>
-                <h1 className="font-serif" style={{ fontSize: '3rem', color: '#2D0A4E', marginBottom: '10px', lineHeight: '1.2' }}>{product.name}</h1>
+                <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '15px' }}>{product.category}</span>
+                <h1 className="font-serif" style={{ fontSize: '3rem', color: '#295454', marginBottom: '10px', lineHeight: '1.2' }}>{product.name}</h1>
                 
                 {/* Rating summary below title */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
@@ -525,7 +525,7 @@ const ProductScreen = () => {
                 </div>
 
                 <div style={{ marginBottom: '30px' }}>
-                   <span style={{ fontSize: '2rem', fontWeight: '800', color: '#2D0A4E' }}>₹{product.price?.toLocaleString('en-IN')}</span>
+                   <span style={{ fontSize: '2rem', fontWeight: '800', color: '#295454' }}>₹{product.price?.toLocaleString('en-IN')}</span>
                    <span style={{ marginLeft: '15px', color: '#999', fontSize: '0.9rem', textDecoration: 'line-through' }}>₹{(product.price * 1.2).toLocaleString('en-IN')}</span>
                 </div>
 
@@ -541,11 +541,11 @@ const ProductScreen = () => {
                       {product.sizes && product.sizes.length > 0 && (
                         <div style={{ marginBottom: '25px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                            <span style={{ fontWeight: '800', color: '#2D0A4E', fontSize: '0.85rem', letterSpacing: '1px' }}>SELECT SIZE</span>
+                            <span style={{ fontWeight: '800', color: '#295454', fontSize: '0.85rem', letterSpacing: '1px' }}>SELECT SIZE</span>
                             <button
                               type="button"
                               onClick={() => setShowSizeGuide(true)}
-                              style={{ background: 'none', border: 'none', color: '#D4AF37', fontWeight: '800', fontSize: '0.75rem', letterSpacing: '1px', cursor: 'pointer', textDecoration: 'underline' }}
+                              style={{ background: 'none', border: 'none', color: '#c48f56', fontWeight: '800', fontSize: '0.75rem', letterSpacing: '1px', cursor: 'pointer', textDecoration: 'underline' }}
                             >
                               SIZE GUIDE
                             </button>
@@ -559,9 +559,9 @@ const ProductScreen = () => {
                                 style={{
                                   padding: '10px 18px',
                                   borderRadius: '8px',
-                                  border: selectedSize === size ? '2px solid #2D0A4E' : '1px solid #ddd',
-                                  backgroundColor: selectedSize === size ? '#2D0A4E' : '#fff',
-                                  color: selectedSize === size ? '#fff' : '#2D0A4E',
+                                  border: selectedSize === size ? '2px solid #295454' : '1px solid #ddd',
+                                  backgroundColor: selectedSize === size ? '#295454' : '#fff',
+                                  color: selectedSize === size ? '#fff' : '#295454',
                                   fontWeight: '800',
                                   cursor: 'pointer',
                                   transition: 'all 0.2s ease',
@@ -582,7 +582,7 @@ const ProductScreen = () => {
                       {/* Colors Selection */}
                       {product.colors && product.colors.length > 0 && (
                         <div style={{ marginBottom: '25px' }}>
-                          <span style={{ display: 'block', fontWeight: '800', color: '#2D0A4E', fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '10px' }}>SELECT COLOR</span>
+                          <span style={{ display: 'block', fontWeight: '800', color: '#295454', fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '10px' }}>SELECT COLOR</span>
                           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                             {product.colors.map((color: string) => (
                               <button
@@ -592,8 +592,8 @@ const ProductScreen = () => {
                                 style={{
                                   padding: '8px 16px',
                                   borderRadius: '20px',
-                                  border: selectedColor === color ? '2px solid #2D0A4E' : '1px solid #ddd',
-                                  backgroundColor: selectedColor === color ? '#2D0A4E' : '#fcfcfc',
+                                  border: selectedColor === color ? '2px solid #295454' : '1px solid #ddd',
+                                  backgroundColor: selectedColor === color ? '#295454' : '#fcfcfc',
                                   color: selectedColor === color ? '#fff' : '#555',
                                   fontWeight: '700',
                                   fontSize: '0.85rem',
@@ -610,7 +610,7 @@ const ProductScreen = () => {
 
                       {/* Quantity Selector */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                        <span style={{ fontWeight: '800', color: '#2D0A4E', fontSize: '0.85rem', letterSpacing: '1px' }}>SELECT QUANTITY</span>
+                        <span style={{ fontWeight: '800', color: '#295454', fontSize: '0.85rem', letterSpacing: '1px' }}>SELECT QUANTITY</span>
                         <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #eee', borderRadius: '8px', overflow: 'hidden' }}>
                           <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ padding: '10px 15px', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '800' }}>-</button>
                           <span style={{ padding: '10px 20px', backgroundColor: '#f9f9f9', minWidth: '40px', textAlign: 'center', fontWeight: '800' }}>{qty}</span>
@@ -622,7 +622,7 @@ const ProductScreen = () => {
                         style={{ 
                           width: '100%', 
                           padding: '20px', 
-                          backgroundColor: '#2D0A4E', 
+                          backgroundColor: '#295454', 
                           color: '#fff', 
                           border: 'none', 
                           borderRadius: '12px', 
@@ -650,16 +650,16 @@ const ProductScreen = () => {
                 {/* USP Section */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '20px' }}>
                    <div style={{ textAlign: 'center' }}>
-                      <ShieldCheck size={24} color="#D4AF37" style={{ marginBottom: '10px' }} />
-                      <p style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>SECURE PAYMENT</p>
+                      <ShieldCheck size={24} color="#c48f56" style={{ marginBottom: '10px' }} />
+                      <p style={{ fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>SECURE PAYMENT</p>
                    </div>
                    <div style={{ textAlign: 'center' }}>
-                      <Truck size={24} color="#D4AF37" style={{ marginBottom: '10px' }} />
-                      <p style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>FREE DELIVERY</p>
+                      <Truck size={24} color="#c48f56" style={{ marginBottom: '10px' }} />
+                      <p style={{ fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>FREE DELIVERY</p>
                    </div>
                    <div style={{ textAlign: 'center' }}>
-                      <RefreshCcw size={24} color="#D4AF37" style={{ marginBottom: '10px' }} />
-                      <p style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>EASY EXCHANGE</p>
+                      <RefreshCcw size={24} color="#c48f56" style={{ marginBottom: '10px' }} />
+                      <p style={{ fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>EASY EXCHANGE</p>
                    </div>
                 </div>
               </div>
@@ -671,24 +671,24 @@ const ProductScreen = () => {
                 
                 {/* 1. Specifications Section */}
                 <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '40px' }}>
-                  <span style={{ color: '#D4AF37', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>DETAILS</span>
-                  <h3 className="font-serif" style={{ fontSize: '2rem', color: '#2D0A4E', marginBottom: '25px', marginTop: 0 }}>Specifications</h3>
+                  <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>DETAILS</span>
+                  <h3 className="font-serif" style={{ fontSize: '2rem', color: '#295454', marginBottom: '25px', marginTop: 0 }}>Specifications</h3>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
                     <tbody>
                       <tr style={{ borderBottom: '1px solid #f8f8f8' }}>
                         <td style={{ padding: '15px 0', color: '#999', width: '35%', fontWeight: '600' }}>Category</td>
-                        <td style={{ padding: '15px 0', color: '#2D0A4E', fontWeight: '700' }}>{product.category}</td>
+                        <td style={{ padding: '15px 0', color: '#295454', fontWeight: '700' }}>{product.category}</td>
                       </tr>
                       {product.subcategory && (
                         <tr style={{ borderBottom: '1px solid #f8f8f8' }}>
                           <td style={{ padding: '15px 0', color: '#999', fontWeight: '600' }}>Subcategory</td>
-                          <td style={{ padding: '15px 0', color: '#2D0A4E', fontWeight: '700' }}>{product.subcategory}</td>
+                          <td style={{ padding: '15px 0', color: '#295454', fontWeight: '700' }}>{product.subcategory}</td>
                         </tr>
                       )}
                       {product.materials && product.materials.length > 0 && (
                         <tr style={{ borderBottom: '1px solid #f8f8f8' }}>
                           <td style={{ padding: '15px 0', color: '#999', fontWeight: '600' }}>Material / Fabric</td>
-                          <td style={{ padding: '15px 0', color: '#2D0A4E', fontWeight: '700' }}>{product.materials.join(', ')}</td>
+                          <td style={{ padding: '15px 0', color: '#295454', fontWeight: '700' }}>{product.materials.join(', ')}</td>
                         </tr>
                       )}
                       {product.specifications && product.specifications.length > 0 && product.specifications.map((spec: string, index: number) => {
@@ -698,7 +698,7 @@ const ProductScreen = () => {
                         return (
                           <tr key={index} style={{ borderBottom: '1px solid #f8f8f8' }}>
                             <td style={{ padding: '15px 0', color: '#999', fontWeight: '600' }}>{label.trim()}</td>
-                            <td style={{ padding: '15px 0', color: '#2D0A4E', fontWeight: '700' }}>{value.trim()}</td>
+                            <td style={{ padding: '15px 0', color: '#295454', fontWeight: '700' }}>{value.trim()}</td>
                           </tr>
                         );
                       })}
@@ -708,8 +708,8 @@ const ProductScreen = () => {
 
                 {/* 2. Care Instructions Section */}
                 <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '40px' }}>
-                  <span style={{ color: '#D4AF37', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>MAINTENANCE</span>
-                  <h3 className="font-serif" style={{ fontSize: '2rem', color: '#2D0A4E', marginBottom: '25px', marginTop: 0 }}>Care Guide</h3>
+                  <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>MAINTENANCE</span>
+                  <h3 className="font-serif" style={{ fontSize: '2rem', color: '#295454', marginBottom: '25px', marginTop: 0 }}>Care Guide</h3>
                   {product.careInstructions && product.careInstructions.length > 0 ? (
                     <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
                       {product.careInstructions.map((inst: string, idx: number) => (
@@ -722,7 +722,7 @@ const ProductScreen = () => {
                           fontSize: '1rem',
                           color: '#555'
                         }}>
-                          <span style={{ color: '#D4AF37', fontSize: '1.2rem', lineHeight: '1' }}>✦</span>
+                          <span style={{ color: '#c48f56', fontSize: '1.2rem', lineHeight: '1' }}>✦</span>
                           <span>{inst}</span>
                         </li>
                       ))}
@@ -734,7 +734,7 @@ const ProductScreen = () => {
 
                 {/* 3. Reviews Section */}
                 <div>
-                  <span style={{ color: '#D4AF37', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>FEEDBACK</span>
+                  <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>FEEDBACK</span>
                   <ReviewsTab productId={product._id} />
                 </div>
 
@@ -786,7 +786,7 @@ const ProductScreen = () => {
               &times;
             </button>
             <span style={{ 
-              color: '#D4AF37', 
+              color: '#c48f56', 
               letterSpacing: '4px', 
               fontWeight: '800', 
               fontSize: '0.7rem', 
@@ -794,11 +794,11 @@ const ProductScreen = () => {
               display: 'block', 
               marginBottom: '10px' 
             }}>FIT GUIDE</span>
-            <h3 className="font-serif" style={{ fontSize: '2rem', color: '#2D0A4E', marginBottom: '25px', marginTop: 0 }}>Size Chart (Inches)</h3>
+            <h3 className="font-serif" style={{ fontSize: '2rem', color: '#295454', marginBottom: '25px', marginTop: 0 }}>Size Chart (Inches)</h3>
             
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '0.95rem' }}>
               <thead>
-                <tr style={{ borderBottom: '2px solid #2D0A4E', color: '#2D0A4E', fontWeight: '800' }}>
+                <tr style={{ borderBottom: '2px solid #295454', color: '#295454', fontWeight: '800' }}>
                   <th style={{ padding: '12px' }}>Size</th>
                   <th style={{ padding: '12px' }}>Chest</th>
                   <th style={{ padding: '12px' }}>Waist</th>
@@ -816,7 +816,7 @@ const ProductScreen = () => {
                   { size: '5XL', chest: '50', waist: '46', hip: '52' }
                 ].map((row, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '12px', fontWeight: '700', color: '#2D0A4E' }}>{row.size}</td>
+                    <td style={{ padding: '12px', fontWeight: '700', color: '#295454' }}>{row.size}</td>
                     <td style={{ padding: '12px', color: '#555' }}>{row.chest}</td>
                     <td style={{ padding: '12px', color: '#555' }}>{row.waist}</td>
                     <td style={{ padding: '12px', color: '#555' }}>{row.hip}</td>

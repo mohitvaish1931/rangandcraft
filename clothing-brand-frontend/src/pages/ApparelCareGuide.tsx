@@ -43,7 +43,7 @@ const ApparelCareGuide = () => {
   return (
     <div className="policy-page-v2" style={{ 
       backgroundColor: '#fff', 
-      color: '#2d0a4e', 
+      color: '#295454', 
       minHeight: '100vh', 
       padding: '80px 20px',
       fontFamily: "'Inter', sans-serif"
@@ -51,8 +51,8 @@ const ApparelCareGuide = () => {
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#2d0a4e' }}>Garment Care Guide</h1>
-          <div style={{ width: '60px', height: '2px', backgroundColor: '#D4AF37', margin: '0 auto 20px' }}></div>
+          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#295454' }}>Garment Care Guide</h1>
+          <div style={{ width: '60px', height: '2px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
           <p style={{ fontSize: '1.1rem', color: '#666' }}>Preserve the beauty and longevity of your handcrafted ethnic wear with these expert tips.</p>
         </div>
 
@@ -74,7 +74,7 @@ const ApparelCareGuide = () => {
                 height: '70px', 
                 borderRadius: '50%', 
                 backgroundColor: '#FDF7F2', 
-                color: '#2d0a4e', 
+                color: '#295454', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
@@ -83,7 +83,7 @@ const ApparelCareGuide = () => {
                 {section.icon}
               </div>
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', letterSpacing: '1px', marginBottom: '12px', color: '#2d0a4e' }}>{section.title}</h3>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', letterSpacing: '1px', marginBottom: '12px', color: '#295454' }}>{section.title}</h3>
                 <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}>{section.text}</p>
                 {section.note && (
                   <p style={{ color: '#777', fontStyle: 'italic', fontSize: '0.85rem', marginTop: '10px' }}>{section.note}</p>
@@ -100,8 +100,8 @@ const ApparelCareGuide = () => {
           padding: '60px 40px', 
           textAlign: 'center'
         }}>
-          <h2 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '15px', color: '#2d0a4e' }}>NEED ADVICE?</h2>
-          <div style={{ width: '40px', height: '2px', backgroundColor: '#D4AF37', margin: '0 auto 20px' }}></div>
+          <h2 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '15px', color: '#295454' }}>NEED ADVICE?</h2>
+          <div style={{ width: '40px', height: '2px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
           <p style={{ color: '#666', marginBottom: '40px' }}>Our styling experts are here to help you preserve your heirloom pieces:</p>
           
           <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
@@ -135,12 +135,12 @@ const ContactCard = ({ icon, label, value, href }: { icon: React.ReactNode, labe
     backgroundColor: '#fff', 
     borderRadius: '16px', 
     textDecoration: 'none', 
-    color: '#2d0a4e',
+    color: '#295454',
     boxShadow: '0 10px 20px rgba(0,0,0,0.02)',
     minWidth: '320px',
     border: '1px solid #f0f0f0'
   }}>
-    <div style={{ color: '#2d0a4e', backgroundColor: '#F9F6FF', padding: '12px', borderRadius: '12px' }}>{icon}</div>
+    <div style={{ color: '#295454', backgroundColor: '#F9F6FF', padding: '12px', borderRadius: '12px' }}>{icon}</div>
     <div style={{ textAlign: 'left' }}>
       <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#999', display: 'block' }}>{label}</span>
       <span style={{ fontSize: '1rem', fontWeight: '700' }}>{value}</span>

@@ -63,7 +63,7 @@ const RegisterScreen = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center', 
-      backgroundColor: '#FDFBFD',
+      backgroundColor: '#f9f9f9',
       padding: '60px 20px'
     }}>
       <div style={{
@@ -77,7 +77,7 @@ const RegisterScreen = () => {
         textAlign: 'center'
       }}>
         <span style={{ 
-          color: '#D4AF37', 
+          color: '#c48f56', 
           letterSpacing: '4px', 
           fontWeight: '800', 
           fontSize: '0.7rem', 
@@ -86,7 +86,7 @@ const RegisterScreen = () => {
           marginBottom: '15px' 
         }}>JOIN THE LEGACY</span>
         
-        <h1 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#2D0A4E' }}>Register</h1>
+        <h1 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#295454' }}>Register</h1>
         <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.95rem' }}>Create your RANG AND CRAFT account</p>
 
         {error && (
@@ -105,7 +105,7 @@ const RegisterScreen = () => {
 
         <form onSubmit={submitHandler} style={{ textAlign: 'left' }}>
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>FULL NAME</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>FULL NAME</label>
             <input 
               type="text" 
               value={name}
@@ -124,7 +124,7 @@ const RegisterScreen = () => {
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>EMAIL ADDRESS</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>EMAIL ADDRESS</label>
             <input 
               type="email" 
               value={email}
@@ -143,7 +143,7 @@ const RegisterScreen = () => {
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>PASSWORD</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>PASSWORD</label>
             <input 
               type="password" 
               value={password}
@@ -162,7 +162,7 @@ const RegisterScreen = () => {
           </div>
 
           <div style={{ marginBottom: '30px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>CONFIRM PASSWORD</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>CONFIRM PASSWORD</label>
             <input 
               type="password" 
               value={confirmPassword}
@@ -186,7 +186,7 @@ const RegisterScreen = () => {
             style={{ 
               width: '100%', 
               padding: '18px', 
-              backgroundColor: '#2D0A4E', 
+              backgroundColor: '#295454', 
               color: '#fff', 
               border: 'none', 
               borderRadius: '12px', 
@@ -203,7 +203,7 @@ const RegisterScreen = () => {
         </form>
 
         <div style={{ marginTop: '30px', fontSize: '0.9rem', color: '#666' }}>
-          Already a member? <Link to="/login" style={{ color: '#D4AF37', fontWeight: '800', textDecoration: 'none' }}>Sign In</Link>
+          Already a member? <Link to="/login" style={{ color: '#c48f56', fontWeight: '800', textDecoration: 'none' }}>Sign In</Link>
         </div>
       </div>
     </div>

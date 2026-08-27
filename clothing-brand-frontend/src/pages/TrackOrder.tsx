@@ -71,7 +71,7 @@ const TrackOrder = () => {
 
   return (
     <div className="track-order-page-v3" style={{ 
-      backgroundColor: '#fdfbff', 
+      backgroundColor: '#f9fafa', 
       minHeight: '100vh', 
       paddingBottom: '100px',
       fontFamily: "'Inter', sans-serif",
@@ -89,10 +89,10 @@ const TrackOrder = () => {
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1 }}>
         {/* Header Section */}
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <span style={{ color: '#D4AF37', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>REAL-TIME UPDATES</span>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', color: '#2D0A4E', marginBottom: '15px' }}>Track Your Order</h1>
+          <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>REAL-TIME UPDATES</span>
+          <h1 className="font-serif" style={{ fontSize: '3.5rem', color: '#295454', marginBottom: '15px' }}>Track Your Order</h1>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '25px' }}>
-             <div style={{ width: '40px', height: '1.5px', backgroundColor: '#D4AF37' }}></div>
+             <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56' }}></div>
           </div>
           <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
             Enter your order details below to see the current status of your handcrafted apparel.
@@ -112,9 +112,9 @@ const TrackOrder = () => {
           }}>
             <form onSubmit={handleTrackOrder} style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
               <div className="form-group">
-                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#2D0A4E', marginBottom: '10px' }}>ORDER ID</label>
+                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }}>ORDER ID</label>
                 <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#2D0A4E' }}>
+                  <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#295454' }}>
                     <Package size={20} strokeWidth={1.5} />
                   </div>
                   <input
@@ -129,9 +129,9 @@ const TrackOrder = () => {
               </div>
 
               <div className="form-group">
-                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#2D0A4E', marginBottom: '10px' }}>EMAIL ADDRESS</label>
+                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }}>EMAIL ADDRESS</label>
                 <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#2D0A4E' }}>
+                  <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#295454' }}>
                     <Mail size={20} strokeWidth={1.5} />
                   </div>
                   <input
@@ -151,7 +151,7 @@ const TrackOrder = () => {
                 style={{ 
                   width: '100%', 
                   padding: '18px', 
-                  backgroundColor: '#2D0A4E', 
+                  backgroundColor: '#295454', 
                   color: '#fff', 
                   border: 'none', 
                   borderRadius: '12px', 
@@ -184,7 +184,7 @@ const TrackOrder = () => {
         {trackingResult && (
            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '80px' }}>
               <div style={{ 
-                backgroundColor: '#2D0A4E', 
+                backgroundColor: '#295454', 
                 color: '#fff', 
                 padding: '40px', 
                 borderRadius: '24px', 
@@ -197,7 +197,7 @@ const TrackOrder = () => {
                       <span style={{ fontSize: '0.6rem', fontWeight: '700', letterSpacing: '3px', opacity: 0.6, textTransform: 'uppercase' }}>Shipment Status</span>
                       <h2 className="font-serif" style={{ fontSize: '2.5rem', marginTop: '5px' }}>{trackingResult.order.status}</h2>
                     </div>
-                    <Truck size={40} color="#D4AF37" />
+                    <Truck size={40} color="#c48f56" />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
@@ -217,8 +217,8 @@ const TrackOrder = () => {
         {/* Need Help Section */}
         <div style={{ backgroundColor: '#F9F6FF', borderRadius: '24px', padding: '60px 40px', marginBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h3 className="font-serif" style={{ fontSize: '2rem', color: '#2D0A4E', marginBottom: '10px' }}>Need Help?</h3>
-            <div style={{ width: '40px', height: '1.5px', backgroundColor: '#D4AF37', margin: '0 auto' }}></div>
+            <h3 className="font-serif" style={{ fontSize: '2rem', color: '#295454', marginBottom: '10px' }}>Need Help?</h3>
+            <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto' }}></div>
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '25px' }}>
@@ -274,12 +274,12 @@ const TrackOrder = () => {
 
 const HelpCard = ({ icon, title, desc, linkText, href }: { icon: React.ReactNode, title: string, desc: string, linkText: string, href: string }) => (
   <div style={{ backgroundColor: 'transparent', textAlign: 'left' }}>
-    <div style={{ width: '50px', height: '50px', backgroundColor: '#FDF7F2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2D0A4E', marginBottom: '20px', border: '1px solid rgba(45,10,78,0.05)' }}>
+    <div style={{ width: '50px', height: '50px', backgroundColor: '#FDF7F2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#295454', marginBottom: '20px', border: '1px solid rgba(45,10,78,0.05)' }}>
       {icon}
     </div>
-    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#2D0A4E', marginBottom: '8px' }}>{title}</h4>
+    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#295454', marginBottom: '8px' }}>{title}</h4>
     <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: '1.6', marginBottom: '12px' }}>{desc}</p>
-    <a href={href} style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2D0A4E', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}>
+    <a href={href} style={{ fontSize: '0.75rem', fontWeight: '800', color: '#295454', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}>
       {linkText} <ChevronRight size={14} />
     </a>
   </div>
@@ -287,9 +287,9 @@ const HelpCard = ({ icon, title, desc, linkText, href }: { icon: React.ReactNode
 
 const TrustItem = ({ icon, title, sub }: { icon: React.ReactNode, title: string, sub: string }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-    <div style={{ color: '#2D0A4E', opacity: 0.8 }}>{icon}</div>
+    <div style={{ color: '#295454', opacity: 0.8 }}>{icon}</div>
     <div style={{ textAlign: 'left' }}>
-      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#2D0A4E', marginBottom: '2px' }}>{title}</h5>
+      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '2px' }}>{title}</h5>
       <p style={{ fontSize: '0.65rem', color: '#888' }}>{sub}</p>
     </div>
   </div>

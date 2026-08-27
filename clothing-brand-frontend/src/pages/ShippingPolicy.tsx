@@ -22,7 +22,7 @@ const ShippingPolicy = () => {
       title: "SHIPPING COST",
       text: (
         <>
-          We charge ₹70 per order and also offer <strong style={{color: '#2d0a4e'}}>free shipping on all orders above ₹1499.</strong>
+          We charge ₹70 per order and also offer <strong style={{color: '#295454'}}>free shipping on all orders above ₹1499.</strong>
         </>
       )
     },
@@ -45,8 +45,8 @@ const ShippingPolicy = () => {
 
   return (
     <div className="policy-page-v2" style={{ 
-      backgroundColor: '#fdfbff', 
-      color: '#2d0a4e', 
+      backgroundColor: '#f9fafa', 
+      color: '#295454', 
       minHeight: '100vh', 
       fontFamily: "'Inter', sans-serif",
       position: 'relative',
@@ -63,9 +63,9 @@ const ShippingPolicy = () => {
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <span style={{ color: '#D4AF37', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>LOGISTICS</span>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#2d0a4e' }}>Shipping Policy</h1>
-          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#D4AF37', margin: '0 auto 20px' }}></div>
+          <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>LOGISTICS</span>
+          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#295454' }}>Shipping Policy</h1>
+          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
           <p style={{ fontSize: '1.1rem', color: '#666' }}>Learn about our delivery times, shipping costs, and order tracking.</p>
         </div>
 
@@ -87,7 +87,7 @@ const ShippingPolicy = () => {
                 height: '70px', 
                 borderRadius: '50%', 
                 backgroundColor: '#F9F6FF', 
-                color: '#2d0a4e', 
+                color: '#295454', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
@@ -96,7 +96,7 @@ const ShippingPolicy = () => {
                 {section.icon}
               </div>
               <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: '800', letterSpacing: '1px', marginBottom: '12px', color: '#2d0a4e' }}>{section.title}</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', letterSpacing: '1px', marginBottom: '12px', color: '#295454' }}>{section.title}</h3>
                 <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}>{section.text}</p>
               </div>
             </div>
@@ -113,11 +113,11 @@ const ShippingPolicy = () => {
         }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
              <div style={{ width: '60px', height: '60px', backgroundColor: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(45,10,78,0.05)' }}>
-                <Headphones size={28} color="#2d0a4e" strokeWidth={1.5} />
+                <Headphones size={28} color="#295454" strokeWidth={1.5} />
              </div>
           </div>
-          <h2 className="font-serif" style={{ fontSize: '2.2rem', marginBottom: '10px', color: '#2d0a4e' }}>NEED HELP WITH YOUR ORDER?</h2>
-          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#D4AF37', margin: '0 auto 20px' }}></div>
+          <h2 className="font-serif" style={{ fontSize: '2.2rem', marginBottom: '10px', color: '#295454' }}>NEED HELP WITH YOUR ORDER?</h2>
+          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
           <p style={{ color: '#666', marginBottom: '40px' }}>Feel free to reach us out on:</p>
           
           <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
@@ -165,12 +165,12 @@ const ContactCard = ({ icon, label, value, href }: { icon: React.ReactNode, labe
     backgroundColor: '#fff', 
     borderRadius: '16px', 
     textDecoration: 'none', 
-    color: '#2d0a4e',
+    color: '#295454',
     boxShadow: '0 10px 20px rgba(0,0,0,0.02)',
     minWidth: '320px',
     border: '1px solid #f0f0f0'
   }}>
-    <div style={{ color: '#2d0a4e', backgroundColor: '#F9F6FF', padding: '12px', borderRadius: '12px' }}>{icon}</div>
+    <div style={{ color: '#295454', backgroundColor: '#F9F6FF', padding: '12px', borderRadius: '12px' }}>{icon}</div>
     <div style={{ textAlign: 'left' }}>
       <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#999', display: 'block' }}>{label}</span>
       <span style={{ fontSize: '1rem', fontWeight: '700' }}>{value}</span>
@@ -180,9 +180,9 @@ const ContactCard = ({ icon, label, value, href }: { icon: React.ReactNode, labe
 
 const TrustItem = ({ icon, title, sub }: { icon: React.ReactNode, title: string, sub: string }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-    <div style={{ color: '#2D0A4E', opacity: 0.8 }}>{icon}</div>
+    <div style={{ color: '#295454', opacity: 0.8 }}>{icon}</div>
     <div style={{ textAlign: 'left' }}>
-      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#2D0A4E', marginBottom: '2px' }}>{title}</h5>
+      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '2px' }}>{title}</h5>
       <p style={{ fontSize: '0.65rem', color: '#888' }}>{sub}</p>
     </div>
   </div>

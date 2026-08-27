@@ -258,7 +258,7 @@ const CartScreen = () => {
       <h1 className="font-serif text-center" style={{fontSize: '2.5rem', marginBottom: '30px', color: 'var(--primary-purple)'}}>Shopping Cart</h1>
       
       {cartItems.length === 0 ? (
-        <div className="text-center" style={{padding: '50px 0', border: '1px solid #efe4ff', background: '#fdfaff', borderRadius: '4px'}}>
+        <div className="text-center" style={{padding: '50px 0', border: '1px solid #e6f0f0', background: '#fdfaff', borderRadius: '4px'}}>
           <h2 className="font-serif mb-4" style={{marginBottom: '20px'}}>Your cart is empty</h2>
           <Link to="/shop" className="btn btn-primary">Go Back To Shop</Link>
         </div>
@@ -282,8 +282,8 @@ const CartScreen = () => {
                       </div>
                       {(item.selectedSize || item.selectedColor) && (
                         <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#666', display: 'flex', gap: '15px' }}>
-                          {item.selectedSize && <span>Size: <strong style={{ color: '#2D0A4E' }}>{item.selectedSize}</strong></span>}
-                          {item.selectedColor && <span>Color: <strong style={{ color: '#2D0A4E' }}>{item.selectedColor}</strong></span>}
+                          {item.selectedSize && <span>Size: <strong style={{ color: '#295454' }}>{item.selectedSize}</strong></span>}
+                          {item.selectedColor && <span>Color: <strong style={{ color: '#295454' }}>{item.selectedColor}</strong></span>}
                         </div>
                       )}
                     </div>
@@ -301,7 +301,7 @@ const CartScreen = () => {
                 
                 {/* Coupon Code Section */}
                 <div style={{ marginBottom: '25px', paddingBottom: '20px', borderBottom: '1px solid #eee' }}>
-                  <span style={{ fontWeight: '600', fontSize: '0.9rem', color: '#2D0A4E', display: 'block', marginBottom: '10px' }}>Apply Coupon Code</span>
+                  <span style={{ fontWeight: '600', fontSize: '0.9rem', color: '#295454', display: 'block', marginBottom: '10px' }}>Apply Coupon Code</span>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <input 
                       type="text" 
@@ -316,7 +316,7 @@ const CartScreen = () => {
                       <button 
                         onClick={applyCouponHandler} 
                         disabled={couponLoading || !couponCode.trim()}
-                        style={{ backgroundColor: '#2D0A4E', color: 'white', border: 'none', borderRadius: '4px', padding: '0 15px', fontWeight: 'bold', cursor: 'pointer', opacity: (couponLoading || !couponCode.trim()) ? 0.7 : 1 }}
+                        style={{ backgroundColor: '#295454', color: 'white', border: 'none', borderRadius: '4px', padding: '0 15px', fontWeight: 'bold', cursor: 'pointer', opacity: (couponLoading || !couponCode.trim()) ? 0.7 : 1 }}
                       >
                         {couponLoading ? '...' : 'APPLY'}
                       </button>

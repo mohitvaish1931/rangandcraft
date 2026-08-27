@@ -58,7 +58,7 @@ const LoginScreen = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center', 
-      backgroundColor: '#FDFBFD',
+      backgroundColor: '#f9f9f9',
       padding: '40px 20px'
     }}>
       <div style={{
@@ -72,7 +72,7 @@ const LoginScreen = () => {
         textAlign: 'center'
       }}>
         <span style={{ 
-          color: '#D4AF37', 
+          color: '#c48f56', 
           letterSpacing: '4px', 
           fontWeight: '800', 
           fontSize: '0.7rem', 
@@ -81,7 +81,7 @@ const LoginScreen = () => {
           marginBottom: '15px' 
         }}>WELCOME BACK</span>
         
-        <h1 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#2D0A4E' }}>Sign In</h1>
+        <h1 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#295454' }}>Sign In</h1>
         <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.95rem' }}>Experience the heritage of RANG AND CRAFT</p>
 
         {error && (
@@ -100,7 +100,7 @@ const LoginScreen = () => {
 
         <form onSubmit={submitHandler} style={{ textAlign: 'left' }}>
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>EMAIL ADDRESS</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>EMAIL ADDRESS</label>
             <input 
               type="email" 
               value={email}
@@ -120,7 +120,7 @@ const LoginScreen = () => {
           </div>
 
           <div style={{ marginBottom: '30px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#2D0A4E', letterSpacing: '1px' }}>PASSWORD</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>PASSWORD</label>
             <input 
               type="password" 
               value={password}
@@ -145,7 +145,7 @@ const LoginScreen = () => {
             style={{ 
               width: '100%', 
               padding: '18px', 
-              backgroundColor: '#2D0A4E', 
+              backgroundColor: '#295454', 
               color: '#fff', 
               border: 'none', 
               borderRadius: '12px', 
@@ -162,7 +162,7 @@ const LoginScreen = () => {
         </form>
 
         <div style={{ marginTop: '30px', fontSize: '0.9rem', color: '#666' }}>
-          New to Rang and Craft? <Link to="/register" style={{ color: '#D4AF37', fontWeight: '800', textDecoration: 'none' }}>Create Account</Link>
+          New to Rang and Craft? <Link to="/register" style={{ color: '#c48f56', fontWeight: '800', textDecoration: 'none' }}>Create Account</Link>
         </div>
       </div>
     </div>

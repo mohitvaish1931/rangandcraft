@@ -41,11 +41,11 @@ const ProductListPage = () => {
   }, [keyword, category]);
 
   return (
-    <div className="shop-page" style={{ backgroundColor: '#FDFBFD', minHeight: '100vh', paddingBottom: '100px' }}>
+    <div className="shop-page" style={{ backgroundColor: '#f9f9f9', minHeight: '100vh', paddingBottom: '100px' }}>
       {/* Category Header */}
-      <section style={{ backgroundColor: '#2D0A4E', color: '#fff', padding: '100px 20px', textAlign: 'center', marginBottom: '60px' }}>
+      <section style={{ backgroundColor: '#295454', color: '#fff', padding: '100px 20px', textAlign: 'center', marginBottom: '60px' }}>
          <div className="container">
-            <span style={{ color: '#D4AF37', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>CURATED SELECTION</span>
+            <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>CURATED SELECTION</span>
             <h1 className="font-serif" style={{ fontSize: '3.5rem', marginBottom: '20px' }}>
                {category ? category : (keyword ? `Search: "${keyword}"` : 'Shop The Collection')}
             </h1>
@@ -58,7 +58,7 @@ const ProductListPage = () => {
       <div className="container">
         {loading ? (
           <div style={{ textAlign: 'center', padding: '100px 0' }}>
-             <div className="loader-spinner" style={{ border: '3px solid #f3f3f3', borderTop: '3px solid #2D0A4E', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
+             <div className="loader-spinner" style={{ border: '3px solid #f3f3f3', borderTop: '3px solid #295454', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
              <p style={{ marginTop: '20px', color: '#666', fontFamily: 'serif' }}>Curating your collection...</p>
           </div>
         ) : error ? (
@@ -67,9 +67,9 @@ const ProductListPage = () => {
           </div>
         ) : products.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '100px 0' }}>
-             <h2 className="font-serif" style={{ fontSize: '2rem', color: '#2D0A4E', marginBottom: '20px' }}>No treasures found.</h2>
+             <h2 className="font-serif" style={{ fontSize: '2rem', color: '#295454', marginBottom: '20px' }}>No treasures found.</h2>
              <p style={{ color: '#666', marginBottom: '30px' }}>Try a different search term or explore our full collection.</p>
-             <Link to="/shop" style={{ padding: '15px 30px', backgroundColor: '#2D0A4E', color: '#fff', textDecoration: 'none', borderRadius: '12px', fontWeight: '800', letterSpacing: '1px' }}>VIEW ALL PRODUCTS</Link>
+             <Link to="/shop" style={{ padding: '15px 30px', backgroundColor: '#295454', color: '#fff', textDecoration: 'none', borderRadius: '12px', fontWeight: '800', letterSpacing: '1px' }}>VIEW ALL PRODUCTS</Link>
           </div>
         ) : (
           <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '40px' }}>

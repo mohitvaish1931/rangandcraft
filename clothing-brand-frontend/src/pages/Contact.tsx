@@ -264,7 +264,7 @@ const Contact = () => {
         <div className="testimonials-grid">
           {[
             { name: 'Neha Sharma', text: 'Amazing collection and perfect fitting. The staff is so friendly and helpful!' },
-            { name: 'Priya Aggarwal', text: 'Best ethnic wear in Jaipur. Highly recommended for bridal shopping!' },
+            { name: 'Priya Aggarwal', text: 'Best ethnic wear in Jaipur. Highly recommended for wedding shopping!' },
             { name: 'Riya Kapoor', text: 'Loved the custom stitching. Exactly what I wanted for my sister\'s wedding!' }
           ].map((test, idx) => (
             <div key={idx} className="test-card">

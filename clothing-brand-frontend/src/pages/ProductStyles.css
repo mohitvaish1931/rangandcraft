@@ -82,10 +82,10 @@
 }
 
 .error-box {
-  background-color: #f8f0ff;
+  background-color: #edf3f3;
   color: var(--primary-purple);
   padding: 15px;
-  border: 1px solid #efe4ff;
+  border: 1px solid #e6f0f0;
   border-radius: 4px;
   margin: 20px 0;
 }
@@ -189,7 +189,7 @@
 
 .luxury-name {
   font-size: 1.25rem;
-  color: #2D0A4E;
+  color: #295454;
   margin-bottom: 8px;
   line-height: 1.4;
   transition: color 0.3s ease;
