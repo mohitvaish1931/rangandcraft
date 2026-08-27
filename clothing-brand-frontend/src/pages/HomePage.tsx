@@ -38,7 +38,7 @@ const HomePage = () => {
       <FeaturedTabs shortKurtas={shortKurtas} longKurtas={longKurtas} />
 
       {/* Flash Sale and Newly Launched */}
-      <section style={{ display: 'flex', gap: '20px', padding: '0 20px', marginBottom: '60px' }}>
+      <section className="home-feature-pair" style={{ display: 'flex', gap: '20px', padding: '0 20px', marginBottom: '60px' }}>
         <div style={{ flex: 1, position: 'relative', height: '400px', overflow: 'hidden' }}>
           <img src="/images/indowestern-men.jpg" alt="Flash Sale" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -54,7 +54,7 @@ const HomePage = () => {
       </section>
 
       {/* Timeless Elegance */}
-      <section style={{ backgroundColor: '#131b2c', color: '#fff', padding: '80px 20px', textAlign: 'center', position: 'relative' }}>
+      <section className="home-elegance-section" style={{ backgroundColor: '#131b2c', color: '#fff', padding: '80px 20px', textAlign: 'center', position: 'relative' }}>
         <div style={{ position: 'absolute', top: '20px', left: '20px', color: '#888', fontSize: '11px', letterSpacing: '1px' }}>
           TRUSTED BY 1L+ CUSTOMERS
         </div>

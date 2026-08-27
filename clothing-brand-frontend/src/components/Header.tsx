@@ -2,6 +2,7 @@ import { Search, ShoppingBag, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import logoImg from '../assets/logo.png';
+import './Header.css';
 
 const Header = () => {
   
@@ -25,7 +26,7 @@ const Header = () => {
   return (
     <>
       {/* Top Marquee */}
-      <div style={{ backgroundColor: '#295454', color: '#fff', padding: '10px 0', fontSize: '11px', letterSpacing: '1px', fontWeight: 500, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <div className="mobile-promo-bar" style={{ backgroundColor: '#295454', color: '#fff', padding: '10px 0', fontSize: '11px', letterSpacing: '1px', fontWeight: 500, overflow: 'hidden', whiteSpace: 'nowrap' }}>
         <div style={{ display: 'inline-block', animation: 'marquee 30s linear infinite' }}>
           <span style={{ marginRight: '80px' }}>ON PREPAID ORDERS</span>
           <span style={{ marginRight: '80px' }}>ANY 2 SHORT KURTAS @ FLAT ₹1499✨</span>
@@ -46,20 +47,20 @@ const Header = () => {
       `}</style>
 
       {/* Main Header */}
-      <header style={{ backgroundColor: '#fff', borderBottom: '1px solid #f0f0f0' }}>
-        <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <header className="responsive-header" style={{ backgroundColor: '#fff', borderBottom: '1px solid #f0f0f0' }}>
+        <div className="responsive-header-inner" style={{ maxWidth: '1600px', margin: '0 auto', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '20px' }}>
+          <div className="responsive-header-row" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '20px' }}>
             <div style={{ flex: 1 }}></div>
             
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+            <div className="responsive-logo-wrap" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
               <Link to="/">
                 <img src={logoImg} alt="Rang and Craft Logo" style={{ height: '80px', objectFit: 'contain' }} />
               </Link>
             </div>
 
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: '#555', cursor: 'pointer' }}>
+            <div className="responsive-header-actions" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '20px' }}>
+              <div className="currency-selector" style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: '#555', cursor: 'pointer' }}>
                 <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="India" style={{width: '16px', marginRight: '5px'}}/>
                 Indian Rupee 
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginLeft: '2px'}}><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -74,7 +75,7 @@ const Header = () => {
             </div>
           </div>
 
-          <nav>
+          <nav className="responsive-nav">
             <ul style={{ display: 'flex', gap: '30px', listStyle: 'none', margin: 0, padding: 0 }}>
               {navLinks.map((link, idx) => (
                 <li key={idx}>
