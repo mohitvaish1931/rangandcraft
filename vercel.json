@@ -1,10 +1,14 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": null,
+  "outputDirectory": "clothing-brand-frontend/dist",
+  "framework": "vite",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/:path*",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ]
