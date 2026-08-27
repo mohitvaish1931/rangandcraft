@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build --workspace=clothing-brand-frontend",
+  "outputDirectory": "clothing-brand-frontend/dist",
   "framework": "vite"
 }{
   "buildCommand": "npm run build --workspace=clothing-brand-frontend",
