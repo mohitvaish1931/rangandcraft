@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import './Categories.css';
 
 const Categories = () => {
   const categoriesList = [
@@ -12,16 +13,16 @@ const Categories = () => {
   ];
 
   return (
-    <section style={{ padding: '60px 0', textAlign: 'center' }}>
+    <section className="collection-categories" style={{ padding: '60px 0', textAlign: 'center' }}>
       <h2 style={{ fontSize: '1.8rem', marginBottom: '40px', letterSpacing: '4px', fontWeight: 300, color: '#333' }}>
         SHOP ALL COLLECTION
       </h2>
-      <div style={{ display: 'flex', width: '100%', overflowX: 'auto', scrollbarWidth: 'none' }}>
+      <div className="collection-categories-grid" style={{ display: 'flex', width: '100%', overflowX: 'auto', scrollbarWidth: 'none' }}>
         {categoriesList.map((cat, index) => (
-          <Link to={`/shop`} key={index} style={{ flex: '1', minWidth: '14.28%', aspectRatio: '4/5', position: 'relative', display: 'block', overflow: 'hidden', borderRight: '2px solid white' }}>
+          <Link className="collection-category-card" to={`/shop`} key={index} style={{ flex: '1', minWidth: '14.28%', aspectRatio: '4/5', position: 'relative', display: 'block', overflow: 'hidden', borderRight: '2px solid white' }}>
             <img src={cat.image} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '30px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="collection-category-label" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={{ color: '#fff', fontSize: '14px', fontWeight: 400, letterSpacing: '1px' }}>{cat.name}</span>
                 <div style={{ width: '20px', height: '2px', backgroundColor: '#fff', marginTop: '5px' }}></div>
               </div>
