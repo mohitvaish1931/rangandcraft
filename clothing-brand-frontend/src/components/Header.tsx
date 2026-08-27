@@ -21,9 +21,11 @@ const Header = () => {
   const { user, cart } = state;
 
   const announcements = [
-    "COD AVAILABLE | WORLDWIDE SHIPPING | FREE DELIVERY",
-    "SUMMER BONANZA SALE IS LIVE: UPTO 80% OFF | USE CODE: BONANZA80",
-    "FREE SHIPPING ON ALL DOMESTIC PREPAID ORDERS"
+    "ON PREPAID ORDERS",
+    "ANY 2 SHORT KURTAS @ FLAT ₹1499✨",
+    "ANY 2 HALF SLEEVES @ FLAT ₹1499✨",
+    "1 LAKH+ HAPPY CUSTOMERS ❤️",
+    "EXTRA 10% OFF ON PREPAID ORDERS"
   ];
   const [announcementIdx, setAnnouncementIdx] = useState(0);
   const [fadeProp, setFadeProp] = useState('fade-in');
@@ -107,13 +109,24 @@ const Header = () => {
     <>
       {/* Main Header (Scrolls away) */}
       <header className={`header-main ${isScrolled ? 'header-hidden' : ''}`}>
-        <div className="header-top-bar">
-          <div className="container flex justify-center items-center">
-            <span className={`promo-text announcement-fade ${fadeProp}`}>
-              {announcements[announcementIdx]}
-            </span>
+        <div className="header-top-bar" style={{ backgroundColor: '#1a3c34', color: 'white', overflow: 'hidden', whiteSpace: 'nowrap', padding: '8px 0' }}>
+          <div style={{ display: 'inline-block', animation: 'marquee 25s linear infinite', fontSize: '0.75rem', fontWeight: 500, letterSpacing: '1px' }}>
+            <span style={{marginRight: '50px'}}>ON PREPAID ORDERS</span>
+            <span style={{marginRight: '50px'}}>ANY 2 SHORT KURTAS @ FLAT ₹1499✨</span>
+            <span style={{marginRight: '50px'}}>ANY 2 HALF SLEEVES @ FLAT ₹1499✨</span>
+            <span style={{marginRight: '50px'}}>1 LAKH+ HAPPY CUSTOMERS ❤️</span>
+            <span style={{marginRight: '50px'}}>EXTRA 10% OFF ON PREPAID ORDERS</span>
+            <span style={{marginRight: '50px'}}>ON PREPAID ORDERS</span>
+            <span style={{marginRight: '50px'}}>ANY 2 SHORT KURTAS @ FLAT ₹1499✨</span>
+            <span style={{marginRight: '50px'}}>ANY 2 HALF SLEEVES @ FLAT ₹1499✨</span>
           </div>
         </div>
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+          }
+        `}</style>
         
         <div className="header-main-middle">
           <div className="container header-grid">
@@ -172,6 +185,11 @@ const Header = () => {
 
             {/* Right: Icons */}
             <div className="header-right">
+              <div className="currency-selector" style={{display: 'flex', alignItems: 'center', fontSize: '0.85rem', color: '#666', marginRight: '15px', cursor: 'pointer'}}>
+                <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="India" style={{width: '16px', marginRight: '5px'}}/>
+                Indian Rupee 
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft: '2px'}}><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
               {/* Mobile Search Toggle Icon */}
               <button 
                 type="button" 

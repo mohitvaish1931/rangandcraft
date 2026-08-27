@@ -83,31 +83,29 @@ const HomePage = () => {
     .slice(0, 8);
 
   const TrustBadges = () => (
-    <div className="trust-badges-section">
-      <div className="container">
-        <div className="badges-grid">
-          <div className="badge-item">
-            <h4 className="badge-title font-serif">OUR STORES</h4>
-            <p className="badge-desc">Jaipur, Delhi, Mumbai, Global</p>
+    <div className="trust-badges-section" style={{ padding: '60px 0', borderTop: '1px solid #eaeaea', borderBottom: '1px solid #eaeaea', margin: '40px 0' }}>
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', color: '#1a3c34' }}>
+            {"★★★★★".split('').map((star, i) => <span key={i} style={{ fontSize: '24px' }}>{star}</span>)}
           </div>
-          <div className="badge-item">
-            <h4 className="badge-title font-serif">FREE SHIPPING</h4>
-            <p className="badge-desc">On domestic prepaid orders</p>
-          </div>
-          <div className="badge-item">
-            <h4 className="badge-title font-serif">EASY EXCHANGE</h4>
-            <p className="badge-desc">7 Days exchange</p>
-          </div>
-          <div className="badge-item">
-            <h4 className="badge-title font-serif">STYLING CONCIERGE</h4>
-            <p className="badge-desc">Personal advice via WhatsApp</p>
-          </div>
+          <span style={{ color: '#666', fontSize: '14px' }}>836 reviews</span>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '30px' }}>
+          {['Verified Reviews', 'Highest Ranked', 'Top 5% Store', 'Top 5% Trending'].map((text, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '80px', textAlign: 'center' }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', border: '2px solid #1a3c34', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1a3c34" strokeWidth="2"><path d="M12 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"></path></svg>
+              </div>
+              <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#666', fontWeight: 600 }}>{text}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
-
-  const CarouselSection = ({ tag, titleLight, titleItalic, subtext, items, viewAllLink = '/shop' }: any) => (
+const CarouselSection = ({ tag, titleLight, titleItalic, subtext, items, viewAllLink = '/shop' }: any) => (
     <section className="carousel-section container section">
       <div className="carousel-header flex justify-between items-center reveal-on-scroll" style={{marginBottom: '40px'}}>
         <div>
@@ -208,6 +206,21 @@ const HomePage = () => {
       </div>
       <Categories products={homepageProducts} />
 
+      <section className="container section" style={{ display: 'flex', gap: '20px', padding: '40px 20px' }}>
+        <div style={{ flex: 1, position: 'relative', height: '350px', overflow: 'hidden' }}>
+          <img src="/images/indowestern-category.png" alt="Flash Sale" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <h2 style={{ color: '#fff', fontSize: '3rem', fontWeight: 'bold', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>FLASH SALE</h2>
+          </div>
+        </div>
+        <div style={{ flex: 1, position: 'relative', height: '350px', overflow: 'hidden' }}>
+          <img src="/images/saree-category.png" alt="Newly Launched" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <h2 style={{ color: '#fff', fontSize: '3rem', fontWeight: 'bold', textShadow: '2px 2px 4px rgba(0,0,0,0.5)', textAlign: 'center' }}>NEWLY<br/>LAUNCHED</h2>
+          </div>
+        </div>
+      </section>
+
       <CarouselSection 
         tag="JUST IN" 
         titleLight="NEW" 
@@ -217,41 +230,20 @@ const HomePage = () => {
         viewAllLink="/shop"
       />
 
-      <section className="heritage-edit-section reveal-on-scroll">
-        <div className="heritage-split">
-          <div className="heritage-img-side">
-            <img src="/images/heritage-edit.png" alt="Heritage Edit 2026" />
-          </div>
-          <div className="heritage-content-side">
-            <span className="gold-capsule">THE HERITAGE EDIT 2026</span>
-            <h2 className="font-serif heritage-title">Dressed for Your<br/>Most Precious Moments</h2>
-            
-            <div className="heritage-stats-grid">
-              <div className="stat-item">
-                <h3 className="font-serif" style={{color: 'var(--secondary-color)', fontSize: '2rem'}}>100K+</h3>
-                <p>HAPPY CLIENTS</p>
-              </div>
-              <div className="stat-item">
-                <h3 className="font-serif" style={{color: 'var(--secondary-color)', fontSize: '2rem'}}>2000+</h3>
-                <p>UNIQUE DESIGNS</p>
-              </div>
-              <div className="stat-item">
-                <h3 className="font-serif" style={{color: 'var(--primary-purple)', fontSize: '2rem'}}>21 <span style={{fontSize: '1rem'}}>Yrs</span></h3>
-                <p>OF RANG AND CRAFT</p>
-              </div>
-            </div>
-            
-            <p className="heritage-desc">
-              Experience the royal legacy of Jaipur's intricate craftsmanship, where every thread weaves a tale of timeless beauty, creating heirlooms meant to be treasured forever.
-            </p>
-          </div>
+      <section className="timeless-elegance-section reveal-on-scroll" style={{ backgroundColor: '#0f172a', padding: '100px 20px', textAlign: 'center', color: '#fff', position: 'relative', overflow: 'hidden', minHeight: '500px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', top: '20px', left: '20px', color: '#ccc', fontSize: '1.2rem', letterSpacing: '1px' }}>
+          TRUSTED BY 1L+ CUSTOMERS
         </div>
+        <h2 className="title" style={{ fontSize: '4rem', fontWeight: 600, color: '#fef3c7', marginBottom: '20px' }}>Timeless elegance</h2>
+        <p style={{ fontSize: '1.5rem', color: '#d1d5db', marginBottom: '40px' }}>Traditional clocks are honestly timeless, no cap!</p>
+        <button className="btn" style={{ backgroundColor: '#1a3c34', color: '#fff', padding: '15px 40px', fontSize: '1.2rem', borderRadius: '5px' }}>BUY NOW</button>
       </section>
 
       <CarouselSection 
-        tag="BEST SELLING CATEGORY" 
-        titleLight="KURTA" 
-        titleItalic="SETS" 
+        tag="FEATURED COLLECTION" 
+        titleLight="SHORT" 
+        titleItalic="KURTAS" 
+        subtext="LONG KURTAS" 
         items={shortKurtas} 
         viewAllLink="/shop?category=Short%20Kurtas"
       />
@@ -260,8 +252,8 @@ const HomePage = () => {
 
       <CarouselSection 
         tag="TOP CATEGORY" 
-        titleLight="SUIT" 
-        titleItalic="SETS" 
+        titleLight="LONG" 
+        titleItalic="KURTAS" 
         items={longKurtas} 
         viewAllLink="/shop?category=Long%20Kurtas"
       />
@@ -269,16 +261,16 @@ const HomePage = () => {
 
       <CarouselSection 
         tag="DAILY CHIC" 
-        titleLight="TOPS" 
-        titleItalic="" 
+        titleLight="HALF SLEEVES" 
+        titleItalic="SHIRTS" 
         items={halfSleeves} 
         viewAllLink="/shop?category=Half Sleeves Shirts"
       />
 
       <CarouselSection 
         tag="ELEGANT FLOW" 
-        titleLight="MAXIS &" 
-        titleItalic="DRESSES" 
+        titleLight="FULL SLEEVES" 
+        titleItalic="SHIRTS" 
         items={fullSleeves} 
         viewAllLink="/shop?category=Full%20Sleeves%20Shirts"
       />
@@ -286,7 +278,7 @@ const HomePage = () => {
 
 
       <section className="store-locator-banner reveal-on-scroll" style={{backgroundImage: 'url(/images/store-locator.png)'}}>
-        <div className="store-locator-overlay" style={{backgroundColor: 'rgba(45, 0, 77, 0.7)'}}>
+        <div className="store-locator-overlay" style={{backgroundColor: 'rgba(26, 60, 52, 0.7)'}}>
           <div className="store-locator-content text-center">
             <h2 className="title font-serif" style={{color: '#fff', fontSize: '3.5rem', marginBottom: '20px'}}>Find Your Perfect Look, <i style={{color: 'var(--gold-primary)'}}>In-Store</i></h2>
             <p style={{color: '#ddd', fontSize: '1.2rem', marginBottom: '30px'}}>Discover elegance firsthand at our exclusive boutique showrooms in Jaipur.</p>
@@ -323,7 +315,7 @@ const HomePage = () => {
            <p className="font-serif italic" style={{fontSize: '1.5rem', lineHeight: '1.8', color: '#444'}}>
              "The craftsmanship is unparalleled. I wore a RANG AND CRAFT kurta set for my wedding and it made me feel like royalty. Every thread is intricately woven with magic."
            </p>
-           <p style={{marginTop: '20px', letterSpacing: '2px', fontWeight: 'bold'}}>- PRIYANKA SHARMA</p>
+           <p style={{marginTop: '20px', letterSpacing: '2px', fontWeight: 'bold'}}>- RAHUL SHARMA</p>
         </div>
       </section>
 

@@ -7,56 +7,46 @@ interface CategoriesProps {
 }
 
 const Categories = ({ products = [] }: CategoriesProps) => {
-  return (
-    <section className="section categories-masonry-section" style={{padding: '0'}}>
-      <div className="categories-masonry-dual">
-        
-        {(() => {
-          const categoriesList = [
-            {
-              name: 'Short Kurtas',
-              path: '/shop?category=Short%20Kurtas',
-              tag: 'THE ETHNIC EDIT',
-              title: 'Short Kurtas',
-              desc: 'Timeless craftsmanship meets modern silhouettes.'
-            },
-            {
-              name: 'Long Kurtas',
-              path: '/shop?category=Long%20Kurtas',
-              tag: 'DESIGNER FAVORITES',
-              title: 'Long Kurtas',
-              desc: 'Regal elegance for every precious occasion.'
-            },
-            {
-              name: 'Half Sleeves Shirts',
-              path: '/shop?category=Half%20Sleeves%20Shirts',
-              tag: 'CASUAL CHIC',
-              title: 'Half Sleeves Shirts',
-              desc: 'Charming everyday comfort in breathable cotton.'
-            }
-          ];
+  const categoriesList = [
+    { name: 'LUXE', path: '/shop?category=Luxe' },
+    { name: 'SHORT KURTA', path: '/shop?category=Short%20Kurtas' },
+    { name: 'HALF SLEEVES SHIRT', path: '/shop?category=Half%20Sleeves%20Shirts' },
+    { name: 'LINEN PANTS', path: '/shop?category=Linen%20Pants' },
+    { name: 'FULL SLEEVES SHIRT', path: '/shop?category=Full%20Sleeves%20Shirts' },
+    { name: 'LONG KURTA', path: '/shop?category=Long%20Kurtas' },
+    { name: 'NEHRU JACKETS', path: '/shop?category=Nehru%20Jackets' },
+  ];
 
-          return categoriesList.map((cat, index) => {
+  return (
+    <section className="section shop-all-collection-section" style={{padding: '20px 0 60px 0', textAlign: 'center'}}>
+      <h2 className="title" style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '2px', fontWeight: 400}}>SHOP ALL COLLECTION</h2>
+      <div className="container">
+        <div style={{display: 'flex', gap: '15px', overflowX: 'auto', paddingBottom: '20px', scrollbarWidth: 'none'}}>
+          {categoriesList.map((cat, index) => {
             const list = Array.isArray(products) ? products : [];
-            const matched = list.find((p) => p.category === cat.name);
-            if (!matched) return null;
+            let matched = list.find((p) => p.category?.toUpperCase() === cat.name.toUpperCase());
+            if (!matched && cat.name === 'SHORT KURTA') matched = list.find((p) => p.category === 'Short Kurtas');
+            if (!matched && cat.name === 'LONG KURTA') matched = list.find((p) => p.category === 'Long Kurtas');
+            if (!matched && cat.name === 'HALF SLEEVES SHIRT') matched = list.find((p) => p.category === 'Half Sleeves Shirts');
+            if (!matched && cat.name === 'FULL SLEEVES SHIRT') matched = list.find((p) => p.category === 'Full Sleeves Shirts');
             
+            // Fallback image if product not found so UI still matches
+            const imageSrc = matched ? getImageUrl(matched.image, 600) : '/images/kurta-category.png';
+
             return (
-              <Link to={cat.path} key={index} className={`cat-card-purple reveal-on-scroll delay-${index * 100}`}>
-                <img src={getImageUrl(matched.image, 800)} alt={cat.name} className="cat-bg-img" loading="lazy" />
-                <div className="cat-overlay-purple"></div>
-                <div className="cat-text-content-purple">
-                  <span className="cat-tag-purple">{cat.tag}</span>
-                  <h3 className="cat-title-purple font-serif">{cat.title}</h3>
-                  <p className="cat-desc-purple">{cat.desc}</p>
-                  <span className="cat-link-purple">EXPLORE COLLECTION</span>
+              <Link to={cat.path} key={index} className="collection-cat-card" style={{minWidth: '200px', height: '300px', position: 'relative', overflow: 'hidden', flex: '0 0 auto', display: 'block'}}>
+                <img src={imageSrc} alt={cat.name} style={{width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease'}} className="hover-scale" />
+                <div style={{position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <span style={{color: '#fff', fontSize: '1rem', fontWeight: 500, letterSpacing: '1px'}}>{cat.name}</span>
                 </div>
               </Link>
             );
-          });
-        })()}
-
+          })}
+        </div>
       </div>
+      <style>{`
+        .hover-scale:hover { transform: scale(1.05); }
+      `}</style>
     </section>
   );
 };
