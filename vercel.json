@@ -1,5 +1,0 @@
-{
-  "buildCommand": "npm run build --workspace=clothing-brand-frontend",
-  "outputDirectory": "clothing-brand-frontend/dist",
-  "framework": "vite"
-}
