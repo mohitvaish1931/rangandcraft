@@ -32,6 +32,8 @@ import AdminCustomerReports from './pages/admin/AdminCustomerReports';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminRoles from './pages/admin/AdminRoles';
 import TrackOrder from './pages/TrackOrder';
+import Gallery from './pages/Gallery';
+import Reviews from './pages/Reviews';
 import Contact from './pages/Contact';
 import AboutUs from './pages/AboutUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -138,6 +140,8 @@ const MainLayout = () => {
             <Route path="roles" element={<AdminRoles />} />
           </Route>
           <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/reviews" element={<Reviews />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
