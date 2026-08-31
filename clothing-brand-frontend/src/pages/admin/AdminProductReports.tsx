@@ -1,4 +1,4 @@
-import { Package, TrendingUp, AlertTriangle } from 'lucide-react';
+import { TrendingUp, AlertTriangle } from 'lucide-react';
 
 const AdminProductReports = () => {
   return (
