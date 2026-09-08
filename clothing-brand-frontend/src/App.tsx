@@ -14,6 +14,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { AppProvider } from './context/AppContext';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from '@vercel/analytics/react';
 
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -186,6 +187,7 @@ function App() {
           <ScrollToTop />
           <MainLayout />
           <SpeedInsights />
+          <Analytics />
         </Router>
       </AppProvider>
     </HelmetProvider>
