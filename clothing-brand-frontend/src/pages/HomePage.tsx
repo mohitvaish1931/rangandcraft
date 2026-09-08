@@ -57,7 +57,7 @@ const HomePage = () => {
   const bestSellers = list.slice(5, 10).length > 0 ? list.slice(5, 10) : list.slice(0, 5);
 
   return (
-    <div className="homepage jaipur-bg-pattern" style={{ backgroundColor: "#fdfbf7" }}>
+    <div className="homepage">
       <Helmet>
         <title>Rang and Craft - Men's Kurtas & Shirts Online</title>
       </Helmet>
@@ -86,7 +86,7 @@ const HomePage = () => {
       </section>
 
       {/* NEW Choose Your Fit Section */}
-      <section className="choose-your-fit" style={{ padding: '80px 20px', maxWidth: '1400px', margin: '0 auto', position: 'relative' }}>
+      <section className="choose-your-fit jaipur-bg-pattern" style={{ padding: '80px 20px', maxWidth: '1400px', margin: '40px auto', position: 'relative', backgroundColor: '#fdfbf7' }}>
         <div style={{ textAlign: 'center', marginBottom: '50px', position: 'relative' }}>
           <div style={{ color: '#c48f56', fontSize: '24px', marginBottom: '5px' }}>❁</div>
           <h2 style={{ fontSize: '38px', fontWeight: 400, fontFamily: 'serif', color: '#111', margin: '0 0 10px 0' }}>Choose Your Fit</h2>
@@ -167,7 +167,7 @@ const HomePage = () => {
       </div>
 
       {/* Our Story & Values */}
-      <section className="story-values-section" style={{ maxWidth: '1400px', margin: '80px auto', display: 'flex', flexWrap: 'wrap', gap: '60px', padding: '0 20px' }}>
+      <section className="story-values-section jaipur-bg-pattern" style={{ maxWidth: '1400px', margin: '80px auto', display: 'flex', flexWrap: 'wrap', gap: '60px', padding: '40px 20px', backgroundColor: '#fdfbf7' }}>
         
         {/* Story */}
         <div style={{ flex: '1 1 500px', display: 'flex', gap: '30px', flexWrap: 'wrap' }}>

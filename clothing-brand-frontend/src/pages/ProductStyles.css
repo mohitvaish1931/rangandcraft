@@ -24,7 +24,8 @@
 
 .product-img-wrapper {
   width: 100%;
-  height: 400px;
+  aspect-ratio: 3 / 4;
+  height: auto;
   background-color: #f7f7f7;
   overflow: hidden;
 }
@@ -242,5 +243,20 @@
   }
   .luxury-product-card {
     border-radius: 12px;
+  }
+
+  .product-img-wrapper {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+@media (min-width: 577px) and (max-width: 900px) {
+  .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .luxury-name {
+    font-size: 1.05rem;
   }
 }

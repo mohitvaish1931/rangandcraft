@@ -520,6 +520,23 @@
     white-space: nowrap;
     font-size: 11px !important;
   }
+
+  .responsive-header-inner {
+    overflow: hidden;
+  }
+
+  .responsive-header-row {
+    min-width: 0;
+  }
+
+  .responsive-logo-wrap {
+    min-width: 0;
+  }
+
+  .responsive-logo-wrap a {
+    display: block;
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -686,5 +703,17 @@
     right: 14px;
     width: auto;
     transform: none;
+  }
+
+  .mobile-promo-bar {
+    font-size: 10px !important;
+  }
+
+  .responsive-header-inner {
+    padding-block: 12px !important;
+  }
+
+  .responsive-nav ul {
+    gap: 18px !important;
   }
 }

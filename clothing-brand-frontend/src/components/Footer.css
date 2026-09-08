@@ -168,4 +168,21 @@
   .footer-grid {
     grid-template-columns: 1fr;
   }
+
+  .footer-purple {
+    padding: 56px 0 28px;
+  }
+
+  .footer-heading-purple {
+    margin-bottom: 18px;
+  }
+
+  .footer-links-purple li {
+    margin-bottom: 12px;
+  }
+
+  .footer-bottom-purple {
+    padding-top: 28px;
+    line-height: 1.6;
+  }
 }
