@@ -45,7 +45,7 @@ const ProfileScreen = () => {
   if (!user) return null;
 
   return (
-    <div className="profile-page" style={{ backgroundColor: '#f9f9f9', minHeight: '100vh', padding: '100px 20px' }}>
+    <div className="profile-page" style={{ backgroundColor: 'transparent', minHeight: '100vh', padding: '100px 20px' }}>
       <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
         
         {/* Profile Header */}

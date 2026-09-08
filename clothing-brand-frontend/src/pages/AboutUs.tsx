@@ -12,7 +12,7 @@ const AboutUs = () => {
   });
 
   return (
-    <div className="about-page" style={{ backgroundColor: '#f9f9f9', color: '#1a1a1a' }}>
+    <div className="about-page" style={{ backgroundColor: 'transparent', color: '#1a1a1a' }}>
       {/* Hero Section */}
       <section className="about-hero" style={{ 
         position: 'relative', 

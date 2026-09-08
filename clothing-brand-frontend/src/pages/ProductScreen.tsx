@@ -212,7 +212,7 @@ const ReviewsTab = ({ productId }: { productId: string }) => {
           </div>
 
           {!state.user ? (
-            <div style={{ textAlign: 'center', padding: '30px', backgroundColor: '#f9f9f9', borderRadius: '16px', border: '1px dashed #ddd' }}>
+            <div style={{ textAlign: 'center', padding: '30px', backgroundColor: 'transparent', borderRadius: '16px', border: '1px dashed #ddd' }}>
               <p style={{ color: '#666', marginBottom: '20px' }}>You must be signed in to submit a product review.</p>
               <Link
                 to="/login"
@@ -391,7 +391,7 @@ const ProductScreen = () => {
   const productReviewsCount = product.numReviews !== undefined ? product.numReviews : (product.reviewCount || 0);
 
   return (
-    <div className="product-page-detail" style={{ backgroundColor: '#f9f9f9', minHeight: '100vh', padding: '60px 20px 100px' }}>
+    <div className="product-page-detail" style={{ backgroundColor: 'transparent', minHeight: '100vh', padding: '60px 20px 100px' }}>
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <Link to="/shop" style={{ 
           display: 'inline-flex', 
@@ -613,7 +613,7 @@ const ProductScreen = () => {
                         <span style={{ fontWeight: '800', color: '#295454', fontSize: '0.85rem', letterSpacing: '1px' }}>SELECT QUANTITY</span>
                         <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid #eee', borderRadius: '8px', overflow: 'hidden' }}>
                           <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ padding: '10px 15px', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '800' }}>-</button>
-                          <span style={{ padding: '10px 20px', backgroundColor: '#f9f9f9', minWidth: '40px', textAlign: 'center', fontWeight: '800' }}>{qty}</span>
+                          <span style={{ padding: '10px 20px', backgroundColor: 'transparent', minWidth: '40px', textAlign: 'center', fontWeight: '800' }}>{qty}</span>
                           <button onClick={() => setQty(Math.min(product.countInStock, qty + 1))} style={{ padding: '10px 15px', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '800' }}>+</button>
                         </div>
                       </div>

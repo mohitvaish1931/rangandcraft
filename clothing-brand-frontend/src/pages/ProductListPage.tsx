@@ -41,7 +41,7 @@ const ProductListPage = () => {
   }, [keyword, category]);
 
   return (
-    <div className="shop-page" style={{ backgroundColor: '#f9f9f9', minHeight: '100vh', paddingBottom: '100px' }}>
+    <div className="shop-page" style={{ backgroundColor: 'transparent', minHeight: '100vh', paddingBottom: '100px' }}>
       {/* Category Header */}
       <section style={{ backgroundColor: '#295454', color: '#fff', padding: '100px 20px', textAlign: 'center', marginBottom: '60px' }}>
          <div className="container">

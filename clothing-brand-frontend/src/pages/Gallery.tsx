@@ -13,7 +13,7 @@ const Gallery = () => {
   ];
 
   return (
-    <div style={{ backgroundColor: '#F9F9F9', minHeight: '100vh', padding: '60px 20px', textAlign: 'center' }}>
+    <div style={{ backgroundColor: 'transparent', minHeight: '100vh', padding: '60px 20px', textAlign: 'center' }}>
       <Helmet>
         <title>Our Gallery - Rang and Craft</title>
       </Helmet>

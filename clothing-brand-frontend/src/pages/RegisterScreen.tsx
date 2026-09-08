@@ -63,7 +63,7 @@ const RegisterScreen = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center', 
-      backgroundColor: '#f9f9f9',
+      backgroundColor: 'transparent',
       padding: '60px 20px'
     }}>
       <div style={{
