@@ -44,7 +44,7 @@ const HomePage = () => {
       try {
         const res = await fetch(API_ENDPOINTS.PRODUCTS);
         const data = await res.json();
-        setProducts(data.products || []);
+        setProducts(Array.isArray(data) ? data : data.products || []);
       } catch (err) {
         console.error(err);
       }
