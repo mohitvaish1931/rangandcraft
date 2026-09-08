@@ -4,7 +4,7 @@ import './Footer.css';
 
 const Footer = () => {
   return (
-    <footer className="footer-purple">
+    <footer className="footer-purple jaipur-bg-pattern">
       <div className="container">
         <div className="footer-grid">
           <div className="footer-col">

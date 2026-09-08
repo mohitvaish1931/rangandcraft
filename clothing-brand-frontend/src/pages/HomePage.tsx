@@ -109,7 +109,7 @@ const HomePage = () => {
       </section>
 
       {/* Our Story & Values */}
-      <section style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1200px', margin: '60px auto', gap: '30px', padding: '0 20px' }}>
+      <section className="jaipur-bg-pattern" style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1200px', margin: '60px auto', gap: '30px', padding: '40px 20px', backgroundColor: '#fdfdfd' }}>
         <div style={{ flex: '1 1 300px', textAlign: 'center', padding: '60px 40px', border: '1px solid rgba(41, 84, 84, 0.2)', backgroundColor: 'transparent' }}>
           <h2 style={{ fontSize: '28px', marginBottom: '15px', fontFamily: 'serif' }}>Our Story</h2>
           <h3 style={{ fontSize: '16px', color: '#295454', marginBottom: '25px', fontWeight: 600, letterSpacing: '1px' }}>Crafting Style, Comfort & Heritage</h3>
