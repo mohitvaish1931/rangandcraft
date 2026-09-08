@@ -1,1 +1,64 @@
-/* Empty CSS */
+/* Hero Animations and Styles */
+
+.hero-bg {
+  animation: slowZoom 20s infinite alternate ease-in-out;
+}
+
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+.delay-4 { animation-delay: 0.8s; }
+.delay-5 { animation-delay: 1.2s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-btn {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.hero-btn.primary-btn:hover {
+  background-color: transparent !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+.hero-btn.secondary-btn:hover {
+  background-color: #fff !important;
+  color: #111 !important;
+}
+
+@keyframes scrollDown {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(200%); opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+  .hero-content {
+    margin-top: 20px !important;
+  }
+}
