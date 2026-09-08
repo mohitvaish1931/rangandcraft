@@ -344,6 +344,58 @@
   display: none;
 }
 
+/* Desktop header alignment */
+@media (min-width: 769px) {
+  .responsive-header-inner {
+    padding: 14px 28px 0 !important;
+  }
+
+  .responsive-header-row {
+    min-height: 104px;
+    margin-bottom: 10px !important;
+  }
+
+  .mobile-menu-trigger-wrap {
+    display: block;
+    visibility: hidden;
+  }
+
+  .responsive-logo-wrap,
+  .responsive-header-actions,
+  .mobile-menu-trigger-wrap {
+    flex: 1 1 0 !important;
+    min-width: 0;
+  }
+
+  .responsive-logo-wrap {
+    justify-content: center !important;
+  }
+
+  .responsive-logo-wrap img {
+    display: block;
+    width: auto;
+    height: 96px !important;
+    max-height: 96px;
+    object-fit: contain;
+    transform: none !important;
+  }
+
+  .responsive-header-actions {
+    justify-content: flex-end !important;
+  }
+
+  .responsive-nav {
+    width: 100%;
+    padding: 4px 0 16px;
+  }
+
+  .responsive-nav ul {
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
+
 .mobile-nav-overlay {
   position: fixed;
   inset: 0;
