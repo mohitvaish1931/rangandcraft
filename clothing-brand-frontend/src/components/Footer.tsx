@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="footer-grid">
           <div className="footer-col">
             <div className="flex items-center" style={{marginBottom: '20px'}}>
-              <img src={logoImg} alt="Rang and Craft Logo" style={{ height: '60px', width: '220px', objectFit: 'contain', objectPosition: 'left', mixBlendMode: 'multiply' }} />
+              <img src={logoImg} alt="Rang and Craft Logo" style={{ height: '100px', width: '220px', objectFit: 'contain', objectPosition: 'left', mixBlendMode: 'multiply', transform: 'scale(1.2)', transformOrigin: 'left center' }} />
             </div>
             <p className="footer-desc-purple">
               Experience the royal legacy of Jaipur with our exquisite handcrafted ethnic wear for men.

@@ -338,6 +338,12 @@
   color: var(--primary-purple);
 }
 
+.mobile-menu-trigger-wrap,
+.mobile-menu-trigger,
+.mobile-menu-close {
+  display: none;
+}
+
 .mobile-nav-overlay {
   position: fixed;
   inset: 0;
@@ -397,6 +403,16 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   color: #1a1a1a;
+}
+
+.mobile-menu-trigger,
+.mobile-menu-close {
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--primary-purple);
+  cursor: pointer;
 }
 
 /* Mobile search controls */
@@ -467,6 +483,19 @@
 }
 
 @media (max-width: 768px) {
+  .mobile-menu-trigger-wrap {
+    display: flex;
+    align-items: center;
+    flex: 0 0 40px !important;
+  }
+
+  .mobile-menu-trigger,
+  .mobile-menu-close {
+    display: inline-flex;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
   .responsive-header-inner {
     padding: 12px 16px !important;
   }
@@ -474,26 +503,45 @@
   .responsive-header-row {
     margin-bottom: 0 !important;
     gap: 12px;
+    position: relative;
+    min-height: 58px;
   }
 
   .responsive-header-row > div:first-child {
-    display: none;
+    display: flex;
   }
 
   .responsive-logo-wrap {
-    flex: 1 !important;
-    justify-content: flex-start !important;
+    position: absolute;
+    inset: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center !important;
+    pointer-events: none;
+  }
+
+  .responsive-logo-wrap a {
+    pointer-events: auto;
   }
 
   .responsive-logo-wrap img {
-    width: min(180px, 46vw);
-    height: auto !important;
-    max-height: 56px;
+    display: block;
+    width: min(160px, 42vw);
+    height: 48px !important;
+    max-height: 48px;
+    object-fit: contain;
+    transform: none !important;
   }
 
   .responsive-header-actions {
     flex: 0 0 auto !important;
     gap: 14px !important;
+    margin-left: auto;
+    z-index: 1;
+  }
+
+  .responsive-header-actions > a:not(:last-child) {
+    display: none;
   }
 
   .currency-selector {
@@ -501,24 +549,7 @@
   }
 
   .responsive-nav {
-    width: 100%;
-    margin-top: 12px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .responsive-nav::-webkit-scrollbar {
     display: none;
-  }
-
-  .responsive-nav ul {
-    width: max-content;
-    gap: 24px !important;
-  }
-
-  .responsive-nav a {
-    white-space: nowrap;
-    font-size: 11px !important;
   }
 
   .responsive-header-inner {
@@ -554,11 +585,9 @@
   }
 
   .responsive-logo-wrap img {
-    width: min(150px, 42vw);
-  }
-
-  .responsive-nav {
-    margin-top: 10px;
+    width: min(145px, 42vw);
+    height: 44px !important;
+    max-height: 44px;
   }
 }
 
@@ -635,6 +664,13 @@
 
   .mobile-search-bar-row .container {
     width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-nav-overlay,
+  .mobile-nav-menu {
+    display: none;
   }
 }
 

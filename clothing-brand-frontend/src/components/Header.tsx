@@ -1,12 +1,13 @@
-import { Search, ShoppingBag, User } from 'lucide-react';
+import { Menu, Search, ShoppingBag, User, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import logoImg from '../assets/logo.png';
 import './Header.css';
 
 const Header = () => {
-  
-  
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const { state } = useAppContext();
   const { cart } = state;
 
@@ -51,11 +52,21 @@ const Header = () => {
         <div className="responsive-header-inner" style={{ maxWidth: '1600px', margin: '0 auto', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           
           <div className="responsive-header-row" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '20px' }}>
-            <div style={{ flex: 1 }}></div>
+            <div className="mobile-menu-trigger-wrap" style={{ flex: 1 }}>
+              <button
+                type="button"
+                className="mobile-menu-trigger"
+                aria-label="Open menu"
+                aria-expanded={isMobileMenuOpen}
+                onClick={() => setIsMobileMenuOpen(true)}
+              >
+                <Menu size={22} strokeWidth={1.5} />
+              </button>
+            </div>
             
             <div className="responsive-logo-wrap" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
               <Link to="/">
-                <img src={logoImg} alt="Rang and Craft Logo" style={{ height: '80px', objectFit: 'contain' }} />
+                <img src={logoImg} alt="Rang and Craft Logo" style={{ height: '140px', objectFit: 'contain', transform: 'scale(1.2)' }} />
               </Link>
             </div>
 
@@ -88,6 +99,38 @@ const Header = () => {
           </nav>
         </div>
       </header>
+
+      <div
+        className={`mobile-nav-overlay${isMobileMenuOpen ? ' active' : ''}`}
+        aria-hidden={!isMobileMenuOpen}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+      <aside className={`mobile-nav-menu${isMobileMenuOpen ? ' open' : ''}`} aria-label="Mobile navigation">
+        <div className="mobile-nav-header">
+          <span className="mini-logo-text">Rang &amp; Craft</span>
+          <button
+            type="button"
+            className="mobile-menu-close"
+            aria-label="Close menu"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <X size={22} strokeWidth={1.5} />
+          </button>
+        </div>
+        <ul className="mobile-nav-list">
+          {navLinks.map((link) => (
+            <li key={link.path}>
+              <Link
+                to={link.path}
+                className="mobile-nav-link"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </aside>
     </>
   );
 };

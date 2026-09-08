@@ -86,7 +86,8 @@ const HomePage = () => {
       </section>
 
       {/* NEW Choose Your Fit Section */}
-      <section className="choose-your-fit jaipur-bg-pattern" style={{ padding: '80px 20px', maxWidth: '1400px', margin: '40px auto', position: 'relative', backgroundColor: '#fdfbf7' }}>
+      <section className="choose-your-fit-wrapper jaipur-bg-pattern" style={{ width: '100%', backgroundColor: '#fdfbf7', padding: '80px 0', margin: '40px 0' }}>
+<div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 20px', position: 'relative' }}>
         <div style={{ textAlign: 'center', marginBottom: '50px', position: 'relative' }}>
           <div style={{ color: '#c48f56', fontSize: '24px', marginBottom: '5px' }}>❁</div>
           <h2 style={{ fontSize: '38px', fontWeight: 400, fontFamily: 'serif', color: '#111', margin: '0 0 10px 0' }}>Choose Your Fit</h2>
@@ -109,10 +110,10 @@ const HomePage = () => {
           {/* Center 2 Images */}
           <div className="fit-images" style={{ display: 'flex', gap: '20px', flex: 1, maxWidth: '900px' }}>
             {/* Formal Collection */}
-            <div style={{ flex: 1, height: '450px', position: 'relative', overflow: 'hidden' }}>
+            <div className="fit-card" style={{ flex: 1, height: '450px', position: 'relative', overflow: 'hidden' }}>
               <img src="/images/suits-men.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)', padding: '40px', display: 'flex', flexDirection: 'column' }}>
-                 <h3 style={{ color: '#e8c9a3', fontSize: '32px', fontFamily: 'serif', fontWeight: 400, lineHeight: 1.2, marginBottom: '15px' }}>Formal<br/>Collection</h3>
+              <div className="fit-card-content" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)', padding: '40px', display: 'flex', flexDirection: 'column' }}>
+                 <h3 className="fit-card-title" style={{ color: '#e8c9a3', fontSize: '32px', fontFamily: 'serif', fontWeight: 400, lineHeight: 1.2, marginBottom: '15px' }}>Formal<br/>Collection</h3>
                  <div style={{ width: '30px', height: '1px', backgroundColor: '#e8c9a3', marginBottom: '20px' }}></div>
                  <p style={{ color: '#fff', fontSize: '13px', lineHeight: 1.5, maxWidth: '200px', marginBottom: '30px', opacity: 0.9 }}>For weddings, festivals and life's special moments.</p>
                  <Link to="/shop?category=Suits" style={{ backgroundColor: '#e8c9a3', color: '#111', padding: '10px 20px', display: 'inline-block', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textDecoration: 'none', alignSelf: 'flex-start' }}>SHOP NOW →</Link>
@@ -123,10 +124,10 @@ const HomePage = () => {
             </div>
 
             {/* Casual Collection */}
-            <div style={{ flex: 1, height: '450px', position: 'relative', overflow: 'hidden' }}>
+            <div className="fit-card" style={{ flex: 1, height: '450px', position: 'relative', overflow: 'hidden' }}>
               <img src="/images/kurta-men.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)', padding: '40px', display: 'flex', flexDirection: 'column' }}>
-                 <h3 style={{ color: '#e8c9a3', fontSize: '32px', fontFamily: 'serif', fontWeight: 400, lineHeight: 1.2, marginBottom: '15px' }}>Casual<br/>Collection</h3>
+              <div className="fit-card-content" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)', padding: '40px', display: 'flex', flexDirection: 'column' }}>
+                 <h3 className="fit-card-title" style={{ color: '#e8c9a3', fontSize: '32px', fontFamily: 'serif', fontWeight: 400, lineHeight: 1.2, marginBottom: '15px' }}>Casual<br/>Collection</h3>
                  <div style={{ width: '30px', height: '1px', backgroundColor: '#e8c9a3', marginBottom: '20px' }}></div>
                  <p style={{ color: '#fff', fontSize: '13px', lineHeight: 1.5, maxWidth: '200px', marginBottom: '30px', opacity: 0.9 }}>Everyday comfort with a touch of tradition.</p>
                  <Link to="/shop?category=Short Kurtas" style={{ backgroundColor: '#e8c9a3', color: '#111', padding: '10px 20px', display: 'inline-block', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textDecoration: 'none', alignSelf: 'flex-start' }}>SHOP NOW →</Link>
@@ -146,6 +147,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
+      </div>
       </section>
 
       {/* Trust Badges Bar */}
@@ -167,7 +169,8 @@ const HomePage = () => {
       </div>
 
       {/* Our Story & Values */}
-      <section className="story-values-section jaipur-bg-pattern" style={{ maxWidth: '1400px', margin: '80px auto', display: 'flex', flexWrap: 'wrap', gap: '60px', padding: '40px 20px', backgroundColor: '#fdfbf7' }}>
+      <section className="story-values-wrapper jaipur-bg-pattern" style={{ width: '100%', backgroundColor: '#fdfbf7', padding: '80px 0', margin: '80px 0' }}>
+<div className="story-values-section" style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '60px', padding: '0 20px' }}>
         
         {/* Story */}
         <div style={{ flex: '1 1 500px', display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
@@ -221,6 +224,7 @@ const HomePage = () => {
           </div>
         </div>
         
+      </div>
       </section>
 
       {/* Testimonials */}
