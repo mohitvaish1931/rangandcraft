@@ -915,7 +915,7 @@ const Admin = () => {
     };
 
     return (
-      <div className="fixed inset-0 bg-white/90 backdrop-blur-md flex items-center justify-center z-[100] overflow-y-auto py-10">
+      <div className="fixed inset-0 bg-white/90 backdrop-blur-md flex items-center justify-center z-100 overflow-y-auto py-10">
         <div className="bg-white border border-gold-primary/20 rounded-3xl shadow-2xl max-w-4xl w-full mx-4 p-8 md:p-12">
           <div className="mb-8">
             <h3 className="text-3xl font-black text-text-primary luxury-serif tracking-widest uppercase mb-1">Edit Product</h3>
@@ -1867,7 +1867,7 @@ const Admin = () => {
                   <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.2em] mb-1">Health Score</p>
                   <p className="text-lg font-black text-emerald-600 tracking-widest">98.5%</p>
                 </div>
-                <div className="flex items-center space-x-4 bg-white/5 px-6 py-4 rounded-[2rem] border border-gold-primary/10 shadow-inner">
+                <div className="flex items-center space-x-4 bg-white/5 px-6 py-4 rounded-4xl border border-gold-primary/10 shadow-inner">
                   <Package className="h-6 w-6 text-primary-purple" />
                   <span className="text-sm font-black text-text-primary uppercase tracking-widest">{state.products.length} Total SKUs</span>
                 </div>
@@ -1889,12 +1889,12 @@ const Admin = () => {
                   </thead>
                   <tbody className="divide-y divide-gold-primary/5">
                     {state.products.map((product) => (
-                      <tr key={(product as any).id} className="hover:bg-white/[0.02] transition-all duration-300 group">
+                      <tr key={(product as any).id} className="hover:bg-white/2 transition-all duration-300 group">
                         <td className="px-10 py-6 whitespace-nowrap">
                           <div className="flex items-center gap-5">
                             <div className="w-16 h-16 rounded-2xl bg-white/5 overflow-hidden border border-gold-primary/10 shadow-sm relative group-hover:scale-105 transition-transform duration-500">
                               <img src={getImageUrl(product.image)} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                              <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
                             </div>
                             <div className="flex flex-col">
                               <span className="text-sm font-black text-text-primary tracking-wide">{product.name}</span>
@@ -1914,7 +1914,7 @@ const Admin = () => {
                             </span>
                             <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                               <div 
-                                className={`h-full bg-gradient-to-r ${((product as any).stock || 0) <= 5 ? 'from-red-600 to-red-400' : 'from-gold-primary to-gold-light'} transition-all duration-1000`} 
+                                className={`h-full bg-linear-to-r ${((product as any).stock || 0) <= 5 ? 'from-red-600 to-red-400' : 'from-gold-primary to-gold-light'} transition-all duration-1000`} 
                                 style={{ width: `${Math.min(((product as any).stock || 0) * 10, 100)}%` }}
                               ></div>
                             </div>
@@ -1967,14 +1967,14 @@ const Admin = () => {
                   <input
                     type="text"
                     placeholder="Filter products..."
-                    className="bg-white/5 border border-gold-primary/5 rounded-[2rem] py-3.5 pl-14 pr-8 text-[11px] font-black uppercase tracking-widest focus:ring-4 focus:ring-gold-primary/10 focus:bg-white w-80 transition-all outline-none"
+                    className="bg-white/5 border border-gold-primary/5 rounded-4xl py-3.5 pl-14 pr-8 text-[11px] font-black uppercase tracking-widest focus:ring-4 focus:ring-gold-primary/10 focus:bg-white w-80 transition-all outline-none"
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
                   />
                 </div>
                 <button 
                   onClick={() => setShowAddProduct(true)}
-                  className="bg-white text-white px-8 py-4 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] hover:bg-gold-primary transition-all duration-500 shadow-xl shadow-luxury-dark/20 flex items-center gap-3"
+                  className="bg-white text-white px-8 py-4 rounded-4xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-gold-primary transition-all duration-500 shadow-xl shadow-luxury-dark/20 flex items-center gap-3"
                 >
                   <Plus className="w-4 h-4" /> New Acquisition
                 </button>
@@ -2012,7 +2012,7 @@ const Admin = () => {
                     {state.products.filter(p => !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.category.toLowerCase().includes(productSearch.toLowerCase())).map((product, i) => (
                       <tr 
                         key={(product as any)._id || product.id || i}
-                        className={`hover:bg-white/[0.02] transition-all duration-500 group cursor-move ${dragOverProductIndex === i ? 'border-t-2 border-gold-primary' : ''}`}
+                        className={`hover:bg-white/2 transition-all duration-500 group cursor-move ${dragOverProductIndex === i ? 'border-t-2 border-gold-primary' : ''}`}
                         draggable
                         onDragStart={() => setDraggedProductIndex(i)}
                         onDragEnter={(e) => handleDragEnterProduct(e, i)}
@@ -2206,7 +2206,7 @@ const Admin = () => {
                           </div>
                         </td>
                         <td className="px-8 py-4 whitespace-nowrap">
-                          <div className="flex flex-col max-w-[200px]">
+                          <div className="flex flex-col max-w-50">
                             <span className="text-xs text-text-secondary truncate font-medium">
                               {order.items?.map((it: any) => it.name).join(', ')}
                             </span>
@@ -2300,10 +2300,10 @@ const Admin = () => {
           <div className="space-y-10">
             <div className="bg-white p-12 rounded-[3.5rem] border border-gold-primary/10 shadow-sm relative overflow-hidden group">
               <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
-                <div className="w-20 h-20 bg-white text-gold-primary rounded-[2rem] flex items-center justify-center mb-8 shadow-2xl group-hover:rotate-12 transition-transform duration-700">
+                <div className="w-20 h-20 bg-white text-gold-primary rounded-4xl flex items-center justify-center mb-8 shadow-2xl group-hover:rotate-12 transition-transform duration-700">
                   <Users className="w-10 h-10" />
                 </div>
-                <h2 className="text-4xl font-black text-text-primary luxury-serif tracking-[0.1em] uppercase mb-4">Elite Clientele</h2>
+                <h2 className="text-4xl font-black text-text-primary luxury-serif tracking-widest uppercase mb-4">Elite Clientele</h2>
                 <p className="text-sm text-text-muted font-bold tracking-widest uppercase mb-8 opacity-60">Customer Relationship Intelligence</p>
                 <div className="inline-flex items-center gap-3 px-6 py-3 bg-gold-primary/5 border border-gold-primary/20 rounded-2xl text-[11px] font-black text-gold-primary uppercase tracking-[0.3em]">
                   <span className="w-2 h-2 bg-gold-primary rounded-full animate-pulse"></span>
@@ -2313,8 +2313,8 @@ const Admin = () => {
               
               {/* Refined Background Elements */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(212,175,55,0.05),transparent)] pointer-events-none"></div>
-              <div className="absolute top-0 right-0 w-96 h-96 bg-primary-purple/[0.02] rounded-full blur-[120px]"></div>
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold-primary/[0.02] rounded-full blur-[120px]"></div>
+              <div className="absolute top-0 right-0 w-96 h-96 bg-primary-purple/2 rounded-full blur-[120px]"></div>
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold-primary/2 rounded-full blur-[120px]"></div>
             </div>
           </div>
         )}
