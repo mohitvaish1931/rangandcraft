@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../../utils/api';
-import { Shield, User, Trash2 } from 'lucide-react';
+import type { AdminUser } from '../../lib/adminTypes';
+import { Shield, User } from 'lucide-react';
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(API_ENDPOINTS.USERS, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}` // assuming token is in localstorage or we use credentials
-          }
-        });
+        const res = await fetch(API_ENDPOINTS.USERS);
         if (res.ok) {
           const data = await res.json();
           setUsers(data);
@@ -43,7 +40,7 @@ const AdminUsers = () => {
                 <th className="text-left px-6 py-4 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="text-left px-6 py-4 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Email</th>
                 <th className="text-left px-6 py-4 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="text-right px-6 py-4 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="text-right px-6 py-4 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Joined</th>
               </tr>
             </thead>
             <tbody>
@@ -70,9 +67,7 @@ const AdminUsers = () => {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <span className="text-sm text-gray-500">{user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</span>
                   </td>
                 </tr>
               ))}

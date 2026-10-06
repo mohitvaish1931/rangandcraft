@@ -61,9 +61,9 @@ const TrackOrder = () => {
       } else {
         setError('Order not found. Please check your order number and email.');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Tracking error:', err);
-      setError(err.message || 'Something went wrong. Please try again later.');
+      setError(err instanceof Error && err.message ? err.message : 'Something went wrong. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -112,30 +112,33 @@ const TrackOrder = () => {
           }}>
             <form onSubmit={handleTrackOrder} style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
               <div className="form-group">
-                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }}>ORDER ID</label>
+                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }} htmlFor="track-order-id">ORDER NUMBER</label>
                 <div style={{ position: 'relative' }}>
                   <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#295454' }}>
                     <Package size={20} strokeWidth={1.5} />
                   </div>
                   <input
+                    id="track-order-id"
                     type="text"
                     value={orderNumber}
                     onChange={(e) => setOrderNumber(e.target.value)}
                     style={{ width: '100%', padding: '15px 20px 15px 55px', borderRadius: '12px', border: '1px solid #e0e0e0', outline: 'none' }}
-                    placeholder="e.g. MOR-123456"
+                    placeholder="e.g. #A1B2C3D4 (from your confirmation)"
                     required
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }}>EMAIL ADDRESS</label>
+                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }} htmlFor="track-email">EMAIL ADDRESS</label>
                 <div style={{ position: 'relative' }}>
                   <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#295454' }}>
                     <Mail size={20} strokeWidth={1.5} />
                   </div>
                   <input
+                    id="track-email"
                     type="email"
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     style={{ width: '100%', padding: '15px 20px 15px 55px', borderRadius: '12px', border: '1px solid #e0e0e0', outline: 'none' }}
@@ -207,7 +210,7 @@ const TrackOrder = () => {
                     </div>
                     <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
                       <span style={{ fontSize: '0.55rem', fontWeight: '700', letterSpacing: '2px', opacity: 0.5, textTransform: 'uppercase' }}>Courier Partner</span>
-                      <p style={{ fontSize: '1.1rem', fontWeight: '500', marginTop: '5px' }}>{trackingResult.order.courierName || 'In Transit'}</p>
+                      <p style={{ fontSize: '1.1rem', fontWeight: '500', marginTop: '5px' }}>{trackingResult.order.courierName || 'Awaiting dispatch'}</p>
                     </div>
                   </div>
               </div>
@@ -257,8 +260,8 @@ const TrackOrder = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', borderTop: '1px solid #eee', paddingTop: '40px' }}>
             <TrustItem icon={<ShieldCheck size={28} />} title="PREMIUM QUALITY" sub="Finest fabrics & craftsmanship" />
             <TrustItem icon={<Lock size={28} />} title="SECURE PAYMENTS" sub="100% secure & trusted" />
-            <TrustItem icon={<RefreshCcw size={28} />} title="EASY RETURNS" sub="Hassle-free returns" />
-            <TrustItem icon={<Globe size={28} />} title="WORLDWIDE SHIPPING" sub="Delivered across the globe" />
+            <TrustItem icon={<RefreshCcw size={28} />} title="7-DAY EXCHANGE" sub="Hassle-free size swaps" />
+            <TrustItem icon={<Globe size={28} />} title="PAN-INDIA SHIPPING" sub="Free on prepaid orders" />
         </div>
       </div>
 

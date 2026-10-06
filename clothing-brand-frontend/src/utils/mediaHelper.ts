@@ -1,9 +1,17 @@
 /**
  * Media loading utility for handling images and videos with fallbacks
  */
+import { API_BASE_URL } from './api';
+
+// Self-contained placeholder (the old via.placeholder.com service is gone).
+export const PLACEHOLDER_IMAGE =
+  'data:image/svg+xml;charset=UTF-8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500"><rect width="400" height="500" fill="#f2eadd"/><path d="M200 210c-22 0-40 18-40 40s18 40 40 40 40-18 40-40-18-40-40-40zm0 64c-13 0-24-11-24-24s11-24 24-24 24 11 24 24-11 24-24 24z" fill="#d6cab9"/></svg>'
+  );
 
 export const getImageUrl = (imageUrl: string | undefined, width?: number): string => {
-  if (!imageUrl) return 'https://via.placeholder.com/400?text=No+Image';
+  if (!imageUrl) return PLACEHOLDER_IMAGE;
   
   // Apply Cloudinary optimizations if it's a Cloudinary URL
   if (imageUrl.includes('res.cloudinary.com') && imageUrl.includes('/upload/')) {
@@ -20,8 +28,7 @@ export const getImageUrl = (imageUrl: string | undefined, width?: number): strin
   
   // Backwards compatibility for relative paths if any remain
   if (imageUrl.startsWith('/uploads/') || imageUrl.startsWith('uploads/')) {
-    const baseUrl = import.meta.env.VITE_API_BASE ?? 
-      (import.meta.env.DEV ? 'http://localhost:5000' : 'https://rangandcraft.onrender.com');
+    const baseUrl = API_BASE_URL;
     const cleanUrl = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
     return `${baseUrl}${cleanUrl}`;
   }
@@ -57,9 +64,7 @@ export const getVideoUrl = (videoUrl: string | undefined): string | null => {
   
   // If it's a direct video file, construct full URL if needed
   if (videoUrl.startsWith('/uploads/')) {
-    const baseUrl = import.meta.env.VITE_API_BASE ?? 
-      (import.meta.env.DEV ? 'http://localhost:5000' : '');
-    return `${baseUrl}${videoUrl}`;
+    return `${API_BASE_URL}${videoUrl}`;
   }
   
   if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
@@ -122,10 +127,11 @@ export const validateVideoFile = (file: File): { valid: boolean; error?: string 
  * Handle image load errors with fallback
  */
 export const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
-  event.currentTarget.src = 'https://via.placeholder.com/400?text=Image+Not+Found';
+  const img = event.currentTarget;
+  if (img.src !== PLACEHOLDER_IMAGE) img.src = PLACEHOLDER_IMAGE;
 };
 
 export const handleVideoError = (event: React.SyntheticEvent<HTMLVideoElement>) => {
   console.error('Video failed to load:', event.currentTarget.src);
-  event.currentTarget.poster = 'https://via.placeholder.com/400?text=Video+Failed';
+  event.currentTarget.poster = PLACEHOLDER_IMAGE;
 };

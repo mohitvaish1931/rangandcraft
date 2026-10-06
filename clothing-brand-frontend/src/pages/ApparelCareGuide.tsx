@@ -15,28 +15,28 @@ const ApparelCareGuide = () => {
     {
       icon: <Droplets size={30} />,
       title: "PROFESSIONAL CLEANING",
-      text: "Most of our ethnic wear, especially those with Zari, Gotta Patti, or Zardosi work, requires professional dry cleaning. Avoid machine washing or hand washing at home for silk sarees and heavy embroidered suits.",
+      text: "Printed cotton kurtas and shirts are best hand washed separately in cold water with a mild detergent for the first few washes, as natural dyes can bleed slightly. Festive suits and pieces with embroidery or zari work should be dry cleaned only.",
       note: "Important: Always inform your dry cleaner about the specific material and embroidery type."
     },
     {
       icon: <Archive size={30} />,
       title: "PERFECT STORAGE",
-      text: "Store your precious sarees and lehengas in breathable muslin or cotton bags. Avoid plastic covers as they can cause yellowing. Change folds every few months to prevent fabric stress at the creases."
+      text: "Store your kurtas and suits in breathable cotton garment bags or on wide hangers. Avoid plastic covers as they trap moisture and can cause yellowing. Keep printed pieces away from direct sunlight to prevent fading."
     },
     {
       icon: <Wind size={30} />,
       title: "IRONING & STEAMING",
-      text: "Always iron on the reverse side of the garment using a low-to-medium heat setting. Steam ironing is preferred for removing wrinkles from delicate silks and georgettes, but avoid direct contact with embroidery."
+      text: "Always iron on the reverse side of the garment using a low-to-medium heat setting. Steam ironing works well for linen and cotton blends; avoid direct contact with any embroidery or buttons."
     },
     {
       icon: <Sparkles size={30} />,
       title: "USAGE & MAINTENANCE",
-      text: "Avoid spraying perfumes or deodorants directly onto your clothes, as chemicals can stain the fabric and darken metal threads. Apply perfumes and jewelry before putting on your garment."
+      text: "Avoid spraying perfumes or deodorants directly onto your clothes, as chemicals can stain the fabric and darken prints. Let deodorant dry fully before dressing."
     },
     {
       icon: <Info size={30} />,
       title: "SPECIFIC CARE",
-      text: "If a thread comes loose, never pull it. Instead, carefully snip it with small scissors. For heavy lehengas, we recommend storing them flat if possible to prevent the weight from stretching the fabric."
+      text: "If a thread comes loose, never pull it. Instead, carefully snip it with small scissors. Dry printed garments inside out in the shade, and fold heavier festive suits flat rather than hanging them for long periods."
     }
   ];
 

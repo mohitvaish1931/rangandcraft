@@ -1,41 +1,84 @@
-import { BarChart, DollarSign, TrendingUp, Calendar } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { IndianRupee, ShoppingCart, TrendingUp, Clock } from 'lucide-react';
+import { inr, useAdminData } from './useAdminData';
+
+const RANGES = [
+  { label: 'Last 7 days', days: 7 },
+  { label: 'Last 30 days', days: 30 },
+  { label: 'Last 90 days', days: 90 },
+  { label: 'All time', days: 0 },
+];
 
 const AdminSalesReports = () => {
+  const { orders, paid, loading, error } = useAdminData();
+  const [days, setDays] = useState(30);
+  const [now] = useState(() => Date.now());
+
+  const report = useMemo(() => {
+    const since = days ? now - days * 86400000 : 0;
+    const inRange = paid.filter((o) => new Date(o.createdAt).getTime() >= since);
+    const revenue = inRange.reduce((s, o) => s + (o.totalPrice || 0), 0);
+    const pending = (orders ?? []).filter((o) => !o.isPaid && o.paymentStatus !== 'Paid' && new Date(o.createdAt).getTime() >= since).length;
+
+    // Revenue per day (or per month for long ranges).
+    const byMonth = !days || days > 31;
+    const buckets = new Map<string, number>();
+    inRange.forEach((o) => {
+      const d = new Date(o.createdAt);
+      const key = byMonth ? d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }) : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      buckets.set(key, (buckets.get(key) || 0) + (o.totalPrice || 0));
+    });
+    const series = [...buckets.entries()].reverse();
+    return { inRange, revenue, pending, series, aov: inRange.length ? revenue / inRange.length : 0 };
+  }, [paid, orders, days, now]);
+
+  const max = Math.max(1, ...report.series.map(([, v]) => v));
   const stats = [
-    { label: 'Total Revenue', value: '₹14,50,000', icon: <DollarSign className="w-5 h-5" />, growth: '+15%' },
-    { label: 'Orders This Month', value: '450', icon: <BarChart className="w-5 h-5" />, growth: '+8%' },
-    { label: 'Average Order Value', value: '₹3,222', icon: <TrendingUp className="w-5 h-5" />, growth: '+2%' },
+    { label: 'Revenue (paid)', value: inr(report.revenue), icon: IndianRupee },
+    { label: 'Paid orders', value: String(report.inRange.length), icon: ShoppingCart },
+    { label: 'Average order value', value: inr(report.aov), icon: TrendingUp },
+    { label: 'Unpaid / abandoned', value: String(report.pending), icon: Clock },
   ];
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Sales Reports</h1>
-        <button className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-medium transition-colors">
-          <Calendar className="w-4 h-4" />
-          Last 30 Days
-        </button>
+        <select value={days} onChange={(e) => setDays(Number(e.target.value))} className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium">
+          {RANGES.map((r) => <option key={r.days} value={r.days}>{r.label}</option>)}
+        </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {stats.map((stat, i) => (
-          <div key={i} className="p-6 border border-gray-100 rounded-xl">
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-teal-50 text-[#295454] rounded-lg">{stat.icon}</div>
-              <span className="text-green-500 text-sm font-medium bg-green-50 px-2 py-1 rounded-full">{stat.growth}</span>
-            </div>
-            <h3 className="text-gray-500 text-sm font-medium mb-1">{stat.label}</h3>
-            <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+      {error ? <p className="text-red-600">{error}</p> : loading ? <p className="text-gray-400">Loading…</p> : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {stats.map((s) => (
+              <div key={s.label} className="p-6 border border-gray-100 rounded-xl">
+                <div className="p-3 bg-teal-50 text-[#1f4645] rounded-lg w-fit mb-4"><s.icon className="w-5 h-5" /></div>
+                <h3 className="text-gray-500 text-sm font-medium mb-1">{s.label}</h3>
+                <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="border border-gray-100 rounded-xl p-6 h-80 flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <BarChart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 font-medium">Detailed sales chart will populate as more data arrives.</p>
-        </div>
-      </div>
+          <div className="border border-gray-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-6">Revenue over time</h3>
+            {report.series.length === 0 ? (
+              <p className="text-gray-500 text-sm py-16 text-center">No paid orders in this period yet.</p>
+            ) : (
+              <div className="flex items-end gap-2 h-64 overflow-x-auto pb-2">
+                {report.series.map(([label, value]) => (
+                  <div key={label} className="flex flex-col items-center gap-2 min-w-[44px] flex-1 h-full justify-end" title={`${label}: ${inr(value)}`}>
+                    <span className="text-[10px] text-gray-500">{inr(value)}</span>
+                    <div className="w-full bg-[#1f4645] rounded-t-md" style={{ height: `${(value / max) * 80}%`, minHeight: 4 }} />
+                    <span className="text-[10px] text-gray-500 whitespace-nowrap">{label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };

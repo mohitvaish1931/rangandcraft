@@ -49,7 +49,7 @@ const AdminProducts = () => {
       dispatch({ type: 'SET_PRODUCTS', payload: products });
 
       const reorderPayload = products.map((p, idx) => ({
-        id: (p as any)._id || p.id,
+        id: p._id || p.id,
         displayOrder: idx,
       }));
 
@@ -117,7 +117,7 @@ const AdminProducts = () => {
             <tbody className="divide-y divide-gray-50">
               {filteredProducts.map((product, idx) => (
                 <tr 
-                  key={(product as any)._id || product.id}
+                  key={product._id || product.id}
                   draggable
                   onDragStart={() => setDraggedProductIndex(idx)}
                   onDragEnter={(e) => handleDragEnterProduct(e, idx)}
@@ -136,7 +136,7 @@ const AdminProducts = () => {
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-gray-800 truncate">{product.name}</p>
-                        <p className="text-[10px] text-gray-400 font-medium">ID: {(product as any)._id?.substring(0, 8) || product.id}</p>
+                        <p className="text-[10px] text-gray-400 font-medium">ID: {product._id?.substring(0, 8) || product.id}</p>
                       </div>
                     </div>
                   </td>
@@ -163,21 +163,21 @@ const AdminProducts = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button 
-                        onClick={() => navigate(`/product/${(product as any)._id || product.id}`)}
+                        onClick={() => navigate(`/product/${product._id || product.id}`)}
                         className="p-2 text-gray-400 hover:text-primary-purple hover:bg-primary-purple/5 rounded-xl transition-all"
                         title="View Live"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => navigate(`/admin/products/${(product as any)._id || product.id}/edit`)}
+                        onClick={() => navigate(`/admin/products/${product._id || product.id}/edit`)}
                         className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
                         title="Edit"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => handleDeleteProduct((product as any)._id || product.id)}
+                        onClick={() => handleDeleteProduct(product._id || product.id)}
                         className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                         title="Delete"
                       >

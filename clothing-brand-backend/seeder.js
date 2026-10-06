@@ -8,6 +8,12 @@ import connectDB from './config/db.js';
 
 dotenv.config();
 
+// Seeding wipes every product and user. Never let it run against a live store by accident.
+if (process.env.NODE_ENV === 'production' && !process.argv.includes('--force')) {
+  console.error('Refusing to seed/destroy data with NODE_ENV=production. Re-run with --force if you really mean it.');
+  process.exit(1);
+}
+
 connectDB();
 
 const importData = async () => {
@@ -23,7 +29,8 @@ const importData = async () => {
     const usersToInsert = [...users];
     usersToInsert[0] = adminData;
 
-    const createdUsers = await User.insertMany(usersToInsert);
+    // create() (not insertMany) so the pre-save hook hashes the passwords.
+    const createdUsers = await User.create(usersToInsert);
     const adminUser = createdUsers[0]._id;
 
     const sampleProducts = products.map((product) => {

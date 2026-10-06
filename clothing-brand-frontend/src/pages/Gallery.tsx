@@ -1,35 +1,75 @@
-import { Helmet } from 'react-helmet-async';
+import { useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
+import Seo from '../components/Seo';
+import { getImageUrl } from '../utils/mediaHelper';
+
+const EDITORIAL = [
+  '/images/hero-banner.webp',
+  '/images/kurta-men.jpg',
+  '/images/suits-men.jpg',
+  '/images/indowestern-men.jpg',
+  '/images/tops-men.jpg',
+  '/images/saree-men.jpg',
+  '/images/heritage-edit-men.jpg',
+  '/images/clothing_rack_hero.webp',
+];
 
 const Gallery = () => {
-  const images = [
-    '/images/kurta-men.jpg',
-    '/images/suits-men.jpg',
-    '/images/indowestern-men.jpg',
-    '/images/saree-men.jpg',
-    '/images/tops-men.jpg',
-    '/images/hero-banner.png',
-    '/images/clothing_rack_hero.png',
-    '/images/store-locator.png'
-  ];
+  const { state } = useAppContext();
+  const [open, setOpen] = useState<number | null>(null);
+
+  const images = useMemo(() => {
+    const productImages = state.products.flatMap((p) => p.images?.length ? p.images.slice(0, 2) : [p.image]).filter(Boolean);
+    return [...new Set([...EDITORIAL, ...productImages])].slice(0, 36);
+  }, [state.products]);
+
+  useEffect(() => {
+    if (open === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(null);
+      if (e.key === 'ArrowRight') setOpen((i) => (i! + 1) % images.length);
+      if (e.key === 'ArrowLeft') setOpen((i) => (i! - 1 + images.length) % images.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, images.length]);
 
   return (
-    <div style={{ backgroundColor: 'transparent', minHeight: '100vh', padding: '60px 20px', textAlign: 'center' }}>
-      <Helmet>
-        <title>Our Gallery - Rang and Craft</title>
-      </Helmet>
-      <h1 style={{ fontSize: '3rem', color: '#295454', fontFamily: 'serif', marginBottom: '10px' }}>Our Gallery</h1>
-      <p style={{ color: '#666', marginBottom: '50px' }}>Glimpses of our premium ethnic wear collection</p>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-        {images.map((img, idx) => (
-          <div key={idx} style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-            <img src={img} alt={`Gallery image ${idx+1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }} 
-                 onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'} 
-                 onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'} />
-          </div>
-        ))}
+    <>
+      <Seo title="Gallery" description="A look at Rang and Craft menswear, crafted in Jaipur." path="/gallery" />
+      <header className="rc-page-head">
+        <div className="rc-container">
+          <span className="rc-eyebrow">Lookbook</span>
+          <h1 className="rc-h1">Gallery</h1>
+          <p className="rc-lead">Moments, textures and colours from our Jaipur collections.</p>
+        </div>
+      </header>
+      <div className="rc-container rc-section" style={{ paddingTop: 40 }}>
+        <div style={{ columns: '3 260px', columnGap: 16 }}>
+          {images.map((src, i) => (
+            <button
+              key={src}
+              type="button"
+              onClick={() => setOpen(i)}
+              style={{ display: 'block', width: '100%', marginBottom: 16, padding: 0, border: 0, borderRadius: 12, overflow: 'hidden', cursor: 'zoom-in', breakInside: 'avoid', background: 'var(--rc-sand)' }}
+              aria-label={`Open image ${i + 1}`}
+            >
+              <img src={getImageUrl(src, 600)} alt="" loading="lazy" style={{ width: '100%', display: 'block' }} />
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+
+      {open !== null && (
+        <div className="rc-modal" role="dialog" aria-modal="true" aria-label="Image viewer" onClick={() => setOpen(null)} style={{ background: 'rgba(10,9,8,0.92)' }}>
+          <img src={getImageUrl(images[open], 1400)} alt="" style={{ maxWidth: '92vw', maxHeight: '88vh', objectFit: 'contain', borderRadius: 8 }} onClick={(e) => e.stopPropagation()} />
+          <button type="button" className="rc-icon-btn" style={{ position: 'fixed', top: 16, right: 16, color: '#fff' }} onClick={() => setOpen(null)} aria-label="Close"><X size={24} /></button>
+          <button type="button" className="rc-icon-btn" style={{ position: 'fixed', left: 12, top: '50%', color: '#fff' }} onClick={(e) => { e.stopPropagation(); setOpen((open - 1 + images.length) % images.length); }} aria-label="Previous"><ChevronLeft size={28} /></button>
+          <button type="button" className="rc-icon-btn" style={{ position: 'fixed', right: 12, top: '50%', color: '#fff' }} onClick={(e) => { e.stopPropagation(); setOpen((open + 1) % images.length); }} aria-label="Next"><ChevronRight size={28} /></button>
+        </div>
+      )}
+    </>
   );
 };
 

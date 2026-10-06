@@ -61,7 +61,7 @@ const AdminFirstPhotoSection = () => {
           <div className="text-center text-gray-400 py-10">No products found.</div>
         ) : (
           <div className="grid grid-cols-1 gap-8">
-            {products.map((product: any) => {
+            {products.map((product) => {
               const images = product.images && product.images.length > 0 ? product.images : (product.image ? [product.image] : []);
               if (images.length <= 1) return null; // Skip products with 1 or 0 images
 
@@ -90,7 +90,7 @@ const AdminFirstPhotoSection = () => {
                           {!isFirst && (
                             <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
                               <button 
-                                onClick={() => handleMakeFirst(product._id || product.id, idx, images)}
+                                onClick={() => handleMakeFirst(product._id || String(product.id), idx, images)}
                                 disabled={isLoading}
                                 className="bg-white text-purple-700 font-bold text-xs px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition-transform flex items-center gap-2 disabled:opacity-50"
                               >

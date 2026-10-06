@@ -1,33 +1,47 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rang and Craft | Premium Men's Ethnic & Casual Wear</title>
-    <meta name="description" content="Shop the latest trends in men's ethnic and casual wear at Rang and Craft. Explore our wide collection of Kurtas, Half Sleeves Shirts, Co-ord sets, and more with premium quality." />
-    <meta name="keywords" content="men's clothing, kurtas, tops, ethnic wear, casual wear, co-ord sets, Rang and Craft, Indian wear, premium quality tops" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f4645" />
+    <title>Rang and Craft | Men's Kurtas & Shirts from Jaipur</title>
+    <meta name="description" content="Shop men's printed cotton kurtas, half sleeve shirts and co-ord sets, crafted in Jaipur. Breathable fabrics, honest prices, free shipping on prepaid orders." />
     <meta name="author" content="Rang and Craft" />
-    <meta property="og:title" content="Rang and Craft | Premium Men's Ethnic & Casual Wear" />
-    <meta property="og:description" content="Shop the latest trends in men's ethnic and casual wear at Rang and Craft. Explore our wide collection of Kurtas, Half Sleeves Shirts, and Co-ord sets." />
+    <link rel="canonical" href="https://rangandcraft.store/" />
+    <meta property="og:site_name" content="Rang and Craft" />
+    <meta property="og:title" content="Rang and Craft | Men's Kurtas & Shirts from Jaipur" />
+    <meta property="og:description" content="Men's printed cotton kurtas, half sleeve shirts and co-ord sets, crafted in Jaipur." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://rangandcraft.store" />
+    <meta property="og:image" content="https://rangandcraft.store/images/hero-banner.png" />
+    <meta property="og:locale" content="en_IN" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Rang and Craft | Premium Men's Ethnic & Casual Wear" />
-    <meta name="twitter:description" content="Shop the latest trends in men's ethnic and casual wear at Rang and Craft." />
-    
-    <!-- Performance Optimizations -->
-    <link rel="preconnect" href="https://rangandcraft-275k.onrender.com" crossorigin="anonymous" />
-    <link rel="dns-prefetch" href="https://rangandcraft-275k.onrender.com" />
-    <script>
-      // Preload the main products API request immediately when HTML is parsed
-      // This eliminates the waterfall delay of downloading/parsing JS before making the API call
-      window.__INITIAL_PRODUCTS_PROMISE__ = fetch("https://rangandcraft-275k.onrender.com/api/products")
-        .then(res => res.json())
-        .catch(err => { console.error('Prefetch failed', err); return null; });
+    <meta name="twitter:title" content="Rang and Craft | Men's Kurtas & Shirts from Jaipur" />
+    <meta name="twitter:description" content="Men's printed cotton kurtas, half sleeve shirts and co-ord sets, crafted in Jaipur." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ClothingStore",
+        "name": "Rang and Craft",
+        "url": "https://rangandcraft.store",
+        "logo": "https://rangandcraft.store/images/logo.png",
+        "telephone": "+91-9351325459",
+        "address": { "@type": "PostalAddress", "addressLocality": "Jaipur", "addressRegion": "Rajasthan", "addressCountry": "IN" }
+      }
     </script>
   </head>
   <body>
+    <noscript>Please enable JavaScript to shop at Rang and Craft.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

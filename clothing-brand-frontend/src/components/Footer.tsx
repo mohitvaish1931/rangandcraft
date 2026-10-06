@@ -1,65 +1,79 @@
 import { Link } from 'react-router-dom';
+import { Mail, MapPin, Phone } from 'lucide-react';
+import { useMemo } from 'react';
+import { useAppContext } from '../context/AppContext';
+import { categoriesOf } from '../lib/catalog';
+import { SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_URL } from '../lib/brand';
+import WhatsAppIcon from './WhatsAppIcon';
 import logoImg from '../assets/logo.png';
-import './Footer.css';
 
 const Footer = () => {
+  const { state } = useAppContext();
+  const categories = useMemo(() => categoriesOf(state.products).slice(0, 5), [state.products]);
+
   return (
-    <footer className="footer-purple jaipur-bg-pattern">
-      <div className="container">
-        <div className="footer-grid">
-          <div className="footer-col">
-            <div className="flex items-center" style={{marginBottom: '20px'}}>
-              <img src={logoImg} alt="Rang and Craft Logo" style={{ height: '100px', width: '220px', objectFit: 'contain', objectPosition: 'left', mixBlendMode: 'multiply', transform: 'scale(1.2)', transformOrigin: 'left center' }} />
+    <footer className="rc-footer">
+      <div className="rc-container">
+        <div className="rc-footer__grid">
+          <div className="rc-footer__brand">
+            <img src={logoImg} alt="Rang and Craft" loading="lazy" />
+            <p>Menswear rooted in the royal legacy of Jaipur — breathable printed cotton, honest prices, made to be worn every day.</p>
+            <div className="rc-footer__contact">
+              <a href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`}><Phone size={16} /> {SUPPORT_PHONE}</a>
+              <a href={`mailto:${SUPPORT_EMAIL}`}><Mail size={16} /> {SUPPORT_EMAIL}</a>
+              <span style={{ display: 'inline-flex', gap: 10, alignItems: 'center' }}><MapPin size={16} /> Jaipur, Rajasthan, India</span>
             </div>
-            <p className="footer-desc-purple">
-              Experience the royal legacy of Jaipur with our exquisite handcrafted ethnic wear for men.
-            </p>
-            <div className="social-links-purple">
-              {['facebook', 'instagram', 'twitter', 'youtube'].map((platform) => (
-                <a href={`https://${platform}.com`} key={platform} target="_blank" rel="noreferrer">
-                  <span className="capitalize">{platform[0]}</span>
-                </a>
+            <div className="rc-footer__social">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
+                <WhatsAppIcon width={18} height={18} />
+              </a>
+              <a href={`mailto:${SUPPORT_EMAIL}`} aria-label="Email us"><Mail size={18} /></a>
+            </div>
+          </div>
+
+          <div>
+            <h4>Shop</h4>
+            <ul>
+              <li><Link to="/shop">All products</Link></li>
+              <li><Link to="/shop?sort=newest">New in</Link></li>
+              <li><Link to="/shop?sale=1">Sale</Link></li>
+              {categories.map((c) => (
+                <li key={c.name}><Link to={`/shop?category=${encodeURIComponent(c.name)}`}>{c.name}</Link></li>
               ))}
-            </div>
-          </div>
-          
-          <div className="footer-col">
-            <h4 className="footer-heading-purple">Collections</h4>
-            <ul className="footer-links-purple">
-              <li><Link to="/shop?category=Short%20Kurtas">Short Kurtas</Link></li>
-              <li><Link to="/shop?category=Suits">Designer Suits</Link></li>
-              <li><Link to="/shop?category=Half Sleeves Shirts">Half Sleeves Shirts & Tunics</Link></li>
-              <li><Link to="/shop?category=Three%20Piece%20Tops">Three Piece Half Sleeves Shirts</Link></li>
-              <li><Link to="/shop">All Collections</Link></li>
-              <li><Link to="/shop?keyword=New">New Arrivals</Link></li>
             </ul>
           </div>
-          
-          <div className="footer-col">
-            <h4 className="footer-heading-purple">Concierge</h4>
-            <ul className="footer-links-purple">
-              <li><Link to="/contact">Contact Us</Link></li>
-              <li><Link to="/track-order">Track Your Order</Link></li>
-              <li><Link to="/shipping-policy">Shipping Policy</Link></li>
-              <li><Link to="/refund-policy">Returns & Refunds</Link></li>
+
+          <div>
+            <h4>Help</h4>
+            <ul>
+              <li><Link to="/track-order">Track your order</Link></li>
+              <li><Link to="/shipping-policy">Shipping</Link></li>
+              <li><Link to="/refund-policy">Exchanges & refunds</Link></li>
+              <li><Link to="/care-guide">Fabric care</Link></li>
               <li><Link to="/faq">FAQs</Link></li>
+              <li><Link to="/contact">Contact us</Link></li>
             </ul>
           </div>
-          
-          <div className="footer-col">
-            <h4 className="footer-heading-purple">Join Our World</h4>
-            <p className="footer-desc-purple" style={{marginBottom: '15px'}}>
-              Stay updated with our latest releases and exclusive styling tips.
-            </p>
-            <form className="newsletter-form-purple">
-              <input type="email" placeholder="Enter your email" className="newsletter-input-purple" />
-              <button type="submit" className="btn-purple-submit">Join Now</button>
-            </form>
+
+          <div>
+            <h4>Rang and Craft</h4>
+            <ul>
+              <li><Link to="/about">Our story</Link></li>
+              <li><Link to="/gallery">Gallery</Link></li>
+              <li><Link to="/reviews">Customer reviews</Link></li>
+              <li><Link to="/contact?subject=wholesale">Wholesale & franchise</Link></li>
+              <li><Link to="/profile">My account</Link></li>
+            </ul>
           </div>
         </div>
-        
-        <div className="footer-bottom-purple">
-          <p>&copy; {new Date().getFullYear()} RANG AND CRAFT JAIPUR. Handcrafted with Love.</p>
+
+        <div className="rc-footer__bottom">
+          <span>© {new Date().getFullYear()} Rang and Craft, Jaipur. All rights reserved.</span>
+          <nav aria-label="Legal">
+            <Link to="/privacy-policy">Privacy</Link>
+            <Link to="/terms-conditions">Terms</Link>
+            <Link to="/accessibility">Accessibility</Link>
+          </nav>
         </div>
       </div>
     </footer>

@@ -1,171 +1,71 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { API_ENDPOINTS } from '../utils/api';
+import AuthLayout from '../components/AuthLayout';
+import PasswordInput from '../components/PasswordInput';
+import Seo from '../components/Seo';
+import { API_ENDPOINTS, postJSON } from '../utils/api';
+import { errorMessage } from '../lib/format';
+import { safeRedirect, toSessionUser } from '../lib/session';
+import { useToast } from '../lib/toast';
 
 const LoginScreen = () => {
+  const { state, dispatch } = useAppContext();
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [params] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { dispatch } = useAppContext();
+  const [loading, setLoading] = useState(false);
+  const redirect = params.get('redirect');
 
-  const submitHandler = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (state.user) navigate(safeRedirect(redirect, state.user.isAdmin ? '/admin' : '/profile'), { replace: true });
+  }, [state.user, redirect, navigate]);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
-
+    setLoading(true);
     try {
-      const res = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Login failed. Please check your credentials.');
-      }
-
-      dispatch({ 
-        type: 'SET_USER', 
-        payload: { 
-          id: data.id || data._id, 
-          email: data.email, 
-          name: data.name, 
-          isAdmin: data.isAdmin 
-        } 
-      });
-
-      if (data.isAdmin) {
-        navigate('/admin');
-      } else {
-        navigate('/profile');
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = await postJSON<any>(API_ENDPOINTS.AUTH.LOGIN, { email: email.trim(), password });
+      dispatch({ type: 'SET_USER', payload: toSessionUser(data) });
+      toast.success(`Welcome back, ${data.name.split(' ')[0]}!`);
+    } catch (err) {
+      setError(errorMessage(err, 'Sign in failed. Please check your details.'));
+      setLoading(false);
     }
   };
 
   return (
-    <div className="login-page" style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      backgroundColor: 'transparent',
-      padding: '40px 20px'
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '450px',
-        backgroundColor: '#fff',
-        padding: '50px',
-        borderRadius: '24px',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.04)',
-        border: '1px solid #f0f0f0',
-        textAlign: 'center'
-      }}>
-        <span style={{ 
-          color: '#c48f56', 
-          letterSpacing: '4px', 
-          fontWeight: '800', 
-          fontSize: '0.7rem', 
-          textTransform: 'uppercase', 
-          display: 'block', 
-          marginBottom: '15px' 
-        }}>WELCOME BACK</span>
-        
-        <h1 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#295454' }}>Sign In</h1>
-        <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.95rem' }}>Experience the heritage of RANG AND CRAFT</p>
-
-        {error && (
-          <div style={{ 
-            padding: '15px', 
-            backgroundColor: '#FFF5F5', 
-            color: '#C53030', 
-            borderRadius: '12px', 
-            marginBottom: '25px', 
-            fontSize: '0.85rem',
-            border: '1px solid #FED7D7'
-          }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={submitHandler} style={{ textAlign: 'left' }}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>EMAIL ADDRESS</label>
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. name@luxury.com"
-              required
-              style={{ 
-                width: '100%', 
-                padding: '15px 20px', 
-                border: '1.5px solid #eee', 
-                borderRadius: '12px', 
-                outline: 'none',
-                fontSize: '0.95rem',
-                transition: 'border-color 0.3s'
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '30px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.7rem', fontWeight: '800', color: '#295454', letterSpacing: '1px' }}>PASSWORD</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              style={{ 
-                width: '100%', 
-                padding: '15px 20px', 
-                border: '1.5px solid #eee', 
-                borderRadius: '12px', 
-                outline: 'none',
-                fontSize: '0.95rem',
-                transition: 'border-color 0.3s'
-              }}
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={isLoading}
-            style={{ 
-              width: '100%', 
-              padding: '18px', 
-              backgroundColor: '#295454', 
-              color: '#fff', 
-              border: 'none', 
-              borderRadius: '12px', 
-              fontWeight: '800', 
-              letterSpacing: '2px', 
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.7 : 1,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              boxShadow: '0 10px 20px rgba(45, 10, 78, 0.1)'
-            }}
-          >
-            {isLoading ? 'AUTHENTICATING...' : 'SIGN IN'}
-          </button>
-        </form>
-
-        <div style={{ marginTop: '30px', fontSize: '0.9rem', color: '#666' }}>
-          New to Rang and Craft? <Link to="/register" style={{ color: '#c48f56', fontWeight: '800', textDecoration: 'none' }}>Create Account</Link>
+    <AuthLayout quote="Rooted in Jaipur. Made for the way you live.">
+      <Seo title="Sign in" path="/login" noindex />
+      <span className="rc-eyebrow">Welcome back</span>
+      <h1 className="rc-h1">Sign in</h1>
+      <p className="rc-muted">Track orders, save your address and check out faster.</p>
+      {error && <div className="rc-alert rc-alert--error" role="alert">{error}</div>}
+      <form onSubmit={submit} style={{ display: 'grid', gap: 16 }}>
+        <div className="rc-field">
+          <label className="rc-label" htmlFor="login-email">Email</label>
+          <input id="login-email" className="rc-input" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
-      </div>
-    </div>
+        <div className="rc-field">
+          <label className="rc-label" htmlFor="login-password">Password</label>
+          <PasswordInput id="login-password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
+        <button type="submit" className="rc-btn rc-btn--lg rc-btn--block" disabled={loading}>
+          {loading ? <span className="rc-spinner" /> : 'Sign in'}
+        </button>
+      </form>
+      <p className="rc-muted" style={{ fontSize: 14 }}>
+        Forgot your password? <a href="https://wa.me/919351325459?text=Hi!%20I%20need%20help%20resetting%20my%20password." target="_blank" rel="noopener noreferrer">Message us</a> and we’ll help you reset it.
+      </p>
+      <p style={{ fontSize: 15 }}>
+        New to Rang and Craft? <Link to={`/register${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`} style={{ color: 'var(--rc-brand)', fontWeight: 500 }}>Create an account</Link>
+      </p>
+    </AuthLayout>
   );
 };
 

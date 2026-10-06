@@ -16,6 +16,7 @@ import shiprocketRoutes from './routes/shiprocketRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import sitemapRoutes from './routes/sitemapRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import sanitize from './middleware/sanitize.js';
 import { apiLimiter } from './middleware/rateLimit.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -75,6 +76,7 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/shiprocket', shiprocketRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/api', sitemapRoutes);
 
 app.get('/', (req, res) => {

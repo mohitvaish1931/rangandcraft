@@ -43,7 +43,7 @@ const AdminInventory = () => {
             </thead>
             <tbody className="divide-y divide-gold-primary/5">
               {state.products.map((product) => (
-                <tr key={(product as any).id} className="hover:bg-white/[0.02] transition-all duration-300 group">
+                <tr key={product.id} className="hover:bg-white/[0.02] transition-all duration-300 group">
                   <td className="px-10 py-6 whitespace-nowrap">
                     <div className="flex items-center gap-5">
                       <div className="w-16 h-16 rounded-2xl bg-white/5 overflow-hidden border border-gold-primary/10 shadow-sm relative group-hover:scale-105 transition-transform duration-500">
@@ -52,7 +52,7 @@ const AdminInventory = () => {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-sm font-black text-text-primary tracking-wide">{product.name}</span>
-                        <span className="text-[10px] text-text-muted font-bold tracking-widest uppercase mt-0.5">ID: {String((product as any)._id || product.id).substring(0,8)}</span>
+                        <span className="text-[10px] text-text-muted font-bold tracking-widest uppercase mt-0.5">ID: {String(product._id || product.id).substring(0,8)}</span>
                       </div>
                     </div>
                   </td>
@@ -63,19 +63,19 @@ const AdminInventory = () => {
                   </td>
                   <td className="px-10 py-6 whitespace-nowrap text-center">
                     <div className="flex flex-col items-center gap-2">
-                      <span className={`text-2xl font-black luxury-serif ${((product as any).stock || 0) <= 5 ? 'text-primary-purple' : 'text-text-primary'}`}>
-                        {(product as any).stock || 0}
+                      <span className={`text-2xl font-black luxury-serif ${(product.countInStock ?? product.stock ?? 0) <= 5 ? 'text-primary-purple' : 'text-text-primary'}`}>
+                        {product.countInStock ?? product.stock ?? 0}
                       </span>
                       <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                         <div 
-                          className={`h-full bg-gradient-to-r ${((product as any).stock || 0) <= 5 ? 'from-red-600 to-red-400' : 'from-gold-primary to-gold-light'} transition-all duration-1000`} 
-                          style={{ width: `${Math.min(((product as any).stock || 0) * 10, 100)}%` }}
+                          className={`h-full bg-gradient-to-r ${(product.countInStock ?? product.stock ?? 0) <= 5 ? 'from-red-600 to-red-400' : 'from-gold-primary to-gold-light'} transition-all duration-1000`} 
+                          style={{ width: `${Math.min((product.countInStock ?? product.stock ?? 0) * 10, 100)}%` }}
                         ></div>
                       </div>
                     </div>
                   </td>
                   <td className="px-10 py-6 whitespace-nowrap">
-                    {((product as any).stock || 0) > 5 ? (
+                    {(product.countInStock ?? product.stock ?? 0) > 5 ? (
                       <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-sm">
                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                         In Stock
@@ -89,7 +89,7 @@ const AdminInventory = () => {
                   </td>
                   <td className="px-10 py-6 whitespace-nowrap text-right">
                     <button
-                      onClick={() => navigate(`/admin/products/${(product as any)._id || product.id}/edit`)}
+                      onClick={() => navigate(`/admin/products/${product._id || product.id}/edit`)}
                       className="p-3 bg-white border border-gold-primary/10 rounded-2xl text-text-muted hover:text-gold-primary hover:border-gold-primary/30 transition-all shadow-sm hover:shadow-xl hover:-translate-y-0.5"
                     >
                       <Edit className="h-4 w-4" />

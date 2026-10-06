@@ -4,12 +4,13 @@ import {
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { API_ENDPOINTS } from '../../utils/api';
+import { categoryOptions } from '../../lib/catalog';
 import { useNavigate } from 'react-router-dom';
 
 
 
 const AdminAddProduct = () => {
-  const { dispatch } = useAppContext();
+  const { state, dispatch } = useAppContext();
   const navigate = useNavigate();
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -144,12 +145,7 @@ const AdminAddProduct = () => {
                 onChange={() => {}}
               >
                 <option value="">Select category</option>
-                <option value="Short Kurtas">Short Kurtas</option>
-                <option value="Suits">Suits</option>
-                <option value="Half Sleeves Shirts">Half Sleeves Shirts</option>
-                <option value="Three Piece Half Sleeves Shirts">Three Piece Half Sleeves Shirts</option>
-                <option value="Sarees">Sarees</option>
-                <option value="Lehengas">Lehengas</option>
+                {categoryOptions(state.products).map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>

@@ -3,9 +3,10 @@ import {
   Users, Search, Mail, Phone, Calendar
 } from 'lucide-react';
 import { API_ENDPOINTS } from '../../utils/api';
+import type { AdminUser } from '../../lib/adminTypes';
 
 const AdminCustomers = () => {
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<AdminUser[]>([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -96,7 +97,7 @@ const AdminCustomers = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <Calendar className="w-3 h-3 text-gray-400" />
-                      {new Date(customer.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                      {customer.createdAt && new Date(customer.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </div>
                   </td>
                   <td className="px-6 py-4">

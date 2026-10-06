@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { 
   Image as ImageIcon, Plus, Trash2, ArrowUp, ArrowDown
 } from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, type Banner } from '../../context/AppContext';
 import { API_ENDPOINTS } from '../../utils/api';
 
 const AdminBanners = () => {
@@ -34,7 +34,7 @@ const AdminBanners = () => {
     try {
       const res = await fetch(`${API_ENDPOINTS.BANNERS}/${id}`, { method: 'DELETE', credentials: 'include' });
       if (res.ok) {
-        dispatch({ type: 'SET_BANNERS', payload: state.banners.filter((b: any) => b._id !== id && b.id !== id) });
+        dispatch({ type: 'SET_BANNERS', payload: state.banners.filter((b) => b._id !== id && b.id !== id) });
       }
     } catch (e) {
       console.error('Failed to delete banner:', e);
@@ -83,7 +83,7 @@ const AdminBanners = () => {
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Banner Type</label>
               <select
                 value={type}
-                onChange={(e) => setType(e.target.value as any)}
+                onChange={(e) => setType(e.target.value as NonNullable<Banner['type']>)}
                 className="w-full p-2.5 bg-gray-50 border border-transparent rounded-xl text-sm focus:bg-white focus:border-yellow-600/20 outline-none transition-all"
               >
                 <option value="info">Information (Blue)</option>
@@ -105,7 +105,7 @@ const AdminBanners = () => {
         <div className="md:col-span-2 space-y-4">
           <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest px-2">Active Banners</h3>
           <div className="space-y-3">
-            {state.banners.map((b: any, i: number) => (
+            {state.banners.map((b, i: number) => (
               <div key={b._id || b.id || i} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between group">
                 <div className="flex items-center gap-4">
                   <div className={`w-2 h-10 rounded-full ${

@@ -1,40 +1,23 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Grid, ShoppingBag, User } from 'lucide-react';
-import { useAppContext } from '../context/AppContext';
-import './MobileBottomNav.css';
+import { Home, LayoutGrid, ShoppingBag, User } from 'lucide-react';
+import { cartCount, useAppContext } from '../context/AppContext';
 
 const MobileBottomNav = () => {
-  const location = useLocation();
-  const { state } = useAppContext();
-  const cartItemCount = state.cart.reduce((total: number, item: any) => total + item.quantity, 0);
-
-  const navItems = [
-    { path: '/', label: 'Home', icon: Home },
-    { path: '/shop', label: 'Category', icon: Grid },
-    { path: '/cart', label: 'Cart', icon: ShoppingBag, badge: cartItemCount },
-    { path: '/profile', label: 'Account', icon: User },
-  ];
+  const { pathname } = useLocation();
+  const { state, dispatch } = useAppContext();
+  const count = cartCount(state.cart);
+  const accountPath = state.user ? '/profile' : '/login';
 
   return (
-    <div className="mobile-bottom-nav">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = location.pathname === item.path || 
-                         (item.path === '/shop' && location.pathname.startsWith('/shop'));
-        
-        return (
-          <Link to={item.path} key={item.label} className={`nav-item ${isActive ? 'active' : ''}`}>
-            <div className="icon-wrapper">
-              <Icon className="nav-icon" />
-              {item.badge !== undefined && item.badge > 0 && (
-                <span className="nav-badge">{item.badge}</span>
-              )}
-            </div>
-            <span className="nav-label">{item.label}</span>
-          </Link>
-        );
-      })}
-    </div>
+    <nav className="rc-bottom-nav" aria-label="Quick navigation">
+      <Link to="/" className={pathname === '/' ? 'is-active' : ''}><Home size={20} strokeWidth={1.5} />Home</Link>
+      <Link to="/shop" className={pathname.startsWith('/shop') ? 'is-active' : ''}><LayoutGrid size={20} strokeWidth={1.5} />Shop</Link>
+      <button type="button" onClick={() => dispatch({ type: 'TOGGLE_CART', payload: true })} className={state.isCartOpen ? 'is-active' : ''} aria-label={`Bag, ${count} items`}>
+        <ShoppingBag size={20} strokeWidth={1.5} />Bag
+        {count > 0 && <span className="rc-badge-count">{count}</span>}
+      </button>
+      <Link to={accountPath} className={['/profile', '/login', '/register'].includes(pathname) ? 'is-active' : ''}><User size={20} strokeWidth={1.5} />Account</Link>
+    </nav>
   );
 };
 

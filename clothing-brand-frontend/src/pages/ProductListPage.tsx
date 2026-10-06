@@ -1,135 +1,174 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { API_ENDPOINTS } from '../utils/api';
-import { getImageUrl } from '../utils/mediaHelper';
-import './ProductStyles.css';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { PackageSearch, Search, X } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
+import ProductCard, { ProductCardSkeleton } from '../components/ProductCard';
+import Seo from '../components/Seo';
+import { categoriesOf, isOnSale, isSoldOut, matchesQuery, SORT_OPTIONS, sortProducts, type SortKey } from '../lib/catalog';
+import { productId } from '../lib/format';
+
+const PAGE_SIZE = 24;
 
 const ProductListPage = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const keyword = queryParams.get('keyword') || '';
-  const category = queryParams.get('category') || '';
+  const { state } = useAppContext();
+  const [params, setParams] = useSearchParams();
 
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const category = params.get('category') || '';
+  const query = params.get('q') || params.get('keyword') || '';
+  const legacyTag = (params.get('tag') || '').toLowerCase();
+  const saleOnly = params.get('sale') === '1' || legacyTag.includes('sale');
+  const inStockOnly = params.get('instock') === '1';
+  const sort = (SORT_OPTIONS.some((o) => o.value === params.get('sort')) ? params.get('sort') : 'featured') as SortKey;
 
+  // Local search box text; re-synced whenever the URL query changes elsewhere.
+  const [draft, setDraft] = useState(query);
+  const [syncedQuery, setSyncedQuery] = useState(query);
+  if (syncedQuery !== query) {
+    setSyncedQuery(query);
+    setDraft(query);
+  }
+
+  // "Load more" count resets whenever the filters change.
+  const filterKey = [category, query, saleOnly, sort, inStockOnly].join('|');
+  const [paging, setPaging] = useState({ key: filterKey, count: PAGE_SIZE });
+  const visibleCount = paging.key === filterKey ? paging.count : PAGE_SIZE;
+  const showMore = () => setPaging({ key: filterKey, count: visibleCount + PAGE_SIZE });
+
+  const update = useCallback((changes: Record<string, string | null>) => {
+    setParams((current) => {
+      const next = new URLSearchParams(current);
+      Object.entries(changes).forEach(([k, v]) => (v ? next.set(k, v) : next.delete(k)));
+      next.delete('tag');
+      return next;
+    }, { replace: true });
+  }, [setParams]);
+
+  // Debounce typing into the URL so results update as you type.
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        let url = API_ENDPOINTS.PRODUCTS;
-        if (category) {
-          url += `?category=${encodeURIComponent(category)}`;
-        } else if (keyword) {
-          url += `?keyword=${encodeURIComponent(keyword)}`;
-        }
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setProducts(data);
-        setLoading(false);
-      } catch (err: any) {
-        console.error('Fetch error:', err);
-        setError(err.message || 'Failed to load products. Please try again.');
-        setLoading(false);
-      }
-    };
+    if (draft === query) return;
+    const t = window.setTimeout(() => update({ q: draft.trim() || null, keyword: null }), 250);
+    return () => window.clearTimeout(t);
+  }, [draft, query, update]);
 
-    fetchProducts();
-  }, [keyword, category]);
+  const categories = useMemo(() => categoriesOf(state.products), [state.products]);
+
+  const results = useMemo(() => {
+    const filtered = state.products.filter((p) =>
+      (!category || p.category === category) &&
+      (!saleOnly || isOnSale(p)) &&
+      (!inStockOnly || !isSoldOut(p)) &&
+      matchesQuery(p, query)
+    );
+    return sortProducts(filtered, sort);
+  }, [state.products, category, saleOnly, inStockOnly, query, sort]);
+
+  const loading = state.productsStatus === 'loading' || state.productsStatus === 'idle';
+  const title = category || (saleOnly ? 'Sale' : query ? `Results for “${query}”` : sort === 'newest' ? 'New Arrivals' : 'Shop All');
+  const hasFilters = Boolean(category || query || saleOnly || inStockOnly);
 
   return (
-    <div className="shop-page" style={{ backgroundColor: 'transparent', minHeight: '100vh', paddingBottom: '100px' }}>
-      {/* Category Header */}
-      <section style={{ backgroundColor: '#295454', color: '#fff', padding: '100px 20px', textAlign: 'center', marginBottom: '60px' }}>
-         <div className="container">
-            <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>CURATED SELECTION</span>
-            <h1 className="font-serif" style={{ fontSize: '3.5rem', marginBottom: '20px' }}>
-               {category ? category : (keyword ? `Search: "${keyword}"` : 'Shop The Collection')}
-            </h1>
-            <p style={{ fontSize: '1.1rem', opacity: 0.8, maxWidth: '600px', margin: '0 auto' }}>
-               Experience the finest Jaipur craftsmanship, meticulously curated for the modern connoisseur.
-            </p>
-         </div>
-      </section>
+    <>
+      <Seo
+        title={category ? `${category} for Men` : saleOnly ? 'Sale' : 'Shop Men’s Kurtas & Shirts'}
+        description={`Browse ${category ? category.toLowerCase() : 'men’s kurtas, shirts and co-ord sets'} from Rang and Craft, crafted in Jaipur. Free shipping on prepaid orders.`}
+        path={category ? `/shop?category=${encodeURIComponent(category)}` : '/shop'}
+      />
 
-      <div className="container">
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '100px 0' }}>
-             <div className="loader-spinner" style={{ border: '3px solid #f3f3f3', borderTop: '3px solid #295454', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
-             <p style={{ marginTop: '20px', color: '#666', fontFamily: 'serif' }}>Curating your collection...</p>
-          </div>
-        ) : error ? (
-          <div style={{ textAlign: 'center', padding: '100px 20px', backgroundColor: '#FFF5F5', borderRadius: '24px', border: '1px solid #FED7D7' }}>
-            <p style={{ color: '#C53030', fontWeight: '600' }}>{error}</p>
-          </div>
-        ) : products.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '100px 0' }}>
-             <h2 className="font-serif" style={{ fontSize: '2rem', color: '#295454', marginBottom: '20px' }}>No treasures found.</h2>
-             <p style={{ color: '#666', marginBottom: '30px' }}>Try a different search term or explore our full collection.</p>
-             <Link to="/shop" style={{ padding: '15px 30px', backgroundColor: '#295454', color: '#fff', textDecoration: 'none', borderRadius: '12px', fontWeight: '800', letterSpacing: '1px' }}>VIEW ALL PRODUCTS</Link>
-          </div>
-        ) : (
-          <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '40px' }}>
-            {products.map((product, idx) => {
-              const discount = product.originalPrice && product.price && product.originalPrice > product.price 
-                ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) 
-                : 0;
+      <header className="rc-page-head">
+        <div className="rc-container">
+          <ol className="rc-crumbs" aria-label="Breadcrumb">
+            <li><Link to="/">Home</Link></li>
+            <li>{category ? <Link to="/shop">Shop</Link> : 'Shop'}</li>
+            {category && <li aria-current="page">{category}</li>}
+          </ol>
+          <h1 className="rc-h1">{title}</h1>
+          <p className="rc-lead">
+            {saleOnly
+              ? 'Our best prices on favourite prints — while stocks last.'
+              : 'Breathable kurtas, shirts and sets, crafted in Jaipur for every day and every occasion.'}
+          </p>
+        </div>
+      </header>
 
-              return (
-                <div key={product._id} className={`luxury-product-card reveal-on-scroll delay-${(idx % 4) * 100}`}>
-                  <Link to={`/product/${product._id}`} style={{ textDecoration: 'none' }}>
-                    <div className="luxury-img-wrapper">
-                      <img src={getImageUrl(product.image, 600)} alt={product.name} className="primary-img" loading="lazy" />
-                      {product.images && product.images.length > 1 && (
-                        <img src={getImageUrl(product.images[1], 600)} alt={`${product.name} alternate`} className="secondary-img" loading="lazy" />
-                      )}
-                      {product.isNew && (
-                        <span className="new-arrival-tag">NEW ARRIVAL</span>
-                      )}
-                      {discount > 0 && (
-                        <div className="discount-badge">{discount}% OFF</div>
-                      )}
-                    </div>
-                    <div className="luxury-card-details">
-                      <h3 className="font-serif luxury-name">{product.name}</h3>
-                      <div className="luxury-price-row">
-                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                           {discount > 0 && (
-                             <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9rem' }}>
-                               ₹{product.originalPrice.toLocaleString('en-IN')}
-                             </span>
-                           )}
-                           <span className="luxury-price">₹{product.price.toLocaleString('en-IN')}</span>
-                         </div>
-                         <span className="luxury-atelier">JAIPUR ATELIER</span>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
+      <div className="rc-toolbar">
+        <div className="rc-container">
+          <div className="rc-toolbar__row rc-toolbar__row--wrap">
+            <div className="rc-toolbar__chips" role="group" aria-label="Filter by category">
+              <button type="button" className={`rc-chip${!category && !saleOnly ? ' is-active' : ''}`} onClick={() => update({ category: null, sale: null })}>All</button>
+              <button type="button" className={`rc-chip${saleOnly ? ' is-active' : ''}`} onClick={() => update({ sale: saleOnly ? null : '1' })}>Sale</button>
+              {categories.map((c) => (
+                <button
+                  key={c.name}
+                  type="button"
+                  className={`rc-chip${category === c.name ? ' is-active' : ''}`}
+                  onClick={() => update({ category: category === c.name ? null : c.name })}
+                  aria-pressed={category === c.name}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+            <div className="rc-toolbar__controls">
+              <div className="rc-toolbar__search">
+                <Search size={16} aria-hidden />
+                <label htmlFor="shop-search" className="rc-sr-only">Search products</label>
+                <input id="shop-search" className="rc-input" type="search" placeholder="Search" value={draft} onChange={(e) => setDraft(e.target.value)} />
+              </div>
+              <label htmlFor="shop-sort" className="rc-sr-only">Sort by</label>
+              <select id="shop-sort" className="rc-select" value={sort} onChange={(e) => update({ sort: e.target.value === 'featured' ? null : e.target.value })}>
+                {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
-      <style>{`
-        .hover-zoom:hover {
-          transform: scale(1.08);
-        }
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @media (max-width: 768px) {
-          .shop-page h1 {
-            font-size: 2.2rem !important;
-          }
-        }
-      `}</style>
-    </div>
+      <section className="rc-container" style={{ paddingBottom: 'clamp(56px, 8vw, 100px)' }}>
+        {state.productsStatus === 'error' ? (
+          <div className="rc-empty">
+            <PackageSearch size={44} strokeWidth={1.2} />
+            <h2 className="rc-h3">We couldn’t load the collection</h2>
+            <p>Please check your connection and try again.</p>
+            <button type="button" className="rc-btn" onClick={() => window.location.reload()}>Try again</button>
+          </div>
+        ) : loading ? (
+          <div className="rc-grid">{Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}</div>
+        ) : results.length === 0 ? (
+          <div className="rc-empty">
+            <PackageSearch size={44} strokeWidth={1.2} />
+            <h2 className="rc-h3">Nothing matches just yet</h2>
+            <p>Try a different search or clear your filters to see the full collection.</p>
+            <button type="button" className="rc-btn" onClick={() => setParams({}, { replace: true })}>Clear filters</button>
+          </div>
+        ) : (
+          <>
+            <div className="rc-result-meta">
+              <span aria-live="polite">{results.length} {results.length === 1 ? 'piece' : 'pieces'}</span>
+              <span style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                <label className="rc-chip" style={{ minHeight: 32 }}>
+                  <input type="checkbox" checked={inStockOnly} onChange={(e) => update({ instock: e.target.checked ? '1' : null })} />
+                  In stock only
+                </label>
+                {hasFilters && (
+                  <button type="button" className="rc-chip" style={{ minHeight: 32 }} onClick={() => { setDraft(''); setParams({}, { replace: true }); }}>
+                    <X size={14} /> Clear all
+                  </button>
+                )}
+              </span>
+            </div>
+            <div className="rc-grid">
+              {results.slice(0, visibleCount).map((p, i) => <ProductCard key={productId(p)} product={p} priority={i < 4} />)}
+            </div>
+            {visibleCount < results.length && (
+              <div style={{ textAlign: 'center', marginTop: 48 }}>
+                <p className="rc-muted" style={{ fontSize: 14, marginBottom: 14 }}>Showing {visibleCount} of {results.length}</p>
+                <button type="button" className="rc-btn rc-btn--outline" onClick={showMore}>Load more</button>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+    </>
   );
 };
 

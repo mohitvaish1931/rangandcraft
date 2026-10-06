@@ -4,10 +4,12 @@ import {
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { API_ENDPOINTS } from '../../utils/api';
+import { orderUserName, type AdminOrder } from '../../lib/adminTypes';
+import { shortOrderId } from '../../lib/format';
 
 const AdminOrders = () => {
   const { dispatch } = useAppContext();
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -65,7 +67,7 @@ const AdminOrders = () => {
                   <td className="px-8 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
                       <span className="text-sm font-bold text-text-primary tabular-nums">
-                        {order.orderNumber || (order._id ? `GUL-${order._id.substring(0, 6).toUpperCase()}` : 'N/A')}
+                        {shortOrderId(order._id)}
                       </span>
                       <span className="text-[10px] text-text-muted font-medium">
                         {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN') : 'N/A'}
@@ -75,16 +77,16 @@ const AdminOrders = () => {
                   <td className="px-8 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
                       <span className="text-sm font-bold text-text-primary">
-                        {order.shippingAddress?.name || order.user?.name || 'Guest'}
+                        {order.shippingAddress?.name || orderUserName(order) || 'Guest'}
                       </span>
                       <span className="text-[10px] text-text-muted">{order.shippingAddress?.email}</span>
-                      <span className="text-[10px] text-text-muted">{order.shippingAddress?.phoneNumber || order.shippingAddress?.phone}</span>
+                      <span className="text-[10px] text-text-muted">{order.shippingAddress?.phoneNumber}</span>
                     </div>
                   </td>
                   <td className="px-8 py-4 whitespace-nowrap">
                     <div className="flex flex-col max-w-[200px]">
                       <span className="text-xs text-text-secondary truncate font-medium">
-                        {(order.orderItems || order.items)?.map((it: any) => it.name).join(', ')}
+                        {(order.orderItems || order.items)?.map((it) => it.name).join(', ')}
                       </span>
                       <span className="text-[10px] text-text-muted">{(order.orderItems || order.items)?.length || 0} item(s)</span>
                     </div>

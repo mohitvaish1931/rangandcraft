@@ -115,8 +115,8 @@ const PrivacyPolicy = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', borderTop: '1px solid #eee', paddingTop: '60px' }}>
             <TrustItem icon={<ShieldCheck size={28} />} title="PREMIUM QUALITY" sub="Finest fabrics & craftsmanship" />
             <TrustItem icon={<Lock size={28} />} title="SECURE PAYMENTS" sub="100% secure & trusted" />
-            <TrustItem icon={<RefreshCcw size={28} />} title="EASY RETURNS" sub="Hassle-free returns" />
-            <TrustItem icon={<Globe size={28} />} title="WORLDWIDE SHIPPING" sub="Delivered across the globe" />
+            <TrustItem icon={<RefreshCcw size={28} />} title="7-DAY EXCHANGE" sub="Hassle-free size swaps" />
+            <TrustItem icon={<Globe size={28} />} title="PAN-INDIA SHIPPING" sub="Free on prepaid orders" />
         </div>
       </div>
 

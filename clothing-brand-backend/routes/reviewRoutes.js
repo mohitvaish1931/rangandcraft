@@ -63,6 +63,25 @@ router.get('/product/:productId', asyncHandler(async (req, res) => {
   res.json({ reviews, totalReviews, averageRating, ratingDistribution });
 }));
 
+// Latest approved reviews across the store (homepage / reviews page)
+router.get('/latest', asyncHandler(async (req, res) => {
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 12, 1), 50);
+  const reviews = await Review.find({ status: 'approved' })
+    .select('-userEmail -updatedAt')
+    .populate('productId', 'name image')
+    .sort({ createdAt: -1 })
+    .limit(limit);
+  const [stats] = await Review.aggregate([
+    { $match: { status: 'approved' } },
+    { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } },
+  ]);
+  res.json({
+    reviews,
+    totalReviews: stats ? stats.count : 0,
+    averageRating: stats ? Math.round(stats.avg * 10) / 10 : 0,
+  });
+}));
+
 // Get all reviews for moderation (admin only)
 router.get('/admin/all', protect, admin, asyncHandler(async (req, res) => {
   const filter = ['pending', 'approved', 'rejected'].includes(req.query.status) ? { status: req.query.status } : {};

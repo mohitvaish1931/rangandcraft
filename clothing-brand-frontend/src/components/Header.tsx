@@ -1,135 +1,244 @@
-import { Menu, Search, ShoppingBag, User, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { useAppContext } from '../context/AppContext';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { ArrowRight, Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react';
+import { cartCount, useAppContext } from '../context/AppContext';
+import { categoriesOf, matchesQuery } from '../lib/catalog';
+import { formatPrice, productId } from '../lib/format';
+import { getImageUrl } from '../utils/mediaHelper';
+import { ANNOUNCEMENTS } from '../lib/brand';
 import logoImg from '../assets/logo.png';
-import './Header.css';
 
-const Header = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const NAV_LINKS = [
+  { name: 'Shop All', path: '/shop' },
+  { name: 'New In', path: '/shop?sort=newest' },
+  { name: 'Sale', path: '/shop?sale=1', sale: true },
+  { name: 'Our Story', path: '/about' },
+  { name: 'Reviews', path: '/reviews' },
+  { name: 'Track Order', path: '/track-order' },
+  { name: 'Contact', path: '/contact' },
+];
 
+const useLockBody = (locked: boolean) => {
+  useEffect(() => {
+    if (!locked) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [locked]);
+};
+
+const SearchPanel = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const { state } = useAppContext();
-  const { cart } = state;
+  const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const navLinks = [
-    { name: 'HOME', path: '/' },
-    { name: 'SHOP MEN', path: '/shop' },
-    { name: 'FLASH SALE', path: '/shop?tag=Flash%20Sale' },
-    { name: 'RETURN/EXCHANGE', path: '/refund-policy' },
-    { name: 'CRAFTS', path: '/shop?tag=Crafts' },
-    { name: 'ABOUT', path: '/about' },
-    { name: 'OUR GALLERY', path: '/gallery' },
-    { name: 'REVIEWS', path: '/reviews' },
-    { name: 'CONTACT', path: '/contact' },
-    { name: 'WHOLESALE/FRANCHISE', path: '/contact?subject=wholesale' },
-  ];
+  useEffect(() => {
+    if (open) window.setTimeout(() => inputRef.current?.focus(), 80);
+  }, [open]);
+
+  const hits = useMemo(
+    () => (query.trim().length < 2 ? [] : state.products.filter((p) => matchesQuery(p, query)).slice(0, 6)),
+    [query, state.products]
+  );
+  const popular = useMemo(() => categoriesOf(state.products).slice(0, 6), [state.products]);
+
+  const close = () => { setQuery(''); onClose(); };
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    navigate(`/shop?q=${encodeURIComponent(query.trim())}`);
+    close();
+  };
 
   return (
     <>
-      {/* Top Marquee */}
-      <div className="mobile-promo-bar" style={{ backgroundColor: '#295454', color: '#fff', padding: '10px 0', fontSize: '11px', letterSpacing: '1px', fontWeight: 500, overflow: 'hidden', whiteSpace: 'nowrap' }}>
-        <div style={{ display: 'inline-block', animation: 'marquee 30s linear infinite' }}>
-          <span style={{ marginRight: '80px' }}>ON PREPAID ORDERS</span>
-          <span style={{ marginRight: '80px' }}>ANY 2 SHORT KURTAS @ FLAT ₹1499✨</span>
-          <span style={{ marginRight: '80px' }}>ANY 2 HALF SLEEVES @ FLAT ₹1499✨</span>
-          <span style={{ marginRight: '80px' }}>1 LAKH+ HAPPY CUSTOMERS ❤️</span>
-          <span style={{ marginRight: '80px' }}>EXTRA 10% OFF ON PREPAID ORDERS</span>
-          {/* Duplicate for seamless loop */}
-          <span style={{ marginRight: '80px' }}>ON PREPAID ORDERS</span>
-          <span style={{ marginRight: '80px' }}>ANY 2 SHORT KURTAS @ FLAT ₹1499✨</span>
-          <span style={{ marginRight: '80px' }}>ANY 2 HALF SLEEVES @ FLAT ₹1499✨</span>
+      <div className={`rc-overlay${open ? ' is-open' : ''}`} onClick={close} aria-hidden />
+      <div className={`rc-search${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Search products" aria-hidden={!open}>
+        <div className="rc-container">
+          <form className="rc-search__form" onSubmit={submit} role="search">
+            <Search size={24} strokeWidth={1.4} aria-hidden />
+            <label htmlFor="rc-search-input" className="rc-sr-only">Search</label>
+            <input
+              id="rc-search-input"
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search kurtas, shirts, prints…"
+              autoComplete="off"
+              tabIndex={open ? 0 : -1}
+            />
+            <button type="button" className="rc-icon-btn" onClick={close} aria-label="Close search" tabIndex={open ? 0 : -1}>
+              <X size={22} />
+            </button>
+          </form>
+
+          {query.trim().length >= 2 ? (
+            hits.length > 0 ? (
+              <>
+                <div className="rc-search__results">
+                  {hits.map((p) => (
+                    <Link key={productId(p)} to={`/product/${productId(p)}`} className="rc-search__hit" onClick={close}>
+                      <img src={getImageUrl(p.image, 120)} alt="" loading="lazy" />
+                      <span>
+                        <span style={{ display: 'block', fontSize: 15 }}>{p.name}</span>
+                        <span className="rc-muted" style={{ fontSize: 14 }}>{formatPrice(p.price)}</span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                <button type="submit" className="rc-link" style={{ marginTop: 20 }} onClick={submit}>
+                  See all results for “{query.trim()}” <ArrowRight size={14} />
+                </button>
+              </>
+            ) : (
+              <p className="rc-muted" style={{ marginTop: 20 }}>No pieces match “{query.trim()}”. Try “kurta” or a colour like “indigo”.</p>
+            )
+          ) : (
+            popular.length > 0 && (
+              <div style={{ marginTop: 22 }}>
+                <span className="rc-eyebrow">Popular</span>
+                <div className="rc-search__chips">
+                  {popular.map((c) => (
+                    <Link key={c.name} to={`/shop?category=${encodeURIComponent(c.name)}`} className="rc-chip" onClick={close} tabIndex={open ? 0 : -1}>
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
         </div>
       </div>
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
+    </>
+  );
+};
 
-      {/* Main Header */}
-      <header className="responsive-header" style={{ backgroundColor: '#fff', borderBottom: '1px solid #f0f0f0' }}>
-        <div className="responsive-header-inner" style={{ maxWidth: '1600px', margin: '0 auto', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          
-          <div className="responsive-header-row" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '20px' }}>
-            <div className="mobile-menu-trigger-wrap" style={{ flex: 1 }}>
-              <button
-                type="button"
-                className="mobile-menu-trigger"
-                aria-label="Open menu"
-                aria-expanded={isMobileMenuOpen}
-                onClick={() => setIsMobileMenuOpen(true)}
-              >
+const Header = () => {
+  const { state, dispatch } = useAppContext();
+  const location = useLocation();
+  const here = location.pathname + location.search;
+  // The menu is open only for the page it was opened on, so navigating closes it.
+  const [menuOpenAt, setMenuOpenAt] = useState<string | null>(null);
+  const menuOpen = menuOpenAt === here;
+  const setMenuOpen = (open: boolean) => setMenuOpenAt(open ? here : null);
+  const [scrolled, setScrolled] = useState(false);
+  const count = cartCount(state.cart);
+  const searchOpen = state.isSearchOpen;
+
+  useLockBody(menuOpen || searchOpen);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Close menus on navigation and with Escape.
+  useEffect(() => {
+    dispatch({ type: 'TOGGLE_SEARCH', payload: false });
+  }, [here, dispatch]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMenuOpenAt(null);
+        dispatch({ type: 'TOGGLE_SEARCH', payload: false });
+        dispatch({ type: 'TOGGLE_CART', payload: false });
+      }
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement))) {
+        e.preventDefault();
+        dispatch({ type: 'TOGGLE_SEARCH', payload: true });
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [dispatch]);
+
+  const isActive = (path: string) => {
+    const [p, q] = path.split('?');
+    if (q) return location.pathname === p && location.search.includes(q);
+    return location.pathname === p && (p !== '/shop' || !/sort=newest|sale=1/.test(location.search));
+  };
+
+  const loop = [...ANNOUNCEMENTS, ...ANNOUNCEMENTS];
+
+  return (
+    <>
+      <div className="rc-announce" aria-label="Store announcements">
+        <div className="rc-announce__track">
+          {loop.map((text, i) => <span key={i} aria-hidden={i >= ANNOUNCEMENTS.length}>{text}</span>)}
+        </div>
+      </div>
+
+      <header className={`rc-header${scrolled ? ' is-scrolled' : ''}`}>
+        <div className="rc-container">
+          <div className="rc-header__bar">
+            <div className="rc-header__left">
+              <button type="button" className="rc-icon-btn rc-header__menu-btn" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
                 <Menu size={22} strokeWidth={1.5} />
               </button>
-            </div>
-            
-            <div className="responsive-logo-wrap" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-              <Link to="/">
-                <img src={logoImg} alt="Rang and Craft Logo" style={{ height: '140px', objectFit: 'contain', transform: 'scale(1.2)' }} />
-              </Link>
+              <button type="button" className="rc-icon-btn" aria-label="Search" onClick={() => dispatch({ type: 'TOGGLE_SEARCH', payload: true })}>
+                <Search size={20} strokeWidth={1.5} />
+              </button>
             </div>
 
-            <div className="responsive-header-actions" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '20px' }}>
-              <div className="currency-selector" style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: '#555', cursor: 'pointer' }}>
-                <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="India" style={{width: '16px', marginRight: '5px'}}/>
-                Indian Rupee 
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginLeft: '2px'}}><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </div>
-              
-              <Link to="/profile" style={{ color: '#333' }}><User size={20} strokeWidth={1.5} /></Link>
-              <Link to="/shop" style={{ color: '#333' }}><Search size={20} strokeWidth={1.5} /></Link>
-              <Link to="/cart" style={{ color: '#333', position: 'relative' }}>
-                <ShoppingBag size={20} strokeWidth={1.5} />
-                {cart.length > 0 && <span style={{ position: 'absolute', top: '-8px', right: '-8px', backgroundColor: '#295454', color: 'white', fontSize: '10px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cart.length}</span>}
+            <Link to="/" className="rc-logo" aria-label="Rang and Craft — home">
+              <img src={logoImg} alt="" width={58} height={56} />
+              <span className="rc-logo__word">Rang &amp; Craft<small>Jaipur</small></span>
+            </Link>
+
+            <div className="rc-header__right">
+              <Link to={state.user ? (state.user.isAdmin ? '/admin' : '/profile') : '/login'} className="rc-icon-btn rc-header__hide-mobile" aria-label={state.user ? 'My account' : 'Sign in'}>
+                <User size={20} strokeWidth={1.5} />
               </Link>
+              <Link to="/wishlist" className="rc-icon-btn" aria-label={`Wishlist, ${state.wishlist.length} items`}>
+                <Heart size={20} strokeWidth={1.5} />
+                {state.wishlist.length > 0 && <span className="rc-badge-count">{state.wishlist.length}</span>}
+              </Link>
+              <button type="button" className="rc-icon-btn" aria-label={`Shopping bag, ${count} items`} onClick={() => dispatch({ type: 'TOGGLE_CART', payload: true })}>
+                <ShoppingBag size={20} strokeWidth={1.5} />
+                {count > 0 && <span className="rc-badge-count">{count}</span>}
+              </button>
             </div>
           </div>
-
-          <nav className="responsive-nav">
-            <ul style={{ display: 'flex', gap: '30px', listStyle: 'none', margin: 0, padding: 0 }}>
-              {navLinks.map((link, idx) => (
-                <li key={idx}>
-                  <Link to={link.path} style={{ textDecoration: 'none', color: '#555', fontSize: '12px', letterSpacing: '1px', fontWeight: 500 }}>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
         </div>
+        <nav className="rc-nav" aria-label="Main">
+          {NAV_LINKS.map((link) => (
+            <NavLink key={link.path} to={link.path} className={() => `${isActive(link.path) ? 'active' : ''}${link.sale ? ' is-sale' : ''}`}>
+              {link.name}
+            </NavLink>
+          ))}
+        </nav>
       </header>
 
-      <div
-        className={`mobile-nav-overlay${isMobileMenuOpen ? ' active' : ''}`}
-        aria-hidden={!isMobileMenuOpen}
-        onClick={() => setIsMobileMenuOpen(false)}
-      />
-      <aside className={`mobile-nav-menu${isMobileMenuOpen ? ' open' : ''}`} aria-label="Mobile navigation">
-        <div className="mobile-nav-header">
-          <span className="mini-logo-text">Rang &amp; Craft</span>
-          <button
-            type="button"
-            className="mobile-menu-close"
-            aria-label="Close menu"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            <X size={22} strokeWidth={1.5} />
+      <SearchPanel open={searchOpen} onClose={() => dispatch({ type: 'TOGGLE_SEARCH', payload: false })} />
+
+      <div className={`rc-overlay${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(false)} aria-hidden />
+      <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} aria-label="Menu" aria-hidden={!menuOpen}>
+        <div className="rc-drawer__head">
+          <img src={logoImg} alt="Rang and Craft" style={{ height: 40 }} />
+          <button type="button" className="rc-icon-btn" aria-label="Close menu" onClick={() => setMenuOpen(false)}>
+            <X size={22} />
           </button>
         </div>
-        <ul className="mobile-nav-list">
-          {navLinks.map((link) => (
-            <li key={link.path}>
-              <Link
-                to={link.path}
-                className="mobile-nav-link"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.name}
+        <div className="rc-drawer__body">
+          <nav className="rc-mobile-nav" aria-label="Mobile">
+            <Link to="/">Home</Link>
+            {NAV_LINKS.map((link) => (
+              <Link key={link.path} to={link.path} className={link.sale ? 'is-sale' : ''}>
+                {link.name} <ArrowRight size={16} strokeWidth={1.4} />
               </Link>
-            </li>
-          ))}
-        </ul>
+            ))}
+            <div className="rc-mobile-nav__secondary">
+              <Link to={state.user ? '/profile' : '/login'}>{state.user ? `My account (${state.user.name.split(' ')[0]})` : 'Sign in / Create account'}</Link>
+              <Link to="/wishlist">Wishlist</Link>
+              <Link to="/contact?subject=wholesale">Wholesale & franchise</Link>
+              <Link to="/faq">Help & FAQs</Link>
+            </div>
+          </nav>
+        </div>
       </aside>
     </>
   );

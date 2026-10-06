@@ -1,16 +1,26 @@
-import { useState, useEffect, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Edit, X, Plus, Trash2 } from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, type Product } from '../../context/AppContext';
 import { API_ENDPOINTS } from '../../utils/api';
+import { categoryOptions } from '../../lib/catalog';
 import { getImageUrl } from '../../utils/mediaHelper';
 
+
+type ProductForm = Product & {
+  images: string[];
+  sizes_raw: string;
+  colors_raw: string;
+  materials_raw: string;
+  specifications_raw: string;
+  careInstructions_raw: string;
+};
 const AdminEditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state, dispatch } = useAppContext();
   
-  const [localForm, setLocalForm] = useState<any>(null);
+  const [localForm, setLocalForm] = useState<ProductForm | null>(null);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [soldOut, setSoldOut] = useState(false);
@@ -18,9 +28,12 @@ const AdminEditProduct = () => {
   const [showOnHomepage, setShowOnHomepage] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const product = state.products.find(p => ((p as any)._id || p.id) === id);
-    if (product) {
+  // Fill the form once per product, without clobbering edits if the catalogue refreshes.
+  const product = state.products.find(p => (p._id || String(p.id)) === id);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
+  if (product && loadedId !== id) {
+    setLoadedId(id ?? null);
+    {
       setLocalForm({
         ...product,
         images: [...(product.images || [])],
@@ -34,12 +47,12 @@ const AdminEditProduct = () => {
       setIsBOGO(!!product.isBOGO);
       setShowOnHomepage(product.showOnHomepage !== false);
     }
-  }, [id, state.products]);
+  }
 
   if (!localForm) return <div className="p-10 text-center text-gray-400">Loading product...</div>;
 
   const handleDeleteImage = (idx: number) => {
-    const updated = localForm.images.filter((_: string, i: number) => i !== idx);
+    const updated = (localForm.images || []).filter((_: string, i: number) => i !== idx);
     setLocalForm({ ...localForm, images: updated });
   };
 
@@ -151,10 +164,7 @@ const AdminEditProduct = () => {
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Category</label>
               <select name="category" defaultValue={localForm.category} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-indigo-600/20 transition-all outline-none">
                 <option value="">Select category</option>
-                <option value="Short Kurtas">Short Kurtas</option>
-                <option value="Suits">Suits</option>
-                <option value="Half Sleeves Shirts">Half Sleeves Shirts</option>
-                <option value="Three Piece Half Sleeves Shirts">Three Piece Half Sleeves Shirts</option>
+                {categoryOptions(state.products, localForm.category).map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
@@ -175,7 +185,7 @@ const AdminEditProduct = () => {
             </div>
             <div className="space-y-2">
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Stock</label>
-              <input name="stock" type="number" defaultValue={localForm.stock || 0} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-indigo-600/20 transition-all outline-none" />
+              <input name="stock" type="number" defaultValue={localForm.countInStock ?? localForm.stock ?? 0} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-indigo-600/20 transition-all outline-none" />
             </div>
           </div>
 

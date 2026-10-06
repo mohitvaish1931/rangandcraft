@@ -8,6 +8,13 @@
   "scripts": {
     "start": "node clothing-brand-backend/server.js",
     "build": "node smart-build.js",
-    "install-all": "npm install"
+    "install-all": "npm install",
+    "dev:api": "npm run dev --workspace=clothing-brand-backend",
+    "dev:web": "npm run dev --workspace=clothing-brand-frontend",
+    "lint": "npm run lint --workspace=clothing-brand-frontend",
+    "test": "npm test --workspace=clothing-brand-backend"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

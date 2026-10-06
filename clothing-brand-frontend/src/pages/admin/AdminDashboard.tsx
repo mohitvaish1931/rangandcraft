@@ -6,10 +6,11 @@ import {
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { API_ENDPOINTS } from '../../utils/api';
+import { orderUserId, orderUserName, type AdminOrder } from '../../lib/adminTypes';
 
 const AdminDashboard = () => {
   const { state } = useAppContext();
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
 
   useEffect(() => {
     // We would fetch actual orders here, but for exact visual matching of the screenshot
@@ -34,7 +35,7 @@ const AdminDashboard = () => {
     return sum;
   }, 0);
 
-  const uniqueCustomers = new Set(orders.map(o => o.user?._id || o.user || o.shippingAddress?.email || o.shippingAddress?.name)).size;
+  const uniqueCustomers = new Set(orders.map(o => orderUserId(o) || o.shippingAddress?.email || o.shippingAddress?.name)).size;
 
   const getDayName = (dateStr: string) => new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short' });
 
@@ -52,7 +53,7 @@ const AdminDashboard = () => {
           weeklyRevenue[day as keyof typeof weeklyRevenue] += (order.totalPrice || order.totalAmount || 0);
         }
         
-        const customerId = order.user?._id || order.user || order.shippingAddress?.email || order.shippingAddress?.name;
+        const customerId = orderUserId(order) || order.shippingAddress?.email || order.shippingAddress?.name;
         if (customerId) {
           weeklyCustomers[day].add(customerId);
         }
@@ -141,7 +142,7 @@ const AdminDashboard = () => {
   ];
 
   const recentOrders = orders.slice(0, 5).map(order => {
-    const customerName = order.user?.name || order.shippingAddress?.fullName || order.shippingAddress?.name || 'Guest User';
+    const customerName = orderUserName(order) || order.shippingAddress?.fullName || order.shippingAddress?.name || 'Guest User';
     const initial = customerName.substring(0, 2).toUpperCase();
     
     const bgColors = ['bg-purple-100', 'bg-emerald-100', 'bg-blue-100', 'bg-orange-100', 'bg-gray-100'];
@@ -171,7 +172,7 @@ const AdminDashboard = () => {
   const productSales: Record<string, {name: string, price: number, image: string, count: number}> = {};
   orders.forEach(order => {
     const items = order.orderItems || order.items || [];
-    items.forEach((item: any) => {
+    items.forEach((item) => {
       const pid = item.product || item._id || item.name;
       if (productSales[pid]) {
         productSales[pid].count += (item.qty || item.quantity || 1);

@@ -111,7 +111,7 @@ const AboutUs = () => {
       {/* Values Section */}
       <section style={{ padding: '100px 20px', backgroundColor: '#F0F6F6' }}>
         <div className="container text-center" style={{ marginBottom: '60px', maxWidth: '1200px', margin: '0 auto 60px' }}>
-          <span className="small-gold-tag">THE GUL ETHOS</span>
+          <span className="small-gold-tag">THE RANG AND CRAFT ETHOS</span>
           <h2 className="font-serif" style={{ fontSize: '3rem', color: '#295454' }}>What We Stand For</h2>
         </div>
         
@@ -140,8 +140,8 @@ const AboutUs = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px' }}>
               <TrustItem icon={<ShieldCheck size={28} />} title="PREMIUM QUALITY" sub="Finest fabrics & craftsmanship" />
               <TrustItem icon={<Lock size={28} />} title="SECURE PAYMENTS" sub="100% secure & trusted" />
-              <TrustItem icon={<RefreshCcw size={28} />} title="EASY RETURNS" sub="Hassle-free returns" />
-              <TrustItem icon={<Globe size={28} />} title="WORLDWIDE SHIPPING" sub="Delivered across the globe" />
+              <TrustItem icon={<RefreshCcw size={28} />} title="7-DAY EXCHANGE" sub="Hassle-free size swaps" />
+              <TrustItem icon={<Globe size={28} />} title="PAN-INDIA SHIPPING" sub="Free on prepaid orders" />
           </div>
         </div>
       </section>

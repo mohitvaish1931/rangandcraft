@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { 
   Tag, Plus, Trash2, Power, PowerOff
 } from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, type Coupon } from '../../context/AppContext';
 import { API_ENDPOINTS } from '../../utils/api';
 
 const AdminPromotions = () => {
@@ -13,7 +13,7 @@ const AdminPromotions = () => {
   const [usageLimit, setUsageLimit] = useState<string>('');
 
   const generateCoupon = async () => {
-    const code = 'GUL' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const code = 'RC' + Math.random().toString(36).slice(2, 8).toUpperCase();
     const payload = { 
       code, 
       discountPercent: discount, 
@@ -42,7 +42,7 @@ const AdminPromotions = () => {
     }
   };
 
-  const toggleCoupon = async (coupon: any) => {
+  const toggleCoupon = async (coupon: Coupon) => {
     try {
       const res = await fetch(`${API_ENDPOINTS.COUPONS}/${coupon.code}`, { 
         method: 'PUT', 
@@ -107,7 +107,7 @@ const AdminPromotions = () => {
                 className="w-full p-2.5 bg-gray-50 border border-transparent rounded-xl text-sm focus:bg-white focus:border-purple-600/20 outline-none transition-all"
               >
                 <option value="">All Products</option>
-                {state.products.map(p => <option key={p.id} value={(p as any)._id || p.id}>{p.name}</option>)}
+                {state.products.map(p => <option key={p.id} value={p._id || p.id}>{p.name}</option>)}
               </select>
             </div>
 
@@ -146,8 +146,8 @@ const AdminPromotions = () => {
         <div className="lg:col-span-2 space-y-4">
           <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest px-2">Active Promotions</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {state.coupons.map((c: any) => (
-              <div key={c._id || c.code} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3 group hover:border-purple-100 transition-all">
+            {state.coupons.map((c) => (
+              <div key={c.code} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3 group hover:border-purple-100 transition-all">
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="px-2 py-1 bg-purple-50 text-purple-600 rounded text-[10px] font-black uppercase tracking-widest border border-purple-100">
@@ -169,7 +169,7 @@ const AdminPromotions = () => {
                   <p className="text-[10px] text-gray-500 flex justify-between">
                     <span>Applicable:</span>
                     <span className="font-bold text-gray-700 truncate max-w-[120px]">
-                      {c.productId ? state.products.find(p => ((p as any)._id || p.id) === c.productId)?.name : 'All Products'}
+                      {c.productId ? state.products.find(p => (p._id || p.id) === c.productId)?.name : 'All Products'}
                     </span>
                   </p>
                   <p className="text-[10px] text-gray-500 flex justify-between">

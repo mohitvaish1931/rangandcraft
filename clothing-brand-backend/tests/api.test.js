@@ -335,3 +335,30 @@ describe('reviews', () => {
     assert.equal(p.numReviews, 1);
   });
 });
+
+describe('contact and newsletter', () => {
+  test('contact inquiries are stored and visible only to admins', async () => {
+    const bad = await request(app).post('/api/contact').send({ name: 'A', email: 'nope', message: 'hello there' });
+    assert.equal(bad.status, 400);
+    const ok = await request(app).post('/api/contact').send({ name: 'Asha', email: 'asha@example.com', subject: 'wholesale', message: 'Need 200 pieces' });
+    assert.equal(ok.status, 201);
+    assert.equal((await request(app).get('/api/contact')).status, 401);
+    const inbox = await request(app).get('/api/contact').set('Authorization', `Bearer ${adminToken}`);
+    assert.equal(inbox.body.inquiries.length, 1);
+  });
+
+  test('newsletter subscription is idempotent', async () => {
+    for (let i = 0; i < 2; i++) {
+      const res = await request(app).post('/api/contact/newsletter').send({ email: 'Fan@Example.com' });
+      assert.equal(res.status, 201);
+    }
+    const inbox = await request(app).get('/api/contact').set('Authorization', `Bearer ${adminToken}`);
+    assert.equal(inbox.body.subscribers.length, 1);
+  });
+
+  test('latest reviews are public and hide emails', async () => {
+    const res = await request(app).get('/api/reviews/latest');
+    assert.equal(res.status, 200);
+    assert.ok(res.body.reviews.every((r) => r.userEmail === undefined));
+  });
+});

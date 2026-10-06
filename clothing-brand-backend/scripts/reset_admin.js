@@ -10,7 +10,11 @@ const resetAdmin = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB!');
 
-    const newPassword = process.env.ADMIN_PASSWORD || 'mohitl@1931';
+    const newPassword = process.env.ADMIN_PASSWORD;
+    if (!newPassword || newPassword.length < 8) {
+      console.error('Set ADMIN_PASSWORD (at least 8 characters) before running this script.');
+      process.exit(1);
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 

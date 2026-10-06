@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /profile
+Disallow: /order-success
+Disallow: /login
+Disallow: /register
 
 Sitemap: https://rangandcraft.store/api/sitemap.xml

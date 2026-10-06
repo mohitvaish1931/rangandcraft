@@ -8,11 +8,15 @@ interface SEOProps {
   type?: string;
   keywords?: string;
   author?: string;
-  structuredData?: Record<string, any>;
+  structuredData?: Record<string, unknown>;
 }
 
 export const useSEO = (props: SEOProps) => {
+  const { title, description, image, url, type, keywords, author } = props;
+  const structuredJson = props.structuredData ? JSON.stringify(props.structuredData) : '';
+
   useEffect(() => {
+    const props = { title, description, image, url, type, keywords, author, structuredData: structuredJson ? JSON.parse(structuredJson) : undefined };
     // Update title
     document.title = props.title;
     
@@ -104,5 +108,5 @@ export const useSEO = (props: SEOProps) => {
     
     // Scroll to top on component mount
     window.scrollTo(0, 0);
-  }, [props.title, props.description, props.image, props.url, props.type, props.keywords, props.author, JSON.stringify(props.structuredData)]);
+  }, [title, description, image, url, type, keywords, author, structuredJson]);
 };
