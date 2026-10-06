@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Heart, Minus, Plus, RefreshCcw, Ruler, ShieldCheck, Truck, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, RefreshCcw, Ruler, ShieldCheck, Truck, X } from 'lucide-react';
 import { MAX_LINE_QUANTITY, useAppContext, type Product } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import ProductReviews from '../components/ProductReviews';
@@ -13,6 +13,9 @@ import { isSoldOut } from '../lib/catalog';
 import { useToast } from '../lib/toast';
 import { whatsappLink } from '../lib/brand';
 import NotFound from './NotFound';
+import Lightbox from '../components/Lightbox';
+import { flyToBag } from '../lib/flyToBag';
+import { scrollToElement, useScrollLock } from '../lib/motion';
 
 const SIZE_CHART = [
   { size: 'S', chest: 36, waist: 32, hip: 38 },
@@ -24,7 +27,7 @@ const SIZE_CHART = [
   { size: '5XL', chest: 50, waist: 46, hip: 52 },
 ];
 
-const Gallery = ({ images, name }: { images: string[]; name: string }) => {
+const Gallery = ({ images, name, onOpen }: { images: string[]; name: string; onOpen: (index: number) => void }) => {
   const [index, setIndex] = useState(0);
   const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
   const touchX = useRef<number | null>(null);
@@ -46,7 +49,7 @@ const Gallery = ({ images, name }: { images: string[]; name: string }) => {
         <div
           className={`rc-gallery__main${zoom ? ' is-zoomed' : ''}`}
           onClick={(e) => {
-            if (window.matchMedia('(hover: none)').matches) return;
+            if (window.matchMedia('(hover: none)').matches) { onOpen(index); return; }
             const r = e.currentTarget.getBoundingClientRect();
             setZoom(zoom ? null : { x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 });
           }}
@@ -91,6 +94,7 @@ const Gallery = ({ images, name }: { images: string[]; name: string }) => {
 };
 
 const SizeGuide = ({ onClose }: { onClose: () => void }) => {
+  useScrollLock(true);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
@@ -98,7 +102,7 @@ const SizeGuide = ({ onClose }: { onClose: () => void }) => {
   }, [onClose]);
 
   return (
-    <div className="rc-modal" role="dialog" aria-modal="true" aria-labelledby="size-guide-title" onClick={onClose}>
+    <div className="rc-modal" role="dialog" aria-modal="true" aria-labelledby="size-guide-title" onClick={onClose} data-lenis-prevent>
       <div className="rc-modal__panel" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="rc-icon-btn rc-modal__close" onClick={onClose} aria-label="Close size guide"><X size={20} /></button>
         <span className="rc-eyebrow">Fit guide</span>
@@ -134,7 +138,10 @@ const ProductDetail = ({ id }: { id: string }) => {
   const [sizeError, setSizeError] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [stickyVisible, setStickyVisible] = useState(false);
+  const [lightbox, setLightbox] = useState<number | null>(null);
+  const [added, setAdded] = useState(false);
   const buyRef = useRef<HTMLDivElement>(null);
+  const firstImageRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     let alive = true;
@@ -213,15 +220,19 @@ const ProductDetail = ({ id }: { id: string }) => {
   const addToBag = (buyNow = false) => {
     if (needsSize && !size) {
       setSizeError(true);
-      document.getElementById('size-options')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollToElement(document.getElementById('size-options'));
       toast.error('Please select a size first.');
       return;
     }
-    dispatch({ type: 'ADD_TO_CART', payload: { product, quantity: qty, selectedSize: size, selectedColor: color } });
+    dispatch({ type: 'ADD_TO_CART', payload: { product, quantity: qty, selectedSize: size, selectedColor: color, openDrawer: false } });
     if (buyNow) {
-      dispatch({ type: 'TOGGLE_CART', payload: false });
       navigate('/checkout');
+      return;
     }
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 2000);
+    const from = window.matchMedia('(min-width: 901px)').matches ? firstImageRef.current : document.querySelector('.rc-gallery__main');
+    flyToBag(getImageUrl(product.image, 400), from).then(() => dispatch({ type: 'TOGGLE_CART', payload: true }));
   };
 
   const canonical = `https://rangandcraft.store/product/${id}`;
@@ -264,8 +275,19 @@ const ProductDetail = ({ id }: { id: string }) => {
           <li aria-current="page" style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{product.name}</li>
         </ol>
 
-        <div className="rc-pdp">
-          <Gallery images={images.length ? images : ['']} name={product.name} />
+        <div className="rc-pdp rc-pdp--stack">
+          <div>
+            <div className="rc-stack">
+              {images.map((img, i) => (
+                <button key={img + i} ref={i === 0 ? firstImageRef : undefined} type="button" onClick={() => setLightbox(i)} data-cursor="Zoom" aria-label={`View image ${i + 1} full screen`} data-reveal={i === 0 ? undefined : 'fade'}>
+                  <img src={getImageUrl(img, i === 0 ? 1400 : 900)} alt={i === 0 ? product.name : ''} loading={i < 2 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : 'auto'} onError={handleImageError} />
+                </button>
+              ))}
+            </div>
+            <div className="rc-pdp-mobile-gallery">
+              <Gallery images={images.length ? images : ['']} name={product.name} onOpen={setLightbox} />
+            </div>
+          </div>
 
           <div className="rc-pdp__info">
             <div>
@@ -338,7 +360,9 @@ const ProductDetail = ({ id }: { id: string }) => {
                       <span aria-live="polite">{qty}</span>
                       <button type="button" onClick={() => setQty((q) => Math.min(maxQty, q + 1))} disabled={qty >= maxQty} aria-label="Increase quantity"><Plus size={16} /></button>
                     </div>
-                    <button type="button" className="rc-btn rc-btn--lg" onClick={() => addToBag(false)}>Add to bag</button>
+                    <button type="button" className={`rc-btn rc-btn--lg${added ? ' is-added' : ''}`} onClick={() => addToBag(false)} data-magnetic="">
+                      {added ? <><Check size={18} className="rc-btn__check" /> Added</> : 'Add to bag'}
+                    </button>
                     <button
                       type="button"
                       className={`rc-icon-btn rc-card__wish${wished ? ' is-active' : ''}`}
@@ -431,6 +455,7 @@ const ProductDetail = ({ id }: { id: string }) => {
       )}
 
       {showGuide && <SizeGuide onClose={() => setShowGuide(false)} />}
+      {lightbox !== null && <Lightbox images={images} start={lightbox} alt={product.name} onClose={() => setLightbox(null)} />}
     </div>
   );
 };

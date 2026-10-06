@@ -67,6 +67,8 @@ const Footer = () => {
           </div>
         </div>
 
+        <div className="rc-footer__mega" aria-hidden data-reveal="up">Rang &amp; Craft</div>
+
         <div className="rc-footer__bottom">
           <span>© {new Date().getFullYear()} Rang and Craft, Jaipur. All rights reserved.</span>
           <nav aria-label="Legal">

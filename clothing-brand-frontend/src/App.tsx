@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -8,7 +8,10 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import MobileBottomNav from './components/MobileBottomNav';
-import ScrollToTop from './components/ScrollToTop';
+import MotionProvider from './components/MotionProvider';
+import Cursor from './components/Cursor';
+import Preloader from './components/Preloader';
+import BackToTop from './components/BackToTop';
 import ErrorBoundary from './components/ErrorBoundary';
 import ToastProvider from './components/ToastProvider';
 import WhatsAppIcon from './components/WhatsAppIcon';
@@ -67,27 +70,9 @@ const PageFallback = () => (
   </div>
 );
 
-const useScrollReveal = (key: string) => {
-  useEffect(() => {
-    if (!('IntersectionObserver' in window)) return;
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
-      }),
-      { rootMargin: '0px 0px -40px 0px', threshold: 0.05 }
-    );
-    const scan = () => document.querySelectorAll('.reveal-on-scroll:not(.revealed)').forEach((el) => io.observe(el));
-    scan();
-    const mo = new MutationObserver(scan);
-    mo.observe(document.body, { childList: true, subtree: true });
-    return () => { io.disconnect(); mo.disconnect(); };
-  }, [key]);
-};
-
 const MainLayout = () => {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
-  useScrollReveal(location.pathname);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -96,6 +81,7 @@ const MainLayout = () => {
       <main id="main" style={{ flex: 1, width: '100%' }}>
         <ErrorBoundary>
           <Suspense fallback={<PageFallback />}>
+            <div key={isAdmin ? 'admin' : location.pathname} className={isAdmin ? undefined : 'rc-page-enter'}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/shop" element={<ProductListPage />} />
@@ -140,6 +126,7 @@ const MainLayout = () => {
               <Route path="/accessibility" element={<Accessibility />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </div>
           </Suspense>
         </ErrorBoundary>
       </main>
@@ -150,7 +137,10 @@ const MainLayout = () => {
           <a href={whatsappLink('Hi Rang and Craft! I have a question.')} target="_blank" rel="noopener noreferrer" className="rc-whatsapp" aria-label="Chat with us on WhatsApp">
             <WhatsAppIcon />
           </a>
+          <BackToTop />
           <MobileBottomNav />
+          <Cursor />
+          <Preloader />
         </>
       )}
     </div>
@@ -163,7 +153,7 @@ function App() {
       <AppProvider>
         <ToastProvider>
           <Router>
-            <ScrollToTop />
+            <MotionProvider />
             <MainLayout />
             <SpeedInsights />
             <Analytics />

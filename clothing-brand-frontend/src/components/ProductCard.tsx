@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Check, Heart } from 'lucide-react';
 import { useAppContext, type Product } from '../context/AppContext';
 import { getImageUrl, handleImageError } from '../utils/mediaHelper';
 import { discountPercent, formatPrice, productId } from '../lib/format';
 import { isSoldOut } from '../lib/catalog';
 import { Stars } from './StarRating';
+import { flyToBag } from '../lib/flyToBag';
+import { useToast } from '../lib/toast';
 
 interface Props {
   product: Product;
@@ -13,6 +16,9 @@ interface Props {
 
 const ProductCard = ({ product, priority = false }: Props) => {
   const { state, dispatch } = useAppContext();
+  const toast = useToast();
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [added, setAdded] = useState(false);
   const id = productId(product);
   const href = `/product/${id}`;
   const off = discountPercent(product.price, product.originalPrice);
@@ -26,10 +32,19 @@ const ProductCard = ({ product, priority = false }: Props) => {
     dispatch(wished ? { type: 'REMOVE_FROM_WISHLIST', payload: id } : { type: 'ADD_TO_WISHLIST', payload: product });
   };
 
+  const quickAdd = (size = '') => {
+    dispatch({ type: 'ADD_TO_CART', payload: { product, quantity: 1, selectedSize: size, openDrawer: false } });
+    flyToBag(getImageUrl(product.image, 300), frameRef.current);
+    toast.success(`${product.name}${size ? ` (${size})` : ''} added to your bag`);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1800);
+  };
+  const sizes = product.sizes ?? [];
+
   return (
     <article className={`rc-card${soldOut ? ' is-soldout' : ''}`}>
-      <div className="rc-card__frame">
-        <Link to={href} className="rc-card__media" aria-label={product.name} tabIndex={-1}>
+      <div className="rc-card__frame" ref={frameRef}>
+        <Link to={href} className="rc-card__media" aria-label={product.name} tabIndex={-1} data-cursor="View">
           <img
             src={getImageUrl(product.image, 600)}
             alt={product.name}
@@ -53,8 +68,21 @@ const ProductCard = ({ product, priority = false }: Props) => {
           <Heart size={18} strokeWidth={1.6} />
         </button>
         {!soldOut && (
-          <div className="rc-card__quick">
-            <Link to={href} className="rc-btn rc-btn--light rc-btn--sm rc-btn--block">Choose size</Link>
+          <div className="rc-card__qa">
+            {added ? (
+              <div className="rc-card__qa-done" role="status"><Check size={16} /> Added to bag</div>
+            ) : sizes.length > 0 ? (
+              <>
+                <div className="rc-card__qa-label"><span>Quick add</span><span>Select size</span></div>
+                <div className="rc-card__qa-sizes">
+                  {sizes.map((s) => (
+                    <button key={s} type="button" onClick={() => quickAdd(s)} aria-label={`Add ${product.name}, size ${s}, to bag`}>{s}</button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <button type="button" className="rc-btn rc-btn--sm rc-btn--block" onClick={() => quickAdd()}>Add to bag</button>
+            )}
           </div>
         )}
       </div>

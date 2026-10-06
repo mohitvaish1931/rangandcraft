@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./styles/storefront.css";
+@import "./styles/motion.css";
 
 @theme {
   --color-primary-purple: var(--primary-purple);

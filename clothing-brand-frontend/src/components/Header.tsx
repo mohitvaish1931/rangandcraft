@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowRight, Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react';
+import { ArrowRight, ChevronDown, Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react';
 import { cartCount, useAppContext } from '../context/AppContext';
 import { categoriesOf, matchesQuery } from '../lib/catalog';
 import { formatPrice, productId } from '../lib/format';
 import { getImageUrl } from '../utils/mediaHelper';
-import { ANNOUNCEMENTS } from '../lib/brand';
+import { ANNOUNCEMENTS, FALLBACK_IMAGES } from '../lib/brand';
+import { useScrollLock } from '../lib/motion';
 import logoImg from '../assets/logo.png';
 
 const NAV_LINKS = [
-  { name: 'Shop All', path: '/shop' },
+  { name: 'Shop', path: '/shop', mega: true },
   { name: 'New In', path: '/shop?sort=newest' },
   { name: 'Sale', path: '/shop?sale=1', sale: true },
   { name: 'Our Story', path: '/about' },
@@ -18,13 +19,44 @@ const NAV_LINKS = [
   { name: 'Contact', path: '/contact' },
 ];
 
-const useLockBody = (locked: boolean) => {
-  useEffect(() => {
-    if (!locked) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [locked]);
+const MegaMenu = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+  const { state } = useAppContext();
+  const categories = useMemo(() => categoriesOf(state.products).slice(0, 7), [state.products]);
+  return (
+    <div className={`rc-mega${open ? ' is-open' : ''}`} aria-hidden={!open}>
+      <div className="rc-container rc-mega__grid">
+        <div>
+          <h5>Categories</h5>
+          <ul>
+            {categories.map((c) => (
+              <li key={c.name}>
+                <Link to={`/shop?category=${encodeURIComponent(c.name)}`} onClick={onClose} tabIndex={open ? 0 : -1}>
+                  {c.name} <small>{c.count}</small>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h5>Discover</h5>
+          <ul>
+            <li><Link to="/shop" onClick={onClose} tabIndex={open ? 0 : -1}>Shop all</Link></li>
+            <li><Link to="/shop?sort=newest" onClick={onClose} tabIndex={open ? 0 : -1}>New arrivals</Link></li>
+            <li><Link to="/shop?sale=1" onClick={onClose} tabIndex={open ? 0 : -1}>Sale</Link></li>
+            <li><Link to="/gallery" onClick={onClose} tabIndex={open ? 0 : -1}>Lookbook</Link></li>
+          </ul>
+        </div>
+        <Link to="/shop?category=Suits" className="rc-mega__tile" onClick={onClose} tabIndex={open ? 0 : -1}>
+          <img src={FALLBACK_IMAGES[3]} alt="" loading="lazy" />
+          <span>Festive edit</span>
+        </Link>
+        <Link to="/shop?sort=newest" className="rc-mega__tile" onClick={onClose} tabIndex={open ? 0 : -1}>
+          <img src={FALLBACK_IMAGES[0]} alt="" loading="lazy" />
+          <span>New this season</span>
+        </Link>
+      </div>
+    </div>
+  );
 };
 
 const SearchPanel = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
@@ -54,7 +86,7 @@ const SearchPanel = ({ open, onClose }: { open: boolean; onClose: () => void }) 
   return (
     <>
       <div className={`rc-overlay${open ? ' is-open' : ''}`} onClick={close} aria-hidden />
-      <div className={`rc-search${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Search products" aria-hidden={!open}>
+      <div className={`rc-search${open ? ' is-open' : ''}`} data-lenis-prevent role="dialog" aria-modal="true" aria-label="Search products" aria-hidden={!open}>
         <div className="rc-container">
           <form className="rc-search__form" onSubmit={submit} role="search">
             <Search size={24} strokeWidth={1.4} aria-hidden />
@@ -123,10 +155,16 @@ const Header = () => {
   const menuOpen = menuOpenAt === here;
   const setMenuOpen = (open: boolean) => setMenuOpenAt(open ? here : null);
   const [scrolled, setScrolled] = useState(false);
+  const [megaAt, setMegaAt] = useState<string | null>(null);
+  const megaOpen = megaAt === here;
+  const megaTimer = useRef<number | undefined>(undefined);
+  const openMega = () => { window.clearTimeout(megaTimer.current); setMegaAt(here); };
+  const closeMega = () => { megaTimer.current = window.setTimeout(() => setMegaAt(null), 120); };
   const count = cartCount(state.cart);
   const searchOpen = state.isSearchOpen;
+  const overlay = location.pathname === '/' && !scrolled && !megaOpen && !searchOpen;
 
-  useLockBody(menuOpen || searchOpen);
+  useScrollLock(menuOpen || searchOpen);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -144,6 +182,7 @@ const Header = () => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setMenuOpenAt(null);
+        setMegaAt(null);
         dispatch({ type: 'TOGGLE_SEARCH', payload: false });
         dispatch({ type: 'TOGGLE_CART', payload: false });
       }
@@ -172,7 +211,7 @@ const Header = () => {
         </div>
       </div>
 
-      <header className={`rc-header${scrolled ? ' is-scrolled' : ''}`}>
+      <header className={`rc-header${scrolled ? ' is-scrolled' : ''}${overlay ? ' is-overlay' : ''}`} onMouseLeave={closeMega}>
         <div className="rc-container">
           <div className="rc-header__bar">
             <div className="rc-header__left">
@@ -197,7 +236,7 @@ const Header = () => {
                 <Heart size={20} strokeWidth={1.5} />
                 {state.wishlist.length > 0 && <span className="rc-badge-count">{state.wishlist.length}</span>}
               </Link>
-              <button type="button" className="rc-icon-btn" aria-label={`Shopping bag, ${count} items`} onClick={() => dispatch({ type: 'TOGGLE_CART', payload: true })}>
+              <button type="button" className="rc-icon-btn" data-bag-target aria-label={`Shopping bag, ${count} items`} onClick={() => dispatch({ type: 'TOGGLE_CART', payload: true })}>
                 <ShoppingBag size={20} strokeWidth={1.5} />
                 {count > 0 && <span className="rc-badge-count">{count}</span>}
               </button>
@@ -205,18 +244,28 @@ const Header = () => {
           </div>
         </div>
         <nav className="rc-nav" aria-label="Main">
-          {NAV_LINKS.map((link) => (
-            <NavLink key={link.path} to={link.path} className={() => `${isActive(link.path) ? 'active' : ''}${link.sale ? ' is-sale' : ''}`}>
+          {NAV_LINKS.map((link) => link.mega ? (
+            <div key={link.path} className="rc-nav__item" onMouseEnter={openMega} onFocus={openMega}>
+              <NavLink to={link.path} className={() => (isActive(link.path) ? 'active' : '')}>{link.name}</NavLink>
+              <button type="button" className="rc-nav__trigger" aria-label="Show shop menu" aria-expanded={megaOpen} onClick={() => (megaOpen ? setMegaAt(null) : openMega())} style={{ marginLeft: 4 }}>
+                <ChevronDown size={14} />
+              </button>
+            </div>
+          ) : (
+            <NavLink key={link.path} to={link.path} className={() => `${isActive(link.path) ? 'active' : ''}${link.sale ? ' is-sale' : ''}`} onMouseEnter={closeMega}>
               {link.name}
             </NavLink>
           ))}
         </nav>
+        <div onMouseEnter={openMega}>
+          <MegaMenu open={megaOpen} onClose={() => setMegaAt(null)} />
+        </div>
       </header>
 
       <SearchPanel open={searchOpen} onClose={() => dispatch({ type: 'TOGGLE_SEARCH', payload: false })} />
 
       <div className={`rc-overlay${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(false)} aria-hidden />
-      <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} aria-label="Menu" aria-hidden={!menuOpen}>
+      <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} data-lenis-prevent aria-label="Menu" aria-hidden={!menuOpen}>
         <div className="rc-drawer__head">
           <img src={logoImg} alt="Rang and Craft" style={{ height: 40 }} />
           <button type="button" className="rc-icon-btn" aria-label="Close menu" onClick={() => setMenuOpen(false)}>

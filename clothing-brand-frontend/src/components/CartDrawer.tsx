@@ -4,6 +4,7 @@ import { ShoppingBag, X } from 'lucide-react';
 import { cartCount, cartSubtotal, useAppContext } from '../context/AppContext';
 import { formatPrice } from '../lib/format';
 import CartLine from './CartLine';
+import { useScrollLock } from '../lib/motion';
 
 const CartDrawer = () => {
   const { state, dispatch } = useAppContext();
@@ -13,12 +14,9 @@ const CartDrawer = () => {
   const closeRef = useRef<HTMLButtonElement>(null);
   const close = () => dispatch({ type: 'TOGGLE_CART', payload: false });
 
+  useScrollLock(open);
   useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.setTimeout(() => closeRef.current?.focus(), 50);
-    return () => { document.body.style.overflow = prev; };
+    if (open) window.setTimeout(() => closeRef.current?.focus(), 50);
   }, [open]);
 
   useEffect(() => { dispatch({ type: 'TOGGLE_CART', payload: false }); }, [location.pathname, dispatch]);
@@ -30,7 +28,7 @@ const CartDrawer = () => {
   return (
     <>
       <div className={`rc-overlay${open ? ' is-open' : ''}`} onClick={close} aria-hidden />
-      <aside className={`rc-drawer rc-drawer--right${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden={!open}>
+      <aside className={`rc-drawer rc-drawer--right${open ? ' is-open' : ''}`} data-lenis-prevent role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden={!open}>
         <div className="rc-drawer__head">
           <span className="rc-drawer__title">Your bag {count > 0 && <span className="rc-muted" style={{ fontSize: '1rem' }}>({count})</span>}</span>
           <button ref={closeRef} type="button" className="rc-icon-btn" onClick={close} aria-label="Close bag">

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { Check, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
+import Confetti from '../components/Confetti';
 import { useAppContext } from '../context/AppContext';
 import Seo from '../components/Seo';
+import SplitText from '../components/SplitText';
 import { API_ENDPOINTS } from '../utils/api';
 import { formatPrice, shortOrderId } from '../lib/format';
 import { getImageUrl } from '../utils/mediaHelper';
@@ -40,9 +42,14 @@ const OrderSuccess = () => {
     <div className="rc-container rc-section">
       <Seo title="Order confirmed" noindex />
       <div className="rc-success">
-        <div className="rc-success__icon"><Check size={38} strokeWidth={2} /></div>
+        <Confetti />
+        <div className="rc-success__icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rc-check-draw" aria-hidden>
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          </svg>
+        </div>
         <span className="rc-eyebrow">Thank you{order?.shippingAddress?.name ? `, ${order.shippingAddress.name.split(' ')[0]}` : ''}</span>
-        <h1 className="rc-h1" style={{ margin: '12px 0' }}>Your order is confirmed</h1>
+        <SplitText as="h1" className="rc-h1" text="Your order is *confirmed*" />
         <p className="rc-lead" style={{ marginInline: 'auto' }}>
           Order <strong>{number}</strong> has been placed and will be dispatched within 2–3 working days.
           Keep your order number handy — you can use it with your email{order?.shippingAddress?.email ? <> (<strong>{order.shippingAddress.email}</strong>)</> : ''} to track your order.

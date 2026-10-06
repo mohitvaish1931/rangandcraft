@@ -135,7 +135,7 @@ type AppAction =
   | { type: 'ADD_COUPON'; payload: Coupon }
   | { type: 'UPDATE_COUPON'; payload: Coupon }
   | { type: 'REMOVE_COUPON'; payload: string }
-  | { type: 'ADD_TO_CART'; payload: { product: Product; quantity: number; selectedSize?: string; selectedColor?: string } }
+  | { type: 'ADD_TO_CART'; payload: { product: Product; quantity: number; selectedSize?: string; selectedColor?: string; openDrawer?: boolean } }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_CART_QUANTITY'; payload: { key: string; quantity: number } }
   | { type: 'CLEAR_CART' }
@@ -241,7 +241,7 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, coupons: state.coupons.filter((c) => c.code !== action.payload) };
 
     case 'ADD_TO_CART': {
-      const { product, quantity, selectedSize = '', selectedColor = '' } = action.payload;
+      const { product, quantity, selectedSize = '', selectedColor = '', openDrawer = true } = action.payload;
       const pid = idOf(product);
       const key = cartKey(pid, selectedSize, selectedColor);
       const maxQuantity = Math.max(1, Math.min(MAX_LINE_QUANTITY, product.countInStock ?? MAX_LINE_QUANTITY));
@@ -266,7 +266,7 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
               maxQuantity,
             },
           ];
-      return { ...state, cart, isCartOpen: true };
+      return { ...state, cart, isCartOpen: openDrawer ? true : state.isCartOpen };
     }
     case 'REMOVE_FROM_CART':
       return { ...state, cart: state.cart.filter((item) => item.key !== action.payload) };
