@@ -123,7 +123,7 @@ const TrackOrder = () => {
                     value={orderNumber}
                     onChange={(e) => setOrderNumber(e.target.value)}
                     style={{ width: '100%', padding: '15px 20px 15px 55px', borderRadius: '12px', border: '1px solid #e0e0e0', outline: 'none' }}
-                    placeholder="e.g. #A1B2C3D4 (from your confirmation)"
+                    placeholder="e.g. #A1B2C3D4"
                     required
                   />
                 </div>
