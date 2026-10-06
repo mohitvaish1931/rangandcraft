@@ -12,6 +12,9 @@ const orderSchema = mongoose.Schema(
         qty: { type: Number, required: true },
         image: { type: String, required: true },
         price: { type: Number, required: true },
+        category: { type: String },
+        selectedSize: { type: String, default: '' },
+        selectedColor: { type: String, default: '' },
         product: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
@@ -37,6 +40,11 @@ const orderSchema = mongoose.Schema(
       status: { type: String },
       update_time: { type: String },
       email_address: { type: String },
+    },
+    itemsPrice: {
+      type: Number,
+      required: true,
+      default: 0.0,
     },
     taxPrice: {
       type: Number,
@@ -110,11 +118,25 @@ const orderSchema = mongoose.Schema(
     labelPdf: {
       type: String,
     },
+    shiprocketShipmentId: {
+      type: String,
+    },
+    trackingStatus: {
+      type: String,
+    },
+    stockAdjusted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ 'shippingAddress.email': 1 });
+orderSchema.index({ razorpayOrderId: 1 });
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;

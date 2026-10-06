@@ -1,275 +1,193 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Review from '../models/Review.js';
 import Product from '../models/Product.js';
+import Order from '../models/Order.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
+import { writeLimiter } from '../middleware/rateLimit.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
-// Get all reviews for a product
-router.get('/product/:productId', async (req, res) => {
-  try {
-    const { sort = 'newest', rating } = req.query;
-    let query = { productId: req.params.productId, status: 'approved' };
+const str = (value, max) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
 
-    if (rating) {
-      query.rating = parseInt(rating);
-    }
+// Recomputes the cached rating fields on the product from approved reviews.
+const refreshProductRating = async (productId) => {
+  const [stats] = await Review.aggregate([
+    { $match: { productId: new mongoose.Types.ObjectId(String(productId)), status: 'approved' } },
+    { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } },
+  ]);
+  const rating = stats ? Math.round(stats.avg * 10) / 10 : 0;
+  const count = stats ? stats.count : 0;
+  await Product.findByIdAndUpdate(productId, {
+    rating,
+    averageRating: rating,
+    numReviews: count,
+    reviewCount: count,
+  });
+};
 
-    let reviews = await Review.find(query)
-      .select('-updatedAt')
-      .populate('userId', 'name email');
+const SORTS = {
+  helpful: { helpful: -1, createdAt: -1 },
+  highest: { rating: -1, createdAt: -1 },
+  lowest: { rating: 1, createdAt: -1 },
+  newest: { createdAt: -1 },
+};
 
-    // Sort reviews
-    if (sort === 'helpful') {
-      reviews.sort((a, b) => b.helpful - a.helpful);
-    } else if (sort === 'highest') {
-      reviews.sort((a, b) => b.rating - a.rating);
-    } else if (sort === 'lowest') {
-      reviews.sort((a, b) => a.rating - b.rating);
-    } else {
-      // Default: newest
-      reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
-
-    // Get rating distribution
-    const allReviews = await Review.find({ productId: req.params.productId, status: 'approved' });
-    const ratingDistribution = {
-      5: allReviews.filter(r => r.rating === 5).length,
-      4: allReviews.filter(r => r.rating === 4).length,
-      3: allReviews.filter(r => r.rating === 3).length,
-      2: allReviews.filter(r => r.rating === 2).length,
-      1: allReviews.filter(r => r.rating === 1).length
-    };
-
-    res.json({
-      reviews,
-      totalReviews: allReviews.length,
-      ratingDistribution
-    });
-  } catch (err) {
-    console.error('GET /api/reviews/product/:productId error:', err.message);
-    res.status(500).json({ error: 'Failed to fetch reviews' });
+// Get approved reviews for a product
+router.get('/product/:productId', asyncHandler(async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.productId)) {
+    return res.json({ reviews: [], totalReviews: 0, averageRating: 0, ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } });
   }
-});
+  const productId = new mongoose.Types.ObjectId(req.params.productId);
+  const query = { productId, status: 'approved' };
+  const rating = parseInt(req.query.rating, 10);
+  if (rating >= 1 && rating <= 5) query.rating = rating;
 
-// Get single review
-router.get('/:id', async (req, res) => {
-  try {
-    const review = await Review.findById(req.params.id);
-    if (!review) return res.status(404).json({ error: 'Review not found' });
-    res.json(review);
-  } catch (err) {
-    console.error('GET /api/reviews/:id error:', err.message);
-    res.status(500).json({ error: 'Failed to fetch review' });
-  }
-});
+  const reviews = await Review.find(query)
+    .select('-updatedAt -userEmail')
+    .sort(SORTS[req.query.sort] || SORTS.newest)
+    .limit(200);
 
-// Create a review (authenticated users)
-router.post('/', async (req, res) => {
-  try {
-    const { productId, rating, title, comment } = req.body;
+  const counts = await Review.aggregate([
+    { $match: { productId, status: 'approved' } },
+    { $group: { _id: '$rating', count: { $sum: 1 } } },
+  ]);
+  const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  counts.forEach((c) => { ratingDistribution[c._id] = c.count; });
+  const totalReviews = counts.reduce((sum, c) => sum + c.count, 0);
+  const averageRating = totalReviews
+    ? Math.round((counts.reduce((sum, c) => sum + c._id * c.count, 0) / totalReviews) * 10) / 10
+    : 0;
 
-    if (!productId || !rating || !title || !comment) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
+  res.json({ reviews, totalReviews, averageRating, ratingDistribution });
+}));
 
-    if (rating < 1 || rating > 5) {
-      return res.status(400).json({ error: 'Rating must be between 1 and 5' });
-    }
-
-    // Check if product exists
-    const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ error: 'Product not found' });
-
-    // Check if user already reviewed this product
-    const existingReview = await Review.findOne({
-      productId,
-      userId: req.body.userId || 'anonymous'
-    });
-
-    if (existingReview) {
-      return res.status(400).json({ error: 'You have already reviewed this product' });
-    }
-
-    const review = new Review({
-      productId,
-      userId: req.body.userId || 'anonymous',
-      userName: req.body.userName || 'Anonymous',
-      userEmail: req.body.userEmail || '',
-      rating,
-      title,
-      comment,
-      status: 'pending' // Reviews need admin approval
-    });
-
-    await review.save();
-
-    res.status(201).json({
-      message: 'Review submitted successfully. Awaiting approval.',
-      review
-    });
-  } catch (err) {
-    console.error('POST /api/reviews error:', err.message);
-    res.status(500).json({ error: 'Failed to create review' });
-  }
-});
-
-// Update a review (user can update their own review)
-router.put('/:id', async (req, res) => {
-  try {
-    const review = await Review.findById(req.params.id);
-    if (!review) return res.status(404).json({ error: 'Review not found' });
-
-    // No auth check needed
-
-    const { rating, title, comment } = req.body;
-    if (rating && (rating < 1 || rating > 5)) {
-      return res.status(400).json({ error: 'Rating must be between 1 and 5' });
-    }
-
-    if (rating) review.rating = rating;
-    if (title) review.title = title;
-    if (comment) review.comment = comment;
-    review.status = 'pending'; // Re-submit for approval after edit
-
-    await review.save();
-
-    res.json({
-      message: 'Review updated successfully',
-      review
-    });
-  } catch (err) {
-    console.error('PUT /api/reviews/:id error:', err.message);
-    res.status(500).json({ error: 'Failed to update review' });
-  }
-});
-
-// Delete a review (user can delete their own, admin can delete any)
-router.delete('/:id', async (req, res) => {
-  try {
-    const review = await Review.findById(req.params.id);
-    if (!review) return res.status(404).json({ error: 'Review not found' });
-
-    // No auth check needed
-
-    // Update product rating stats
-    const productReviews = await Review.find({
-      productId: review.productId,
-      status: 'approved'
-    });
-
-    if (productReviews.length > 0) {
-      const avgRating = productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length;
-      await Product.findByIdAndUpdate(review.productId, {
-        rating: Math.round(avgRating * 10) / 10,
-        numReviews: Math.max(0, productReviews.length - 1),
-        averageRating: Math.round(avgRating * 10) / 10,
-        reviewCount: Math.max(0, productReviews.length - 1)
-      });
-    }
-
-    await Review.findByIdAndDelete(req.params.id);
-
-    res.json({ message: 'Review deleted successfully' });
-  } catch (err) {
-    console.error('DELETE /api/reviews/:id error:', err.message);
-    res.status(500).json({ error: 'Failed to delete review' });
-  }
-});
-
-// Mark review as helpful
-router.put('/:id/helpful', async (req, res) => {
-  try {
-    const review = await Review.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { helpful: 1 } },
-      { new: true }
-    );
-
-    if (!review) return res.status(404).json({ error: 'Review not found' });
-
-    res.json({
-      message: 'Thank you for your feedback',
-      helpful: review.helpful
-    });
-  } catch (err) {
-    console.error('PUT /api/reviews/:id/helpful error:', err.message);
-    res.status(500).json({ error: 'Failed to mark review as helpful' });
-  }
-});
+// Get all reviews for moderation (admin only)
+router.get('/admin/all', protect, admin, asyncHandler(async (req, res) => {
+  const filter = ['pending', 'approved', 'rejected'].includes(req.query.status) ? { status: req.query.status } : {};
+  const reviews = await Review.find(filter).populate('productId', 'name image').sort({ createdAt: -1 }).limit(500);
+  res.json({ count: reviews.length, reviews });
+}));
 
 // Get pending reviews (admin only)
-router.get('/admin/pending', async (req, res) => {
-  try {
-    const reviews = await Review.find({ status: 'pending' })
-      .populate('productId', 'name')
-      .sort({ createdAt: -1 });
+router.get('/admin/pending', protect, admin, asyncHandler(async (req, res) => {
+  const reviews = await Review.find({ status: 'pending' }).populate('productId', 'name image').sort({ createdAt: -1 });
+  res.json({ count: reviews.length, reviews });
+}));
 
-    res.json({
-      count: reviews.length,
-      reviews
-    });
-  } catch (err) {
-    console.error('GET /api/reviews/admin/pending error:', err.message);
-    res.status(500).json({ error: 'Failed to fetch pending reviews' });
-  }
+const setStatus = (status) => asyncHandler(async (req, res) => {
+  const review = await Review.findByIdAndUpdate(req.params.id, { status }, { new: true });
+  if (!review) return res.status(404).json({ error: 'Review not found', message: 'Review not found' });
+  await refreshProductRating(review.productId);
+  res.json({ message: `Review ${status}`, review });
 });
 
-// Approve review (admin only)
-router.put('/admin/:id/approve', async (req, res) => {
-  try {
-    const review = await Review.findByIdAndUpdate(
-      req.params.id,
-      { status: 'approved' },
-      { new: true }
-    );
+router.put('/admin/:id/approve', protect, admin, setStatus('approved'));
+router.put('/admin/:id/reject', protect, admin, setStatus('rejected'));
 
-    if (!review) return res.status(404).json({ error: 'Review not found' });
-
-    // Update product rating stats
-    const productReviews = await Review.find({
-      productId: review.productId,
-      status: 'approved'
-    });
-
-    if (productReviews.length > 0) {
-      const avgRating = productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length;
-      await Product.findByIdAndUpdate(review.productId, {
-        rating: Math.round(avgRating * 10) / 10,
-        numReviews: productReviews.length,
-        averageRating: Math.round(avgRating * 10) / 10,
-        reviewCount: productReviews.length
-      });
-    }
-
-    res.json({
-      message: 'Review approved',
-      review
-    });
-  } catch (err) {
-    console.error('PUT /api/reviews/admin/:id/approve error:', err.message);
-    res.status(500).json({ error: 'Failed to approve review' });
+// Get single review
+router.get('/:id', asyncHandler(async (req, res) => {
+  const review = await Review.findById(req.params.id).select('-userEmail');
+  if (!review || review.status !== 'approved') {
+    return res.status(404).json({ error: 'Review not found', message: 'Review not found' });
   }
-});
+  res.json(review);
+}));
 
-// Reject review (admin only)
-router.put('/admin/:id/reject', async (req, res) => {
-  try {
-    const review = await Review.findByIdAndUpdate(
-      req.params.id,
-      { status: 'rejected' },
-      { new: true }
-    );
+// Create a review (signed-in users)
+router.post('/', protect, writeLimiter, asyncHandler(async (req, res) => {
+  const { productId } = req.body;
+  const rating = Number(req.body.rating);
+  const title = str(req.body.title, 120);
+  const comment = str(req.body.comment, 2000);
 
-    if (!review) return res.status(404).json({ error: 'Review not found' });
-
-    res.json({
-      message: 'Review rejected',
-      review
-    });
-  } catch (err) {
-    console.error('PUT /api/reviews/admin/:id/reject error:', err.message);
-    res.status(500).json({ error: 'Failed to reject review' });
+  if (!mongoose.isValidObjectId(productId) || !title || !comment) {
+    return res.status(400).json({ error: 'All fields are required', message: 'Please add a title and your review.' });
   }
-});
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return res.status(400).json({ error: 'Rating must be between 1 and 5', message: 'Rating must be between 1 and 5' });
+  }
+
+  const product = await Product.findById(productId).select('_id');
+  if (!product) return res.status(404).json({ error: 'Product not found', message: 'Product not found' });
+
+  const existingReview = await Review.findOne({ productId, userId: req.user._id });
+  if (existingReview) {
+    return res.status(400).json({ error: 'You have already reviewed this product', message: 'You have already reviewed this product' });
+  }
+
+  const verified = Boolean(await Order.exists({
+    isPaid: true,
+    'orderItems.product': product._id,
+    $or: [{ user: req.user._id }, { 'shippingAddress.email': req.user.email }],
+  }));
+
+  const review = await Review.create({
+    productId,
+    userId: req.user._id,
+    userName: req.user.name,
+    userEmail: req.user.email,
+    rating,
+    title,
+    comment,
+    verified,
+    status: 'pending',
+  });
+
+  res.status(201).json({ message: 'Review submitted successfully. Awaiting approval.', review });
+}));
+
+const loadOwnedReview = async (req, res) => {
+  const review = await Review.findById(req.params.id);
+  if (!review) {
+    res.status(404).json({ error: 'Review not found', message: 'Review not found' });
+    return null;
+  }
+  if (String(review.userId) !== String(req.user._id) && !req.user.isAdmin) {
+    res.status(403).json({ error: 'Forbidden', message: 'You can only change your own review.' });
+    return null;
+  }
+  return review;
+};
+
+// Update a review (author only); goes back to moderation
+router.put('/:id', protect, asyncHandler(async (req, res) => {
+  const review = await loadOwnedReview(req, res);
+  if (!review) return;
+
+  const rating = req.body.rating !== undefined ? Number(req.body.rating) : undefined;
+  if (rating !== undefined && (!Number.isInteger(rating) || rating < 1 || rating > 5)) {
+    return res.status(400).json({ error: 'Rating must be between 1 and 5', message: 'Rating must be between 1 and 5' });
+  }
+  if (rating !== undefined) review.rating = rating;
+  if (str(req.body.title, 120)) review.title = str(req.body.title, 120);
+  if (str(req.body.comment, 2000)) review.comment = str(req.body.comment, 2000);
+  review.status = 'pending';
+
+  await review.save();
+  await refreshProductRating(review.productId);
+  res.json({ message: 'Review updated successfully', review });
+}));
+
+// Delete a review (author or admin)
+router.delete('/:id', protect, asyncHandler(async (req, res) => {
+  const review = await loadOwnedReview(req, res);
+  if (!review) return;
+  await review.deleteOne();
+  await refreshProductRating(review.productId);
+  res.json({ message: 'Review deleted successfully' });
+}));
+
+// Mark review as helpful
+router.put('/:id/helpful', writeLimiter, asyncHandler(async (req, res) => {
+  const review = await Review.findOneAndUpdate(
+    { _id: req.params.id, status: 'approved' },
+    { $inc: { helpful: 1 } },
+    { new: true }
+  );
+  if (!review) return res.status(404).json({ error: 'Review not found', message: 'Review not found' });
+  res.json({ message: 'Thank you for your feedback', helpful: review.helpful });
+}));
 
 export default router;

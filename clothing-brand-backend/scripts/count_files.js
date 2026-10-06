@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const driveContents = JSON.parse(fs.readFileSync(path.join(__dirname, '../drive_contents.json'), 'utf8'));
+const driveContents = JSON.parse(fs.readFileSync(path.join(__dirname, '../../drive_contents.json'), 'utf8'));
 
 // Group files by folder and base timestamp
 const grouped = {};
@@ -62,7 +62,7 @@ Object.entries(imageCounts).sort((a, b) => Number(a[0]) - Number(b[0])).forEach(
 });
 
 // Check local downloads
-const uploadBase = path.join(__dirname, '../drive_downloads');
+const uploadBase = path.join(__dirname, '../../drive_downloads');
 let existCount = 0;
 let missingCount = 0;
 const missingFiles = [];
@@ -85,7 +85,7 @@ if (missingCount > 0 && missingCount <= 10) {
 // Also check current DB total images
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Product from './models/Product.js';
+import Product from '../models/Product.js';
 
 dotenv.config();
 await mongoose.connect(process.env.MONGO_URI);

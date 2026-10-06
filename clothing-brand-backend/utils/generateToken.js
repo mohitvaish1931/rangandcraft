@@ -1,22 +1,23 @@
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
-const generateToken = (res, userId) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET || 'fallbacksecret123', {
-    expiresIn: '30d',
-  });
+let warned = false;
+let ephemeralSecret = null;
 
-  const isProd = process.env.NODE_ENV === 'production';
-  // Use 'lax' for same-origin (Render/Hostinger), 'none' only if cross-origin is needed
-  const sameSiteMode = process.env.COOKIE_SAME_SITE || 'lax';
-  const isSecure = process.env.COOKIE_SECURE === 'true' || isProd;
-
-  // Set JWT as HTTP-Only cookie
-  res.cookie('jwt', token, {
-    httpOnly: true,
-    secure: isSecure,
-    sameSite: sameSiteMode,
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-  });
+// A hard-coded fallback secret would let anyone forge admin tokens, so when
+// JWT_SECRET is missing we use a random per-process secret instead. Sessions
+// then reset on restart, which is safe but inconvenient — set JWT_SECRET.
+export const getJwtSecret = () => {
+  if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
+  if (!ephemeralSecret) ephemeralSecret = crypto.randomBytes(48).toString('hex');
+  if (!warned) {
+    console.warn('[auth] JWT_SECRET is not set; using a random per-process secret. Users will be signed out on every restart.');
+    warned = true;
+  }
+  return ephemeralSecret;
 };
+
+const generateToken = (userId) =>
+  jwt.sign({ userId: String(userId) }, getJwtSecret(), { expiresIn: '30d' });
 
 export default generateToken;

@@ -20,7 +20,11 @@ router.get('/sitemap.xml', async (req, res) => {
       '/terms-conditions',
       '/shipping-policy',
       '/refund-policy',
-      '/care-guide'
+      '/care-guide',
+      '/gallery',
+      '/reviews',
+      '/track-order',
+      '/accessibility'
     ];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
@@ -39,6 +43,7 @@ router.get('/sitemap.xml', async (req, res) => {
     xml += `</urlset>`;
 
     res.header('Content-Type', 'application/xml');
+    res.header('Cache-Control', 'public, max-age=3600');
     res.send(xml);
   } catch (error) {
     console.error('Error generating sitemap:', error);

@@ -94,6 +94,10 @@ const productSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isBOGO: {
+      type: Boolean,
+      default: false,
+    },
     showOnHomepage: {
       type: Boolean,
       default: true,
@@ -123,6 +127,9 @@ const productSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+productSchema.index({ displayOrder: 1, createdAt: -1 });
+productSchema.index({ category: 1 });
 
 const Product = mongoose.model('Product', productSchema);
 

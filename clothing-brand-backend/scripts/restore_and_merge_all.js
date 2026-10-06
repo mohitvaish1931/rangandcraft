@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import Product from './models/Product.js';
-import User from './models/User.js';
+import Product from '../models/Product.js';
+import User from '../models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -228,7 +228,7 @@ const run = async () => {
     const adminId = adminUser._id;
 
     // 2. Load drive contents
-    const jsonPath = path.join(__dirname, '../drive_contents.json');
+    const jsonPath = path.join(__dirname, '../../drive_contents.json');
     const rawData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 
     // Group files by product (folder + base timestamp name)

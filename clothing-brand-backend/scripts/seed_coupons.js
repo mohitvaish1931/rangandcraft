@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Coupon from './models/Coupon.js';
+import Coupon from '../models/Coupon.js';
 
 dotenv.config();
 

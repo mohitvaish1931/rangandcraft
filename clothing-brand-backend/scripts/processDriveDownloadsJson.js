@@ -3,8 +3,9 @@ import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import path from 'path';
-import Product from './models/Product.js';
-import User from './models/User.js';
+import { fileURLToPath } from 'url';
+import Product from '../models/Product.js';
+import User from '../models/User.js';
 
 dotenv.config();
 
@@ -49,7 +50,7 @@ const runSeed = async () => {
   await Product.deleteMany({ name: { $regex: /Style \d+|Floral Print One Piece Kurta|Cotton Floral Print Top|Daily Wear Top/i }});
   console.log('Cleaned up previous grouped products.');
 
-  const groupsFile = 'local_groups.json';
+  const groupsFile = path.join(path.dirname(fileURLToPath(import.meta.url)), 'local_groups.json');
   if (!fs.existsSync(groupsFile)) {
       console.error('local_groups.json not found!');
       process.exit(1);

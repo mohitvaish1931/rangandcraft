@@ -1,39 +1,32 @@
 import express from 'express';
 import Coupon from '../models/Coupon.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
+import { writeLimiter } from '../middleware/rateLimit.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import { couponUnavailableReason } from '../utils/pricing.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+const EDITABLE_FIELDS = ['code', 'discountPercent', 'active', 'productId', 'expiresAt', 'usageLimit', 'applicableCategories', 'maxPriceThreshold'];
+const pick = (body) => Object.fromEntries(EDITABLE_FIELDS.filter((k) => body[k] !== undefined).map((k) => [k, body[k]]));
+
+// @route GET /api/coupons (Admin) — coupon codes must not be publicly listable.
+router.get('/', protect, admin, asyncHandler(async (req, res) => {
   const items = await Coupon.find().sort({ createdAt: -1 }).populate('productId');
   res.json(items);
-});
+}));
 
-router.post('/', async (req, res) => {
-  const c = new Coupon(req.body);
-  await c.save();
-  res.status(201).json(c);
-});
+router.post('/', protect, admin, asyncHandler(async (req, res) => {
+  const coupon = await Coupon.create(pick(req.body));
+  res.status(201).json(coupon);
+}));
 
-router.get('/validate/:code', async (req, res) => {
-  const couponCode = req.params.code.toUpperCase();
-  const coupon = await Coupon.findOne({ code: couponCode });
-  
-  if (!coupon) {
-    return res.status(404).json({ error: 'Invalid coupon code' });
-  }
-  
-  if (!coupon.active) {
-    return res.status(400).json({ error: 'Coupon is no longer active' });
-  }
-
-  // Check usage limit if applicable
-  if (coupon.usageLimit && coupon.used >= coupon.usageLimit) {
-    return res.status(400).json({ error: 'Coupon usage limit reached' });
-  }
-  
-  // Check expiration if applicable
-  if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
-    return res.status(400).json({ error: 'Coupon has expired' });
+// @route GET /api/coupons/validate/:code (Public)
+router.get('/validate/:code', writeLimiter, asyncHandler(async (req, res) => {
+  const coupon = await Coupon.findOne({ code: String(req.params.code).trim().toUpperCase() });
+  const reason = couponUnavailableReason(coupon);
+  if (reason) {
+    return res.status(coupon ? 400 : 404).json({ error: reason, message: reason });
   }
 
   res.json({
@@ -41,20 +34,23 @@ router.get('/validate/:code', async (req, res) => {
     discountPercent: coupon.discountPercent,
     applicableCategories: coupon.applicableCategories,
     maxPriceThreshold: coupon.maxPriceThreshold,
-    usageLimit: coupon.usageLimit,
-    used: coupon.used
+    productId: coupon.productId,
   });
-});
+}));
 
-router.put('/:code', async (req, res) => {
-  const updated = await Coupon.findOneAndUpdate({ code: req.params.code }, req.body, { new: true });
-  if (!updated) return res.status(404).json({ error: 'Not found' });
+router.put('/:code', protect, admin, asyncHandler(async (req, res) => {
+  const updated = await Coupon.findOneAndUpdate(
+    { code: String(req.params.code).toUpperCase() },
+    pick(req.body),
+    { new: true, runValidators: true }
+  );
+  if (!updated) return res.status(404).json({ error: 'Not found', message: 'Coupon not found' });
   res.json(updated);
-});
+}));
 
-router.delete('/:code', async (req, res) => {
-  await Coupon.findOneAndDelete({ code: req.params.code });
+router.delete('/:code', protect, admin, asyncHandler(async (req, res) => {
+  await Coupon.findOneAndDelete({ code: String(req.params.code).toUpperCase() });
   res.json({ ok: true });
-});
+}));
 
 export default router;

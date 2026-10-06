@@ -4,8 +4,8 @@ import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
-import Product from './models/Product.js';
-import User from './models/User.js';
+import Product from '../models/Product.js';
+import User from '../models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +19,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Trending names arrays
+// ==========================================
+// NAME ARRAYS - 40 Half Sleeves Shirts, 20 Gowns, 20 Kurta4, 25 Kurta5, 14 Suits = 119 names
+// We need 135 unique products, so we add Vol suffix for overflow
+// ==========================================
 const topsNames = [
   "Aura Floral Print Peplum Top", "Miraya Smocked Cotton Top", "Ziva Indigo Tunic", "Nisha Cotton Peplum Top", "Ananya Boho Chic Top",
   "Rhea Meadow Floral Top", "Ira Indigo Printed Top", "Siya Crimson Cotton Top", "Zoya Classic Tunic Top", "Kriti Elegant Peplum Top",
@@ -28,7 +31,9 @@ const topsNames = [
   "Kashvi Boho Peplum Top", "Vaidehi Floral Tunic", "Fiza Summer Cotton Top", "Meera Flared Peplum", "Riya Block Print Top",
   "Tanu Classic Daily Top", "Pia Modern Ethnic Top", "Dia Crimson Daily Top", "Suhana Indigo Peplum", "Divya Pastel Meadow Top",
   "Pari Boho Cotton Top", "Aarohi Floral Smocked Top", "Siya Indigo Tunic", "Prisha Vintage Print Top", "Sanya Cotton Peplum",
-  "Sneha Meadow Daily Top", "Maya Indigo Floral Top", "Tanya Grace Tunic", "Siya Smocked Floral Top", "Neha Elegant Peplum Top"
+  "Sneha Meadow Daily Top", "Maya Indigo Floral Top", "Tanya Grace Tunic", "Siya Smocked Floral Top", "Neha Elegant Peplum Top",
+  "Tanvi Royal Printed Top", "Nandini Classic Cotton Top", "Jhanvi Ethnic Floral Top", "Swara Paisley Cotton Top", "Radhika Charm Top",
+  "Anvi Embroidered Daily Top"
 ];
 
 const gownNames = [
@@ -42,7 +47,9 @@ const kurtaSet4Names = [
   "Mehrunisa Embroidered Angrakha Set", "Zeenat Festive Angrakha Set", "Kashida Heritage Kurta Set", "Noor Floral Angrakha Set", "Fiza Pastel Kurta Set",
   "Gulnaz Cotton Kurta Set", "Afreen Traditional Kurta Set", "Zara Embroidered Suit Set", "Sabrina Angrakha Kurta Set", "Pakeezah Royal Kurta Set",
   "Komal Daily Kurta Set", "Jasmine Pastel Angrakha Set", "Ruhi Embroidered Set", "Nisha Cotton Kurta Set", "Shreya Angrakha Kurta Set",
-  "Ritu Daily Wear Set", "Prisha Embroidered Kurta Set", "Sia Cotton Kurta Set", "Myra Festive Kurta Set", "Zoya Traditional Angrakha Set"
+  "Ritu Daily Wear Set", "Prisha Embroidered Kurta Set", "Sia Cotton Kurta Set", "Myra Festive Kurta Set", "Zoya Traditional Angrakha Set",
+  "Laila Royal Angrakha Set", "Inaya Embroidered Kurta Set", "Naira Festive Angrakha Set", "Hina Cotton Kurta Set", "Ayesha Classic Angrakha Set",
+  "Mahira Premium Kurta Set"
 ];
 
 const kurtaSet5Names = [
@@ -50,7 +57,9 @@ const kurtaSet5Names = [
   "Dia Crimson Angrakha Set", "Zoya Daily Comfort Set", "Kriti Pastel Kurta Set", "Zara Everyday Angrakha Set", "Sanvi Daily Kurta Set",
   "Kiara Pastel Kurta Set", "Diya Cotton Kurta Set", "Kavya Simple Angrakha Set", "Tanya Daily Cotton Set", "Shanaya Pastel Kurta Set",
   "Ahana Comfort Kurta Set", "Aditi Daily Angrakha Set", "Kashvi Cotton Kurta Set", "Vaidehi Daily Wear Set", "Fiza Simple Angrakha Set",
-  "Riya Cotton Angrakha Set", "Tanu Comfort Kurta Set", "Pia Pastel Angrakha Set", "Suhana Daily Kurta Set", "Divya Comfort Kurta Set"
+  "Riya Cotton Angrakha Set", "Tanu Comfort Kurta Set", "Pia Pastel Angrakha Set", "Suhana Daily Kurta Set", "Divya Comfort Kurta Set",
+  "Nidhi Classic Angrakha Set", "Pooja Everyday Kurta Set", "Mansi Comfort Angrakha Set", "Roshni Pastel Kurta Set", "Sonali Cotton Angrakha Set",
+  "Drishti Daily Kurta Set", "Gauri Everyday Angrakha Set", "Paridhi Comfort Kurta Set"
 ];
 
 const suitNames = [
@@ -63,65 +72,43 @@ const suitNames = [
 let topsIdx = 0, gownIdx = 0, kurta4Idx = 0, kurta5Idx = 0, suitIdx = 0;
 
 function getName(folder) {
+  let arr, idx;
   if (folder.includes("Folder 1") || folder.includes("Folder 2")) {
-    const base = topsNames[topsIdx % topsNames.length];
-    topsIdx++;
-    const suffix = Math.floor(topsIdx / topsNames.length) > 0 ? ` (Design ${Math.floor(topsIdx / topsNames.length) + 1})` : "";
-    return base + suffix;
+    arr = topsNames; idx = topsIdx++;
   } else if (folder.includes("Folder 3")) {
-    const base = gownNames[gownIdx % gownNames.length];
-    gownIdx++;
-    const suffix = Math.floor(gownIdx / gownNames.length) > 0 ? ` (Design ${Math.floor(gownIdx / gownNames.length) + 1})` : "";
-    return base + suffix;
+    arr = gownNames; idx = gownIdx++;
   } else if (folder.includes("Folder 4")) {
-    const base = kurtaSet4Names[kurta4Idx % kurtaSet4Names.length];
-    kurta4Idx++;
-    const suffix = Math.floor(kurta4Idx / kurtaSet4Names.length) > 0 ? ` (Design ${Math.floor(kurta4Idx / kurtaSet4Names.length) + 1})` : "";
-    return base + suffix;
+    arr = kurtaSet4Names; idx = kurta4Idx++;
   } else if (folder.includes("Folder 5")) {
-    const base = kurtaSet5Names[kurta5Idx % kurtaSet5Names.length];
-    kurta5Idx++;
-    const suffix = Math.floor(kurta5Idx / kurtaSet5Names.length) > 0 ? ` (Design ${Math.floor(kurta5Idx / kurtaSet5Names.length) + 1})` : "";
-    return base + suffix;
+    arr = kurtaSet5Names; idx = kurta5Idx++;
   } else if (folder.includes("Folder 6")) {
-    const base = suitNames[suitIdx % suitNames.length];
-    suitIdx++;
-    const suffix = Math.floor(suitIdx / suitNames.length) > 0 ? ` (Design ${Math.floor(suitIdx / suitNames.length) + 1})` : "";
-    return base + suffix;
+    arr = suitNames; idx = suitIdx++;
+  } else {
+    return "Beautiful Ethnic Wear";
   }
-  return "Beautiful Ethnic Wear";
+  const base = arr[idx % arr.length];
+  const cycle = Math.floor(idx / arr.length);
+  return cycle > 0 ? `${base} Vol ${cycle + 1}` : base;
 }
 
-// SEO Naming Suffixes
+// SEO Name builder
 function getSeoName(baseName, folder) {
-  const designMatch = baseName.match(/\s*\(Design\s*(\d+)\)/i);
-  const cleanName = baseName.replace(/\s*\(Design\s*\d+\)/i, '').trim();
-  const designSuffix = designMatch ? ` Vol ${designMatch[1]}` : '';
-  
-  let seoName;
   if (folder.includes("Folder 1")) {
-    seoName = `${cleanName} 3-Piece Cotton Top Set`;
+    return `${baseName} 3-Piece Cotton Top Set`;
   } else if (folder.includes("Folder 2")) {
-    if (cleanName.toLowerCase().includes("peplum")) {
-      seoName = `${cleanName} Cotton Peplum Top`;
-    } else if (cleanName.toLowerCase().includes("tunic")) {
-      seoName = `${cleanName} Cotton Tunic Top`;
-    } else {
-      seoName = `${cleanName} Casual Printed Cotton Top`;
-    }
+    if (baseName.toLowerCase().includes("peplum")) return `${baseName} Cotton Peplum Top`;
+    if (baseName.toLowerCase().includes("tunic")) return `${baseName} Cotton Tunic Top`;
+    return `${baseName} Casual Printed Cotton Top`;
   } else if (folder.includes("Folder 3")) {
-    seoName = `${cleanName} Cotton Flared Anarkali Gown Kurta`;
+    return `${baseName} Cotton Flared Anarkali Gown Kurta`;
   } else if (folder.includes("Folder 4")) {
-    seoName = `${cleanName} Premium Embroidered Cotton Angrakha Kurta Pant Set`;
+    return `${baseName} Premium Embroidered Cotton Angrakha Kurta Pant Set`;
   } else if (folder.includes("Folder 5")) {
-    seoName = `${cleanName} Daily Wear Cotton Angrakha Kurta Pant Set`;
+    return `${baseName} Daily Wear Cotton Angrakha Kurta Pant Set`;
   } else if (folder.includes("Folder 6")) {
-    seoName = `${cleanName} Premium Cotton Angrakha Suit Set with Dupatta`;
-  } else {
-    seoName = cleanName;
+    return `${baseName} Premium Cotton Angrakha Suit Set with Dupatta`;
   }
-  
-  return seoName + designSuffix;
+  return baseName;
 }
 
 const folderConfig = {
@@ -133,7 +120,7 @@ const folderConfig = {
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     materials: ['Cotton'],
     specifications: ['Length: 30 inches', 'Premium 60x60 Cotton Fabric', 'Comfortable Daily Wear fit'],
-    description: "Enhance your daily wardrobe with this beautiful daily wear cotton top. Made from premium 60x60 cotton fabric, it features a comfortable fit with a length of 30 inches. Perfect for everyday casual outings."
+    description: "Enhance your daily wardrobe with this beautiful three-piece cotton top. Made from premium 60x60 cotton fabric, it features a comfortable fit with a length of 30 inches. Perfect for everyday casual outings."
   },
   "Folder 2 (Top": {
     category: "Half Sleeves Shirts",
@@ -190,42 +177,41 @@ const folderConfig = {
   }
 };
 
-const runSeeding = async () => {
+// ==========================================
+// MAIN RESTORATION
+// ==========================================
+const run = async () => {
   try {
     console.log('Connecting to MongoDB...');
     await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB Connected!');
 
-    // Delete existing products
-    console.log('Clearing existing products...');
-    await Product.deleteMany({});
-    console.log('Products cleared!');
-
-    // Get admin user
     const adminUser = await User.findOne({ email: 'admin@rangandcraft.store' });
-    if (!adminUser) {
-      throw new Error("Admin user admin@rangandcraft.store not found.");
-    }
+    if (!adminUser) throw new Error("Admin user admin@rangandcraft.store not found.");
     const adminId = adminUser._id;
 
-    // Load drive contents
-    const jsonPath = path.join(__dirname, '../drive_contents.json');
+    // 1. Collect ALL existing Cloudinary URLs from current DB products
+    const existingProducts = await Product.find().select('images');
+    const existingUrls = new Set();
+    existingProducts.forEach(p => {
+      if (p.images) p.images.forEach(url => existingUrls.add(url));
+    });
+    console.log(`Found ${existingUrls.size} existing Cloudinary URLs in DB to potentially reuse.`);
+
+    // 2. Load drive contents and group into 135 products
+    const jsonPath = path.join(__dirname, '../../drive_contents.json');
     const rawData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 
-    // Group files by product (folder + base timestamp name)
     const grouped = {};
     rawData.forEach(item => {
       if (item.path === 'Rate List For Kurtas.pdf') return;
-      
       const parts = item.path.split('/');
       const folder = parts[0];
       const filename = parts[1];
       
       let baseName = filename;
       const match = filename.match(/(WhatsApp Image\s+\d{4}-\d{2}-\d{2}\s+at\s+\d+\.\d+\.\d+\s+[AP]M)(?:\s+\(\d+\))?\.jpe?g/i);
-      if (match) {
-        baseName = match[1];
-      }
+      if (match) baseName = match[1];
       
       const key = `${folder}/${baseName}`;
       if (!grouped[key]) {
@@ -235,36 +221,44 @@ const runSeeding = async () => {
     });
 
     const productsList = Object.values(grouped);
-    console.log(`\nGrouped into ${productsList.length} unique products.`);
+    console.log(`\nGrouped into ${productsList.length} unique products from drive_contents.json.`);
 
-    const uploadBase = path.join(__dirname, '../drive_downloads');
-
-    // Helper to upload a single file to Cloudinary
+    // 3. Upload images to Cloudinary (reuse existing URLs where possible)
+    const uploadBase = path.join(__dirname, '../../drive_downloads');
+    
+    // Build a cache: filename -> URL (from existing Cloudinary resources if possible)
+    // We can't easily match old URLs to files, so we'll upload all and let Cloudinary handle it
     const uploadToCloudinary = async (fileItem) => {
       const localPath = path.join(uploadBase, ...fileItem.path.split('/'));
       if (!fs.existsSync(localPath)) {
         throw new Error(`File does not exist locally: ${localPath}`);
       }
       const result = await cloudinary.uploader.upload(localPath, {
-        folder: 'gul_products_imported',
+        folder: 'gul_products_all',
+        resource_type: 'image',
       });
       return result.secure_url;
     };
 
+    // 4. Clear existing products
+    console.log('\nClearing existing products...');
+    const deleteResult = await Product.deleteMany({});
+    console.log(`Cleared ${deleteResult.deletedCount} products.`);
+
+    // 5. Process products in batches
     let processedCount = 0;
     let successCount = 0;
     let failCount = 0;
+    const batchSize = 5;
 
-    // We will batch process products with concurrency of 6 products at a time
-    const batchSize = 6;
     for (let i = 0; i < productsList.length; i += batchSize) {
       const batch = productsList.slice(i, i + batchSize);
-      console.log(`\n--- Processing Batch ${Math.floor(i / batchSize) + 1} (${batch.length} products) ---`);
+      console.log(`\n--- Batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(productsList.length / batchSize)} (Products ${i + 1}-${Math.min(i + batchSize, productsList.length)}) ---`);
 
       await Promise.all(batch.map(async (p) => {
         const config = folderConfig[p.folder];
         if (!config) {
-          console.warn(`Warning: No configuration found for folder ${p.folder}. Skipping.`);
+          console.warn(`  ⚠️ No config for folder "${p.folder}". Skipping.`);
           return;
         }
 
@@ -273,13 +267,16 @@ const runSeeding = async () => {
 
         try {
           // Upload all images for this product
-          const imageUrls = await Promise.all(p.files.map(fileItem => uploadToCloudinary(fileItem)));
-          
-          if (imageUrls.length === 0) {
-            throw new Error(`No images uploaded successfully.`);
+          const imageUrls = [];
+          for (const fileItem of p.files) {
+            const url = await uploadToCloudinary(fileItem);
+            imageUrls.push(url);
           }
 
-          // Create product in DB
+          if (imageUrls.length === 0) {
+            throw new Error('No images uploaded.');
+          }
+
           const productData = {
             user: adminId,
             name: finalName,
@@ -291,7 +288,7 @@ const runSeeding = async () => {
             description: config.description,
             price: config.price,
             originalPrice: config.originalPrice,
-            countInStock: Math.floor(Math.random() * 15) + 5, // Random stock between 5 and 19
+            countInStock: Math.floor(Math.random() * 15) + 5,
             stock: Math.floor(Math.random() * 15) + 5,
             sizes: config.sizes || [],
             colors: config.colors || [],
@@ -303,25 +300,50 @@ const runSeeding = async () => {
           };
 
           await Product.create(productData);
-          console.log(`  [✓] Created product: "${finalName}" with ${imageUrls.length} images.`);
+          console.log(`  [✓] "${finalName}" (${imageUrls.length} images)`);
           successCount++;
         } catch (err) {
-          console.error(`  [✗] Failed to process product "${finalName}" (${p.folder}):`, err.message);
+          console.error(`  [✗] Failed "${finalName}": ${err.message}`);
           failCount++;
         }
       }));
     }
 
-    console.log('\n=== Restoration Finished ===');
-    console.log(`Total Grouped Products: ${productsList.length}`);
-    console.log(`Successfully Seeded: ${successCount}`);
-    console.log(`Failed: ${failCount}`);
+    // 6. Verification
+    console.log('\n\n========================================');
+    console.log('       RESTORATION COMPLETE');
+    console.log('========================================');
+    console.log(`Total Products Attempted: ${productsList.length}`);
+    console.log(`Successfully Created:     ${successCount}`);
+    console.log(`Failed:                   ${failCount}`);
+
+    const categories = ["Three Piece Half Sleeves Shirts", "Half Sleeves Shirts", "Kurtas", "Short Kurtas", "Suits"];
+    console.log('\nCategory Breakdown:');
+    for (const cat of categories) {
+      const count = await Product.countDocuments({ category: cat });
+      console.log(`  ${cat}: ${count}`);
+    }
+
+    // Check for duplicate names
+    const dupes = await Product.aggregate([
+      { $group: { _id: "$name", count: { $sum: 1 } } },
+      { $match: { count: { $gt: 1 } } }
+    ]);
+    if (dupes.length > 0) {
+      console.log('\n⚠️ DUPLICATE NAMES:');
+      dupes.forEach(d => console.log(`  "${d._id}" x${d.count}`));
+    } else {
+      console.log('\n✅ All product names are unique!');
+    }
+
+    const totalInDB = await Product.countDocuments();
+    console.log(`\n✅ Total Products in Database: ${totalInDB}`);
 
     process.exit(0);
   } catch (error) {
-    console.error(`Critical Error during restoration: ${error.message}`);
+    console.error(`\nCritical Error: ${error.message}`);
     process.exit(1);
   }
 };
 
-runSeeding();
+run();

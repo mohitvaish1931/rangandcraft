@@ -3,6 +3,8 @@ import Product from '../models/Product.js';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinary.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
@@ -16,7 +18,9 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024, files: 10 } });
+
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // Helper to safely parse stringified JSON arrays
 const parseField = (field) => {
@@ -31,47 +35,33 @@ const parseField = (field) => {
 
 // @desc    Fetch all products
 // @route   GET /api/products
-router.get('/', async (req, res) => {
-  try {
-    let query = {};
+router.get('/', asyncHandler(async (req, res) => {
+  const query = {};
+  const category = typeof req.query.category === 'string' ? req.query.category.trim() : '';
+  const keyword = typeof req.query.keyword === 'string' ? req.query.keyword.trim().slice(0, 80) : '';
 
-    if (req.query.category) {
-      query.category = req.query.category;
-    } else if (req.query.keyword) {
-      query = {
-        $or: [
-          { name: { $regex: req.query.keyword, $options: 'i' } },
-          { category: { $regex: req.query.keyword, $options: 'i' } }
-        ],
-      };
-    }
-
-    const products = await Product.find(query).sort({ displayOrder: 1, createdAt: -1 });
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error: unable to fetch products' });
+  if (category) query.category = category;
+  if (keyword) {
+    // Escaped so user input can never be interpreted as a (slow) regex.
+    const pattern = { $regex: escapeRegex(keyword), $options: 'i' };
+    query.$or = [{ name: pattern }, { category: pattern }, { description: pattern }];
   }
-});
+
+  const products = await Product.find(query).sort({ displayOrder: 1, createdAt: -1 }).lean();
+  res.json(products);
+}));
 
 // @desc    Fetch single product
 // @route   GET /api/products/:id
-router.get('/:id', async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-
-    if (product) {
-      res.json(product);
-    } else {
-      res.status(404).json({ message: 'Product not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error: Invalid ID format' });
-  }
-});
+router.get('/:id', asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id).lean();
+  if (!product) return res.status(404).json({ message: 'Product not found' });
+  res.json(product);
+}));
 
 // @desc    Create new product
 // @route   POST /api/products
-router.post('/', upload.array('image', 10), async (req, res) => {
+router.post('/', protect, admin, upload.array('image', 10), async (req, res) => {
   try {
     const imageUrls = req.files ? req.files.map(f => f.secure_url || f.url || f.path) : [];
     
@@ -83,6 +73,7 @@ router.post('/', upload.array('image', 10), async (req, res) => {
     const parsedVideos = parseField(req.body.videos);
 
     const product = new Product({
+      user: req.user._id,
       name: req.body.name,
       price: Number(req.body.price || 0),
       originalPrice: Number(req.body.originalPrice || 0),
@@ -108,13 +99,13 @@ router.post('/', upload.array('image', 10), async (req, res) => {
     res.status(201).json(createdProduct);
   } catch (error) {
     console.error('Create product error:', error);
-    res.status(500).json({ message: 'Server Error: unable to create product', error: error.message });
+    res.status(error.name === 'ValidationError' ? 400 : 500).json({ message: `Unable to create product: ${error.message}` });
   }
 });
 
 // @desc    Update a product
 // @route   PUT /api/products/:id
-router.put('/:id', upload.array('image', 10), async (req, res) => {
+router.put('/:id', protect, admin, upload.array('image', 10), async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -171,13 +162,13 @@ router.put('/:id', upload.array('image', 10), async (req, res) => {
     }
   } catch (error) {
     console.error('Update product error:', error);
-    res.status(500).json({ message: 'Server Error: unable to update product', error: error.message });
+    res.status(error.name === 'ValidationError' ? 400 : 500).json({ message: `Unable to update product: ${error.message}` });
   }
 });
 
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, admin, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -195,17 +186,17 @@ router.delete('/:id', async (req, res) => {
 
 // @desc    Reorder products displayOrder
 // @route   POST /api/products/reorder
-router.post('/reorder', async (req, res) => {
+router.post('/reorder', protect, admin, async (req, res) => {
   try {
     const { products } = req.body;
     if (!products || !Array.isArray(products)) {
       return res.status(400).json({ message: 'Invalid payload' });
     }
 
-    const bulkOps = products.map(p => ({
+    const bulkOps = products.filter(p => p && p.id).map(p => ({
       updateOne: {
         filter: { _id: p.id },
-        update: { $set: { displayOrder: p.displayOrder } }
+        update: { $set: { displayOrder: Number(p.displayOrder) || 0 } }
       }
     }));
 

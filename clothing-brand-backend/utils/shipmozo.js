@@ -18,10 +18,14 @@ export const createShipmozoOrder = async (order, user) => {
       invoice_amount: order.totalPrice
     };
 
-    console.log('Sending to Shipmozo:', payload);
 
-    // If no token exists, return mock data for testing so checkout doesn't break
+    // Without a token, return mock data in development only. In production a
+    // fake AWB would be shown to customers as real tracking information.
     if (!process.env.SHIPMOZO_API_TOKEN) {
+      if (process.env.NODE_ENV === 'production') {
+        console.warn('SHIPMOZO_API_TOKEN not set; shipment must be booked manually for order', String(order._id));
+        return null;
+      }
       console.log('SHIPMOZO_API_TOKEN not found, returning mock shipping data');
       return {
         awbNumber: 'MOCK_AWB_' + Date.now(),

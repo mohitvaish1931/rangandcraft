@@ -8,20 +8,27 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "data:import": "node seeder.js",
-    "data:destroy": "node seeder.js -d"
+    "data:destroy": "node seeder.js -d",
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
     "axios": "^1.16.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.7.0",
+    "compression": "^1.8.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^7.5.0",
     "multer": "^2.1.1",
     "multer-storage-cloudinary": "^4.0.0",
     "razorpay": "^2.9.8"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
   }
 }

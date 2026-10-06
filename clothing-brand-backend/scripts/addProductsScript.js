@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import path from 'path';
-import Product from './models/Product.js';
-import User from './models/User.js';
+import Product from '../models/Product.js';
+import User from '../models/User.js';
 
 dotenv.config();
 
