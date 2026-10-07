@@ -441,6 +441,14 @@ a { color: inherit; }
 .rc-line__right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 8px; }
 .rc-line__remove { background: none; border: 0; padding: 4px; color: var(--rc-muted); cursor: pointer; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
 .rc-line__remove:hover { color: var(--rc-danger); }
+.rc-perks-box { display: grid; gap: 10px; margin: 16px 0 6px; padding: 14px 16px; border-radius: var(--rc-radius); background: var(--rc-ivory); font-size: 13px; color: var(--rc-ink-soft); }
+.rc-perks-box__row { display: flex; gap: 10px; align-items: flex-start; }
+.rc-perks-box__row svg { flex-shrink: 0; margin-top: 2px; color: var(--rc-gold); }
+.rc-perks-box__row strong { color: var(--rc-ink); font-weight: 500; }
+.rc-perks-box__row--good, .rc-perks-box__row--good strong, .rc-perks-box__row--good svg { color: var(--rc-success); }
+.rc-perks-box__bar { height: 4px; border-radius: 999px; background: var(--rc-line); overflow: hidden; }
+.rc-perks-box__bar span { display: block; height: 100%; border-radius: inherit; background: var(--rc-gold); transition: width 0.6s var(--rc-ease); }
+.rc-perks-box__bar span.is-done { background: var(--rc-success); }
 .rc-progress { margin-bottom: 4px; padding: 14px 16px; border-radius: var(--rc-radius); background: var(--rc-ivory); font-size: 13px; color: var(--rc-ink-soft); }
 .rc-summary-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 15px; }
 .rc-summary-row--total { font-size: 18px; font-weight: 500; border-top: 1px solid var(--rc-line); margin-top: 8px; padding-top: 16px; }

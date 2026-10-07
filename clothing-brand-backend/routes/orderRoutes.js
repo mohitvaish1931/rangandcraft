@@ -7,7 +7,7 @@ import { protect, admin, optionalAuth } from '../middleware/authMiddleware.js';
 import { writeLimiter } from '../middleware/rateLimit.js';
 import { HttpError } from '../middleware/errorMiddleware.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { buildOrderLines, couponUnavailableReason, priceOrder } from '../utils/pricing.js';
+import { buildOrderLines, couponUnavailableReason, priceOrder, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../utils/pricing.js';
 
 const router = express.Router();
 
@@ -60,9 +60,17 @@ router.post('/quote', asyncHandler(async (req, res) => {
   }
   const pricing = priceOrder(lines, coupon);
   if (coupon && pricing.discountAmount === 0) {
-    couponError = 'This coupon does not apply to any item in your cart';
+    couponError = pricing.offerDiscount > 0
+      ? 'Coupons can’t be combined with the bundle offer on these items'
+      : 'This coupon does not apply to any item in your cart';
   }
-  res.json({ ...pricing, couponCode: coupon && !couponError ? coupon.code : null, couponError });
+  res.json({
+    ...pricing,
+    couponCode: coupon && !couponError ? coupon.code : null,
+    couponError,
+    freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
+    shippingFee: SHIPPING_FEE,
+  });
 }));
 
 // @desc    Create new order. Prices are always computed on the server.
@@ -80,7 +88,9 @@ router.post('/', writeLimiter, optionalAuth, asyncHandler(async (req, res) => {
 
   const pricing = priceOrder(lines, coupon);
   if (coupon && pricing.discountAmount === 0) {
-    throw new HttpError(400, 'This coupon does not apply to any item in your cart');
+    throw new HttpError(400, pricing.offerDiscount > 0
+      ? 'Coupons can’t be combined with the bundle offer on these items'
+      : 'This coupon does not apply to any item in your cart');
   }
 
   const order = await Order.create({

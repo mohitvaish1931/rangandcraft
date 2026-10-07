@@ -17,7 +17,7 @@ import { responsiveImage } from '../utils/mediaHelper';
 import logoImg from '../assets/logo.png';
 
 const VALUES = [
-  { icon: Truck, title: 'Free shipping', text: 'On all prepaid orders' },
+  { icon: Truck, title: 'Free shipping', text: 'On orders above ₹1499' },
   { icon: RefreshCcw, title: '7-day exchange', text: 'Hassle-free size swaps' },
   { icon: ShieldCheck, title: 'Secure payments', text: 'UPI, cards & netbanking' },
   { icon: Gem, title: 'Crafted in Jaipur', text: 'Rooted in heritage' },
@@ -84,7 +84,7 @@ const HomePage = () => {
     <>
       <Seo
         title="Rang and Craft | Men's Kurtas & Shirts from Jaipur"
-        description="Shop men's printed cotton kurtas, half sleeve shirts and co-ord sets, crafted in Jaipur. Breathable fabrics, honest prices, free shipping on prepaid orders."
+        description="Shop men's printed cotton kurtas, half sleeve shirts and co-ord sets, crafted in Jaipur. Breathable fabrics, honest prices, free shipping above ₹1499."
         path="/"
       />
 

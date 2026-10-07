@@ -3,12 +3,16 @@ import { API_ENDPOINTS, fetchJSON, postJSON } from '../utils/api';
 
 export interface Quote {
   itemsPrice: number;
+  offerDiscount: number;
+  appliedOffers: { id: string; label: string; times: number; saving: number }[];
   discountAmount: number;
   shippingPrice: number;
   taxPrice: number;
   totalPrice: number;
   couponCode: string | null;
   couponError: string | null;
+  freeShippingThreshold: number;
+  shippingFee: number;
 }
 
 export interface ShippingAddress {

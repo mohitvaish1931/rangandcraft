@@ -60,6 +60,19 @@ const orderSchema = mongoose.Schema(
       type: Number,
       default: 0.0,
     },
+    offerDiscount: {
+      type: Number,
+      default: 0.0,
+    },
+    appliedOffers: [
+      {
+        _id: false,
+        id: String,
+        label: String,
+        times: Number,
+        saving: Number,
+      },
+    ],
     couponCode: {
       type: String,
     },

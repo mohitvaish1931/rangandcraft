@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, ShieldCheck, ShoppingBag, Tag, Truck, X } from 'lucide-react';
-import { cartSubtotal, useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
+import { estimateBag, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../lib/offers';
 import Seo from '../components/Seo';
 import { API_ENDPOINTS, postJSON } from '../utils/api';
 import { errorMessage, formatPrice } from '../lib/format';
@@ -204,8 +205,10 @@ const CheckoutScreen = () => {
     );
   }
 
-  const subtotal = cartSubtotal(state.cart);
-  const total = quote?.totalPrice ?? subtotal;
+  const estimate = estimateBag(state.cart);
+  const total = quote?.totalPrice ?? estimate.total;
+  const offerDiscount = quote?.offerDiscount ?? estimate.offerDiscount;
+  const shippingPrice = quote?.shippingPrice ?? estimate.shippingPrice;
 
   const field = (name: keyof ShippingAddress, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}, span2 = false) => (
     <div className={`rc-field${span2 ? ' rc-span-2' : ''}`}>
@@ -256,7 +259,7 @@ const CheckoutScreen = () => {
                 {field('postalCode', 'Pincode', { autoComplete: 'postal-code', inputMode: 'numeric', maxLength: 6, required: true })}
               </div>
               <div className="rc-alert rc-alert--info" style={{ marginTop: 16 }}>
-                <Truck size={18} /> Free shipping. Orders are usually dispatched within 2–3 working days and delivered in 4–8 working days.
+                <Truck size={18} /> Free shipping on orders of {formatPrice(FREE_SHIPPING_THRESHOLD)} and above ({formatPrice(SHIPPING_FEE)} below). Orders are usually dispatched within 2–3 working days and delivered in 4–8 working days.
               </div>
             </section>
 
@@ -321,11 +324,19 @@ const CheckoutScreen = () => {
                 )}
               </div>
 
-              <div className="rc-summary-row"><span>Subtotal</span><span>{formatPrice(quote?.itemsPrice ?? subtotal)}</span></div>
+              <div className="rc-summary-row"><span>Subtotal</span><span>{formatPrice(quote?.itemsPrice ?? estimate.itemsPrice)}</span></div>
+              {offerDiscount > 0 && (
+                <div className="rc-summary-row rc-summary-row--discount"><span>Bundle offer</span><span>−{formatPrice(offerDiscount)}</span></div>
+              )}
               {(quote?.discountAmount ?? 0) > 0 && (
                 <div className="rc-summary-row rc-summary-row--discount"><span>Coupon discount</span><span>−{formatPrice(quote!.discountAmount)}</span></div>
               )}
-              <div className="rc-summary-row"><span>Shipping</span><span style={{ color: 'var(--rc-success)' }}>Free</span></div>
+              <div className="rc-summary-row">
+                <span>Shipping</span>
+                {shippingPrice > 0
+                  ? <span>{formatPrice(shippingPrice)}</span>
+                  : <span style={{ color: 'var(--rc-success)' }}>Free</span>}
+              </div>
               <div className="rc-summary-row rc-summary-row--total"><span>Total</span><span>{formatPrice(total)}</span></div>
               <p className="rc-muted" style={{ fontSize: 12, marginTop: 6 }}>Inclusive of all taxes</p>
             </div>

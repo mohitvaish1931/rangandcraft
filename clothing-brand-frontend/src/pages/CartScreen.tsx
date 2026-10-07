@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Lock, ShoppingBag } from 'lucide-react';
 import { cartCount, cartSubtotal, useAppContext } from '../context/AppContext';
 import CartLine from '../components/CartLine';
+import BagPerks from '../components/BagPerks';
+import { estimateBag } from '../lib/offers';
 import Seo from '../components/Seo';
 import { formatPrice } from '../lib/format';
 import { API_ENDPOINTS } from '../utils/api';
@@ -37,6 +39,7 @@ const CartScreen = () => {
 
   const count = cartCount(state.cart);
   const subtotal = cartSubtotal(state.cart);
+  const estimate = estimateBag(state.cart);
   const mrp = state.cart.reduce((sum, i) => sum + (i.originalPrice && i.originalPrice > i.price ? i.originalPrice : i.price) * i.quantity, 0);
 
   return (
@@ -66,8 +69,10 @@ const CartScreen = () => {
                 <h2 className="rc-panel__title">Order summary</h2>
                 <div className="rc-summary-row"><span>MRP total</span><span>{formatPrice(mrp)}</span></div>
                 {mrp > subtotal && <div className="rc-summary-row rc-summary-row--discount"><span>Discount on MRP</span><span>−{formatPrice(mrp - subtotal)}</span></div>}
-                <div className="rc-summary-row"><span>Shipping</span><span style={{ color: 'var(--rc-success)' }}>Free</span></div>
-                <div className="rc-summary-row rc-summary-row--total"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
+                {estimate.offerDiscount > 0 && <div className="rc-summary-row rc-summary-row--discount"><span>Bundle offer</span><span>−{formatPrice(estimate.offerDiscount)}</span></div>}
+                <div className="rc-summary-row"><span>Shipping</span><span style={estimate.shippingPrice ? undefined : { color: 'var(--rc-success)' }}>{estimate.shippingPrice ? formatPrice(estimate.shippingPrice) : 'Free'}</span></div>
+                <div className="rc-summary-row rc-summary-row--total"><span>Total</span><span>{formatPrice(estimate.total)}</span></div>
+                <BagPerks estimate={estimate} />
                 <p className="rc-muted" style={{ fontSize: 13, margin: '8px 0 18px' }}>Inclusive of all taxes. Have a coupon? Apply it at checkout.</p>
                 <button type="button" className="rc-btn rc-btn--block rc-btn--lg" onClick={() => navigate('/checkout')}>
                   <Lock size={16} /> Checkout securely

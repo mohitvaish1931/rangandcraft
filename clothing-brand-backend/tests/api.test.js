@@ -156,7 +156,17 @@ describe('orders and payments', () => {
     });
     assert.equal(res.status, 201);
     assert.equal(res.body.itemsPrice, 1998);
-    assert.equal(res.body.totalPrice, 1998);
+    // Two short kurtas trigger the "any 2 @ ₹1499" bundle; 1499 qualifies for free shipping.
+    assert.equal(res.body.offerDiscount, 499);
+    assert.equal(res.body.shippingPrice, 0);
+    assert.equal(res.body.totalPrice, 1499);
+  });
+
+  test('orders below ₹1499 pay ₹70 shipping', async () => {
+    const res = await request(app).post('/api/orders/quote').send({ orderItems: [{ _id: cheapProduct._id, qty: 2 }] });
+    assert.equal(res.body.itemsPrice, 1000);
+    assert.equal(res.body.shippingPrice, 70);
+    assert.equal(res.body.totalPrice, 1070);
   });
 
   test('size is required when the product has sizes', async () => {
@@ -246,7 +256,7 @@ describe('orders and payments', () => {
     assert.equal(order.status, 201);
     const rzp = await request(app).post('/api/payment/razorpay').send({ orderId: order.body._id, amount: 1 });
     assert.equal(rzp.status, 200);
-    assert.equal(rzp.body.amount, 199800);
+    assert.equal(rzp.body.amount, 149900);
 
     const payload = { mongo_order_id: order.body._id, razorpay_order_id: rzp.body.id, razorpay_payment_id: 'mock', razorpay_signature: 'mock' };
     const first = await request(app).post('/api/payment/verify').send(payload);
@@ -274,8 +284,9 @@ describe('orders and payments', () => {
 
   test('a 100% coupon order can be confirmed without payment; others cannot', async () => {
     const free = await request(app).post('/api/orders').send({
-      orderItems: [{ _id: cheapProduct._id, qty: 1 }], shippingAddress: address, couponCode: 'FREE',
+      orderItems: [{ _id: product._id, qty: 1, selectedSize: 'M' }, { _id: cheapProduct._id, qty: 1 }], shippingAddress: address, couponCode: 'FREE',
     });
+    assert.equal(free.body.shippingPrice, 0);
     assert.equal(free.body.totalPrice, 0);
     const ok = await request(app).post('/api/payment/bypass').send({ mongo_order_id: free.body._id });
     assert.equal(ok.status, 200);
@@ -333,6 +344,29 @@ describe('reviews', () => {
     const p = await Product.findById(product._id);
     assert.equal(p.rating, 4);
     assert.equal(p.numReviews, 1);
+  });
+});
+
+describe('bundle offers', async () => {
+  const { applyBundleOffers, priceOrder } = await import('../utils/pricing.js');
+  const kurta = (price, qty = 1) => ({ product: `k${price}`, category: 'Short Kurtas', price, qty });
+
+  test('pairs the most expensive units and leaves the cheapest one out', () => {
+    const r = applyBundleOffers([kurta(1299), kurta(899), kurta(799)]);
+    assert.equal(r.discount, 1299 + 899 - 1499);
+    assert.deepEqual(r.bundledQty, [1, 1, 0]);
+  });
+
+  test('never makes a pair more expensive than buying separately', () => {
+    const r = applyBundleOffers([kurta(600, 2)]);
+    assert.equal(r.discount, 0);
+  });
+
+  test('coupons only apply to units outside a bundle', () => {
+    const lines = [kurta(999, 3)];
+    const pricing = priceOrder(lines, { discountPercent: 10, active: true, applicableCategories: [] });
+    assert.equal(pricing.offerDiscount, 999 * 2 - 1499);
+    assert.equal(pricing.discountAmount, 100); // 10% of the one unbundled kurta
   });
 });
 

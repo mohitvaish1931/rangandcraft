@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag, X } from 'lucide-react';
-import { cartCount, cartSubtotal, useAppContext } from '../context/AppContext';
+import { cartCount, useAppContext } from '../context/AppContext';
 import { formatPrice } from '../lib/format';
 import CartLine from './CartLine';
+import BagPerks from './BagPerks';
+import { estimateBag } from '../lib/offers';
 import { useScrollLock } from '../lib/motion';
 
 const CartDrawer = () => {
@@ -22,8 +24,7 @@ const CartDrawer = () => {
   useEffect(() => { dispatch({ type: 'TOGGLE_CART', payload: false }); }, [location.pathname, dispatch]);
 
   const count = cartCount(state.cart);
-  const subtotal = cartSubtotal(state.cart);
-  const savings = state.cart.reduce((sum, i) => sum + Math.max(0, (i.originalPrice || i.price) - i.price) * i.quantity, 0);
+  const estimate = estimateBag(state.cart);
 
   return (
     <>
@@ -48,19 +49,26 @@ const CartDrawer = () => {
         ) : (
           <>
             <div className="rc-drawer__body">
-              <div className="rc-progress" style={{ marginTop: 16 }}>
-                ✦ Free shipping on this order{savings > 0 && <> · You’re saving <strong>{formatPrice(savings)}</strong></>}
-              </div>
+              <BagPerks estimate={estimate} />
               {state.cart.map((item) => <CartLine key={item.key} item={item} onNavigate={close} />)}
             </div>
             <div className="rc-drawer__foot">
+              {estimate.offerDiscount > 0 && (
+                <div className="rc-summary-row rc-summary-row--discount" style={{ fontSize: 14 }}>
+                  <span>Bundle offer</span><span>−{formatPrice(estimate.offerDiscount)}</span>
+                </div>
+              )}
+              <div className="rc-summary-row" style={{ fontSize: 14 }}>
+                <span>Shipping</span>
+                <span>{estimate.shippingPrice ? formatPrice(estimate.shippingPrice) : 'Free'}</span>
+              </div>
               <div className="rc-summary-row" style={{ fontSize: 17 }}>
-                <span>Subtotal</span>
-                <strong style={{ fontWeight: 500 }}>{formatPrice(subtotal)}</strong>
+                <span>Total</span>
+                <strong style={{ fontWeight: 500 }}>{formatPrice(estimate.total)}</strong>
               </div>
               <p className="rc-muted" style={{ fontSize: 13, marginBottom: 14 }}>Taxes included. Coupons can be applied at checkout.</p>
               <button type="button" className="rc-btn rc-btn--block rc-btn--lg" onClick={() => { close(); navigate('/checkout'); }}>
-                Checkout · {formatPrice(subtotal)}
+                Checkout · {formatPrice(estimate.total)}
               </button>
               <Link to="/cart" className="rc-btn rc-btn--outline rc-btn--block" style={{ marginTop: 10 }} onClick={close}>View bag</Link>
             </div>

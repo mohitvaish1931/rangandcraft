@@ -17,7 +17,7 @@ export const FALLBACK_IMAGES = [
 export const ANNOUNCEMENTS = [
   'Any 2 short kurtas @ flat ₹1499',
   'Any 2 half sleeve shirts @ flat ₹1499',
-  'Free shipping on all prepaid orders',
+  'Free shipping on orders above ₹1499',
   'Easy 7-day size exchange',
   '1 lakh+ happy customers',
 ];

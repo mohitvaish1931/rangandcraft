@@ -314,7 +314,7 @@ const ProductDetail = ({ id }: { id: string }) => {
                   </>
                 )}
               </div>
-              <p className="rc-pdp__tax" style={{ marginTop: 6 }}>Inclusive of all taxes · Free shipping on prepaid orders</p>
+              <p className="rc-pdp__tax" style={{ marginTop: 6 }}>Inclusive of all taxes · Free shipping above ₹1499</p>
             </div>
 
             {soldOut ? (
@@ -384,7 +384,7 @@ const ProductDetail = ({ id }: { id: string }) => {
             )}
 
             <div className="rc-perks">
-              <div className="rc-perk"><Truck size={20} strokeWidth={1.4} />Free shipping on prepaid orders</div>
+              <div className="rc-perk"><Truck size={20} strokeWidth={1.4} />Free shipping above ₹1499</div>
               <div className="rc-perk"><RefreshCcw size={20} strokeWidth={1.4} />7-day size exchange</div>
               <div className="rc-perk"><ShieldCheck size={20} strokeWidth={1.4} />Secure payments</div>
             </div>
@@ -420,7 +420,7 @@ const ProductDetail = ({ id }: { id: string }) => {
               <details>
                 <summary>Shipping & exchanges <Plus size={18} /></summary>
                 <div className="rc-accordion__body">
-                  <p>Free shipping on all prepaid orders across India. Wrong size? We offer a 7-day size exchange on unworn pieces with original tags attached.</p>
+                  <p>Shipping is free on orders of ₹1499 and above, and a flat ₹70 below that. Orders are dispatched within 2–3 working days and delivered in 4–8 working days. Wrong size? We offer a 7-day size exchange on unworn pieces with original tags attached.</p>
                   <p style={{ marginTop: 8 }}><Link to="/shipping-policy">Shipping policy</Link> · <Link to="/refund-policy">Exchanges & refunds</Link></p>
                 </div>
               </details>

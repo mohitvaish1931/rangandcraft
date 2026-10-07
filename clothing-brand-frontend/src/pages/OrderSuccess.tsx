@@ -16,7 +16,9 @@ interface Order {
   orderItems: OrderItem[];
   shippingAddress: { name: string; email: string; address: string; city: string; postalCode: string; phoneNumber?: string };
   itemsPrice: number;
+  offerDiscount?: number;
   discountAmount: number;
+  shippingPrice?: number;
   totalPrice: number;
   isPaid: boolean;
   couponCode?: string;
@@ -69,8 +71,9 @@ const OrderSuccess = () => {
             ))}
             <div style={{ marginTop: 12 }}>
               <div className="rc-summary-row"><span>Subtotal</span><span>{formatPrice(order.itemsPrice)}</span></div>
+              {(order.offerDiscount ?? 0) > 0 && <div className="rc-summary-row rc-summary-row--discount"><span>Bundle offer</span><span>−{formatPrice(order.offerDiscount!)}</span></div>}
               {order.discountAmount > 0 && <div className="rc-summary-row rc-summary-row--discount"><span>Discount{order.couponCode ? ` (${order.couponCode})` : ''}</span><span>−{formatPrice(order.discountAmount)}</span></div>}
-              <div className="rc-summary-row"><span>Shipping</span><span>Free</span></div>
+              <div className="rc-summary-row"><span>Shipping</span><span>{order.shippingPrice ? formatPrice(order.shippingPrice) : 'Free'}</span></div>
               <div className="rc-summary-row rc-summary-row--total"><span>{order.isPaid ? 'Paid' : 'Total'}</span><span>{formatPrice(order.totalPrice)}</span></div>
             </div>
             <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--rc-line)', fontSize: 14 }}>
