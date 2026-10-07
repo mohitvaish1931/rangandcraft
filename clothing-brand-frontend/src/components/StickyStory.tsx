@@ -12,20 +12,33 @@ const StickyStory = () => {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // The current chapter is the last one whose heading has passed 60% of the
+  // viewport, so the final chapter still activates near the end of the section.
   useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.step)); }),
-      { rootMargin: '-45% 0px -45% 0px' }
-    );
-    refs.current.forEach((el) => el && io.observe(el));
-    return () => io.disconnect();
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.6;
+      let current = 0;
+      refs.current.forEach((el, i) => { if (el && el.getBoundingClientRect().top < line) current = i; });
+      setActive(current);
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, []);
 
   return (
     <div className="rc-sticky-story">
       <div className="rc-sticky-story__media">
         {STEPS.map((s, i) => <img key={s.image} {...responsiveImage(s.image, '(max-width: 900px) 100vw, 50vw')} alt="" className={i === active ? 'is-current' : ''} loading="lazy" />)}
-        <span className="rc-sticky-story__counter">0{active + 1} / 0{STEPS.length}</span>
+        <span className="rc-sticky-story__counter" aria-hidden>0{active + 1} <i>/</i> 0{STEPS.length}</span>
       </div>
       <div>
         {STEPS.map((s, i) => (

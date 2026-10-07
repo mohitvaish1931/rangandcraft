@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CalendarClock, Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, RefreshCcw, Ruler, Share2, ShieldCheck, Truck, X } from 'lucide-react';
+import { ArrowRight, CalendarClock, Check, Gift, ChevronLeft, ChevronRight, Heart, Minus, Plus, RefreshCcw, Ruler, Share2, ShieldCheck, Truck, X } from 'lucide-react';
 import { MAX_LINE_QUANTITY, useAppContext, type Product } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import ProductReviews from '../components/ProductReviews';
@@ -17,6 +17,7 @@ import Lightbox from '../components/Lightbox';
 import { flyToBag } from '../lib/flyToBag';
 import { scrollToElement, useMediaQuery, useScrollLock } from '../lib/motion';
 import { deliveryWindow } from '../lib/delivery';
+import { offerFor } from '../lib/offers';
 import { getRecentlyViewed, rememberViewed } from '../lib/recentlyViewed';
 
 const SIZE_CHART = [
@@ -237,6 +238,7 @@ const ProductDetail = ({ id }: { id: string }) => {
   const images = [...new Set([product.image, ...(product.images || [])].filter(Boolean))];
   const soldOut = isSoldOut(product);
   const off = discountPercent(product.price, product.originalPrice);
+  const offer = offerFor(product.category);
   const stock = product.countInStock ?? MAX_LINE_QUANTITY;
   const maxQty = Math.max(1, Math.min(MAX_LINE_QUANTITY, stock));
   const needsSize = (product.sizes?.length ?? 0) > 0;
@@ -303,7 +305,7 @@ const ProductDetail = ({ id }: { id: string }) => {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/shop">Shop</Link></li>
           {product.category && <li><Link to={`/shop?category=${encodeURIComponent(product.category)}`}>{product.category}</Link></li>}
-          <li aria-current="page" style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{product.name}</li>
+          <li aria-current="page"><span style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</span></li>
         </ol>
 
         <div className="rc-pdp rc-pdp--stack">
@@ -350,6 +352,13 @@ const ProductDetail = ({ id }: { id: string }) => {
                 )}
               </div>
               <p className="rc-pdp__tax" style={{ marginTop: 6 }}>Inclusive of all taxes · Free shipping above ₹1499</p>
+              {!soldOut && offer && (
+                <Link to={`/shop?category=${encodeURIComponent(product.category)}`} className="rc-offer">
+                  <Gift size={18} strokeWidth={1.5} aria-hidden />
+                  <span><strong>Bundle offer:</strong> {offer.label.replace(/^Any /, 'any ')}. Applied automatically in your bag.</span>
+                  <ArrowRight size={16} aria-hidden />
+                </Link>
+              )}
             </div>
 
             {soldOut ? (

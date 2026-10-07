@@ -266,15 +266,6 @@ const HomePage = () => {
       </section>
 
       {/* ---------- Values + newsletter ---------- */}
-      <div className="rc-values" role="list">
-        {VALUES.map(({ icon: Icon, title, text }) => (
-          <div className="rc-value" key={title} role="listitem">
-            <Icon size={26} strokeWidth={1.3} aria-hidden />
-            <div><strong>{title}</strong><span>{text}</span></div>
-          </div>
-        ))}
-      </div>
-
       <section className="rc-section">
         <div className="rc-container">
           <div className="rc-band" data-reveal="up">

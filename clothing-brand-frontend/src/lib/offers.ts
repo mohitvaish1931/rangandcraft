@@ -10,6 +10,9 @@ export const BUNDLE_OFFERS = [
   { id: 'half-sleeve-2', label: 'Any 2 half sleeve shirts @ ₹1499', noun: 'half sleeve shirt', match: /half\s*sleeve/i, size: 2, price: 1499 },
 ];
 
+/** The bundle offer a product qualifies for, if any. */
+export const offerFor = (category?: string) => BUNDLE_OFFERS.find((o) => o.match.test(category || '')) || null;
+
 export interface BagEstimate {
   itemsPrice: number;
   offerDiscount: number;

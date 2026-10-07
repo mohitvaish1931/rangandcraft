@@ -47,7 +47,7 @@ const Contact = () => {
   const cards = [
     { icon: <WhatsAppIcon width={22} height={22} />, title: 'WhatsApp', text: 'Fastest replies for orders & sizing', action: 'Chat now', href: whatsappLink('Hi Rang and Craft!'), external: true },
     { icon: <Phone size={22} strokeWidth={1.4} />, title: 'Call us', text: SUPPORT_PHONE, action: 'Call now', href: `tel:${SUPPORT_PHONE.replace(/\s/g, '')}` },
-    { icon: <Mail size={22} strokeWidth={1.4} />, title: 'Email', text: SUPPORT_EMAIL, action: 'Send email', href: `mailto:${SUPPORT_EMAIL}` },
+    { icon: <Mail size={22} strokeWidth={1.4} />, title: 'Email', text: 'Write to us anytime', action: 'Send email', href: `mailto:${SUPPORT_EMAIL}` },
     { icon: <MapPin size={22} strokeWidth={1.4} />, title: 'Studio', text: 'Pahadiya Chowk, Jaipur', action: 'Get directions', href: MAPS_URL, external: true },
   ];
 
@@ -65,10 +65,10 @@ const Contact = () => {
       <div className="rc-container rc-section" style={{ paddingTop: 40 }}>
         <div className="rc-grid" style={{ marginBottom: 48 }}>
           {cards.map((c) => (
-            <a key={c.title} href={c.href} {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="rc-panel" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <a key={c.title} href={c.href} {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="rc-panel" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 8, marginTop: 0 }}>
               <span style={{ color: 'var(--rc-gold)' }}>{c.icon}</span>
               <strong style={{ fontWeight: 500, fontSize: 17 }}>{c.title}</strong>
-              <span className="rc-muted" style={{ fontSize: 14, wordBreak: 'break-word' }}>{c.text}</span>
+              <span className="rc-muted" style={{ fontSize: 14 }}>{c.text}</span>
               <span className="rc-link" style={{ marginTop: 'auto', alignSelf: 'flex-start', fontSize: 12 }}>{c.action}</span>
             </a>
           ))}

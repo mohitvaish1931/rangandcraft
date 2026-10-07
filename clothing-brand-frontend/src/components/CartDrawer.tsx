@@ -6,6 +6,9 @@ import { formatPrice } from '../lib/format';
 import CartLine from './CartLine';
 import BagPerks from './BagPerks';
 import { estimateBag } from '../lib/offers';
+import { isSoldOut } from '../lib/catalog';
+import { getImageUrl } from '../utils/mediaHelper';
+import { productId } from '../lib/format';
 import { useScrollLock } from '../lib/motion';
 
 const CartDrawer = () => {
@@ -25,6 +28,16 @@ const CartDrawer = () => {
 
   const count = cartCount(state.cart);
   const estimate = estimateBag(state.cart);
+
+  // A few pieces to complete the look: first ones that finish a bundle, then other favourites.
+  const inBag = new Set(state.cart.map((i) => i.productId));
+  const candidates = state.products.filter((p) => !inBag.has(productId(p)) && !isSoldOut(p));
+  const suggestions = state.cart.length > 0 && state.cart.length <= 2
+    ? [
+        ...candidates.filter((p) => estimate.nudge && p.category === estimate.nudge.category),
+        ...candidates.filter((p) => !estimate.nudge || p.category !== estimate.nudge.category),
+      ].slice(0, 3)
+    : [];
 
   return (
     <>
@@ -51,6 +64,18 @@ const CartDrawer = () => {
             <div className="rc-drawer__body">
               <BagPerks estimate={estimate} onNavigate={close} />
               {state.cart.map((item) => <CartLine key={item.key} item={item} onNavigate={close} />)}
+              {suggestions.length > 0 && (
+                <div className="rc-pair">
+                  <p className="rc-pair__title">{estimate.nudge ? 'Complete your bundle' : 'Complete the look'}</p>
+                  {suggestions.map((p) => (
+                    <Link key={productId(p)} to={`/product/${productId(p)}`} className="rc-pair__item" onClick={close}>
+                      <img src={getImageUrl(p.image, 120)} alt="" loading="lazy" />
+                      <span className="rc-pair__name">{p.name}</span>
+                      <span className="rc-pair__price">{formatPrice(p.price)}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="rc-drawer__foot">
               {estimate.offerDiscount > 0 && (

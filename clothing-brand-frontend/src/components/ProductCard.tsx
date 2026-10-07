@@ -7,6 +7,7 @@ import { getImageUrl, handleImageError, responsiveImage } from '../utils/mediaHe
 const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 25vw';
 import { discountPercent, formatPrice, productId } from '../lib/format';
 import { isSoldOut } from '../lib/catalog';
+import { offerFor } from '../lib/offers';
 import { Stars } from './StarRating';
 import { flyToBag } from '../lib/flyToBag';
 import { useToast } from '../lib/toast';
@@ -98,6 +99,9 @@ const ProductCard = ({ product, priority = false }: Props) => {
           <span className="rc-price__now">{formatPrice(product.price)}</span>
           {off > 0 && <span className="rc-price__was">{formatPrice(product.originalPrice)}</span>}
         </div>
+        {!soldOut && offerFor(product.category) && (
+          <span className="rc-card__offer">Any 2 for {formatPrice(offerFor(product.category)!.price)}</span>
+        )}
         {reviews > 0 && (
           <span className="rc-rating"><Stars value={rating} size={12} /> ({reviews})</span>
         )}

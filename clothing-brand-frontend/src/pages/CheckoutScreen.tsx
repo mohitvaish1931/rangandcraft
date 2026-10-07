@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, ShieldCheck, ShoppingBag, Tag, Truck, X } from 'lucide-react';
+import { ChevronDown, Lock, ShieldCheck, ShoppingBag, Tag, Truck, X } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { estimateBag, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../lib/offers';
 import Seo from '../components/Seo';
@@ -49,6 +49,7 @@ const CheckoutScreen = () => {
     return { ...saved, name: saved.name || state.user?.name || '', email: saved.email || state.user?.email || '', phoneNumber: saved.phoneNumber || state.user?.phone || '' };
   });
   const [errors, setErrors] = useState<Errors>({});
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [couponInput, setCouponInput] = useState('');
   const [coupon, setCoupon] = useState<string | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
@@ -284,7 +285,12 @@ const CheckoutScreen = () => {
 
           <aside className="rc-summary">
             <div className="rc-panel">
-              <h2 className="rc-panel__title">Order summary</h2>
+              <button type="button" className="rc-summary__toggle" aria-expanded={summaryOpen} aria-controls="co-summary" onClick={() => setSummaryOpen((o) => !o)}>
+                <span>{summaryOpen ? 'Hide' : 'Show'} order summary <ChevronDown size={16} aria-hidden /></span>
+                <strong>{formatPrice(total)}</strong>
+              </button>
+              <h2 className="rc-panel__title rc-summary__title">Order summary</h2>
+              <div id="co-summary" className={`rc-summary__body${summaryOpen ? ' is-open' : ''}`}>
               {state.cart.map((item) => (
                 <div className="rc-line" key={item.key}>
                   <div className="rc-thumb-qty">
@@ -339,6 +345,7 @@ const CheckoutScreen = () => {
               </div>
               <div className="rc-summary-row rc-summary-row--total"><span>Total</span><span>{formatPrice(total)}</span></div>
               <p className="rc-muted" style={{ fontSize: 12, marginTop: 6 }}>Inclusive of all taxes</p>
+              </div>
             </div>
           </aside>
         </form>
