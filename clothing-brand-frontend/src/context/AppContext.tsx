@@ -329,6 +329,10 @@ const getJSON = async (url: string) => {
   return res.json();
 };
 
+// Start loading the catalogue as soon as the bundle runs, before React renders.
+let catalogRequest: Promise<unknown> | null = typeof window !== 'undefined' ? getJSON(API_ENDPOINTS.PRODUCTS) : null;
+catalogRequest?.catch(() => {});
+
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, undefined, initialState);
 
@@ -337,7 +341,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     let mounted = true;
     dispatch({ type: 'SET_PRODUCTS_STATUS', payload: 'loading' });
 
-    getJSON(API_ENDPOINTS.PRODUCTS)
+    const request = catalogRequest ?? getJSON(API_ENDPOINTS.PRODUCTS);
+    catalogRequest = null;
+    request
       .then((data) => mounted && dispatch({ type: 'SET_PRODUCTS', payload: Array.isArray(data) ? data : data.products || [] }))
       .catch(() => mounted && dispatch({ type: 'SET_PRODUCTS_STATUS', payload: 'error' }));
     getJSON(API_ENDPOINTS.VIDEOS).then((d) => mounted && dispatch({ type: 'SET_VIDEOS', payload: d })).catch(() => {});

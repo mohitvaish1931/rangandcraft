@@ -78,7 +78,8 @@ const MainLayout = () => {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {!isAdmin && <a href="#main" className="rc-skip-link">Skip to content</a>}
       {!isAdmin && <Header />}
-      <main id="main" style={{ flex: 1, width: '100%' }}>
+      {/* min-height keeps the footer out of view until the page renders (no layout shift). */}
+      <main id="main" style={{ flex: 1, width: '100%', minHeight: isAdmin ? undefined : '100vh' }}>
         <ErrorBoundary>
           <Suspense fallback={<PageFallback />}>
             <div key={isAdmin ? 'admin' : location.pathname} className={isAdmin ? undefined : 'rc-page-enter'}>

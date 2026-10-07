@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom';
 import { useRef, useState } from 'react';
 import { Check, Heart } from 'lucide-react';
 import { useAppContext, type Product } from '../context/AppContext';
-import { getImageUrl, handleImageError } from '../utils/mediaHelper';
+import { getImageUrl, handleImageError, responsiveImage } from '../utils/mediaHelper';
+
+const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 25vw';
 import { discountPercent, formatPrice, productId } from '../lib/format';
 import { isSoldOut } from '../lib/catalog';
 import { Stars } from './StarRating';
@@ -46,13 +48,16 @@ const ProductCard = ({ product, priority = false }: Props) => {
       <div className="rc-card__frame" ref={frameRef}>
         <Link to={href} className="rc-card__media" aria-label={product.name} tabIndex={-1} data-cursor="View">
           <img
-            src={getImageUrl(product.image, 600)}
+            {...responsiveImage(product.image, CARD_SIZES, 600)}
             alt={product.name}
             loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : 'auto'}
             decoding="async"
+            width={600}
+            height={750}
             onError={handleImageError}
           />
-          {altImage && <img className="rc-card__alt" src={getImageUrl(altImage, 600)} alt="" loading="lazy" decoding="async" aria-hidden />}
+          {altImage && <img className="rc-card__alt" {...responsiveImage(altImage, CARD_SIZES, 600)} alt="" loading="lazy" decoding="async" width={600} height={750} aria-hidden />}
         </Link>
         <div className="rc-card__badges">
           {soldOut ? <span className="rc-tag rc-tag--dark">Sold out</span> : off > 0 && <span className="rc-tag rc-tag--sale">{off}% off</span>}

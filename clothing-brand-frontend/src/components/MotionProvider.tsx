@@ -86,7 +86,12 @@ const MotionProvider = () => {
 
     scan();
     update();
-    const mo = new MutationObserver(() => { scan(); onScroll(); });
+    // Batch DOM changes (route renders produce many mutations) into one scan.
+    let scanTimer = 0;
+    const mo = new MutationObserver(() => {
+      if (scanTimer) return;
+      scanTimer = window.setTimeout(() => { scanTimer = 0; scan(); onScroll(); }, 150);
+    });
     mo.observe(document.body, { childList: true, subtree: true });
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
@@ -95,6 +100,7 @@ const MotionProvider = () => {
       revealIO.disconnect();
       trackIO.disconnect();
       mo.disconnect();
+      window.clearTimeout(scanTimer);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
       cancelAnimationFrame(frame);

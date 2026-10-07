@@ -135,3 +135,34 @@ export const handleVideoError = (event: React.SyntheticEvent<HTMLVideoElement>) 
   console.error('Video failed to load:', event.currentTarget.src);
   event.currentTarget.poster = PLACEHOLDER_IMAGE;
 };
+
+// Editorial photos in /public/images that have pre-generated WebP variants.
+const LOCAL_VARIANTS = new Set([
+  'clothing_rack_hero', 'heritage-edit-men', 'hero-banner', 'indowestern-men',
+  'kurta-men', 'saree-men', 'suits-men', 'tops-men',
+]);
+const CLOUDINARY_WIDTHS = [360, 540, 720, 960, 1280];
+
+export interface ResponsiveImage { src: string; srcSet?: string; sizes?: string }
+
+/**
+ * src/srcSet/sizes for an image so phones download small files:
+ * local editorial photos use their WebP variants, Cloudinary photos are
+ * resized on the fly, anything else is returned as-is.
+ */
+export const responsiveImage = (url: string | undefined, sizes = '100vw', fallbackWidth = 720): ResponsiveImage => {
+  if (!url) return { src: PLACEHOLDER_IMAGE };
+  const local = url.match(/^\/images\/([\w-]+)\.(?:jpe?g|png|webp)$/);
+  if (local && LOCAL_VARIANTS.has(local[1])) {
+    const base = `/images/${local[1]}`;
+    return { src: `${base}.webp`, srcSet: `${base}-640.webp 640w, ${base}.webp 1200w`, sizes };
+  }
+  if (url.includes('res.cloudinary.com') && url.includes('/upload/') && !url.includes('/upload/c_')) {
+    return {
+      src: getImageUrl(url, fallbackWidth),
+      srcSet: CLOUDINARY_WIDTHS.map((w) => `${getImageUrl(url, w)} ${w}w`).join(', '),
+      sizes,
+    };
+  }
+  return { src: getImageUrl(url, fallbackWidth) };
+};

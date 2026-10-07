@@ -4,7 +4,7 @@ import { ArrowRight, ChevronDown, Heart, Menu, Search, ShoppingBag, User, X } fr
 import { cartCount, useAppContext } from '../context/AppContext';
 import { categoriesOf, matchesQuery } from '../lib/catalog';
 import { formatPrice, productId } from '../lib/format';
-import { getImageUrl } from '../utils/mediaHelper';
+import { getImageUrl, responsiveImage } from '../utils/mediaHelper';
 import { ANNOUNCEMENTS, FALLBACK_IMAGES } from '../lib/brand';
 import { useScrollLock } from '../lib/motion';
 import logoImg from '../assets/logo.png';
@@ -26,7 +26,7 @@ const MegaMenu = ({ open, onClose }: { open: boolean; onClose: () => void }) => 
     <div className={`rc-mega${open ? ' is-open' : ''}`} aria-hidden={!open}>
       <div className="rc-container rc-mega__grid">
         <div>
-          <h5>Categories</h5>
+          <p className="rc-mega__title">Categories</p>
           <ul>
             {categories.map((c) => (
               <li key={c.name}>
@@ -38,7 +38,7 @@ const MegaMenu = ({ open, onClose }: { open: boolean; onClose: () => void }) => 
           </ul>
         </div>
         <div>
-          <h5>Discover</h5>
+          <p className="rc-mega__title">Discover</p>
           <ul>
             <li><Link to="/shop" onClick={onClose} tabIndex={open ? 0 : -1}>Shop all</Link></li>
             <li><Link to="/shop?sort=newest" onClick={onClose} tabIndex={open ? 0 : -1}>New arrivals</Link></li>
@@ -47,11 +47,11 @@ const MegaMenu = ({ open, onClose }: { open: boolean; onClose: () => void }) => 
           </ul>
         </div>
         <Link to="/shop?category=Suits" className="rc-mega__tile" onClick={onClose} tabIndex={open ? 0 : -1}>
-          <img src={FALLBACK_IMAGES[3]} alt="" loading="lazy" />
+          <img {...responsiveImage(FALLBACK_IMAGES[3], '25vw')} alt="" loading="lazy" />
           <span>Festive edit</span>
         </Link>
         <Link to="/shop?sort=newest" className="rc-mega__tile" onClick={onClose} tabIndex={open ? 0 : -1}>
-          <img src={FALLBACK_IMAGES[0]} alt="" loading="lazy" />
+          <img {...responsiveImage(FALLBACK_IMAGES[0], '25vw')} alt="" loading="lazy" />
           <span>New this season</span>
         </Link>
       </div>
@@ -223,9 +223,10 @@ const Header = () => {
               </button>
             </div>
 
-            <Link to="/" className="rc-logo" aria-label="Rang and Craft — home">
+            <Link to="/" className="rc-logo">
               <img src={logoImg} alt="" width={58} height={56} />
               <span className="rc-logo__word">Rang &amp; Craft<small>Jaipur</small></span>
+              <span className="rc-sr-only">home</span>
             </Link>
 
             <div className="rc-header__right">
@@ -267,7 +268,7 @@ const Header = () => {
       <div className={`rc-overlay${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(false)} aria-hidden />
       <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} data-lenis-prevent aria-label="Menu" aria-hidden={!menuOpen}>
         <div className="rc-drawer__head">
-          <img src={logoImg} alt="Rang and Craft" style={{ height: 40 }} />
+          <img src={logoImg} alt="Rang and Craft" width={41} height={40} style={{ height: 40, width: 'auto' }} />
           <button type="button" className="rc-icon-btn" aria-label="Close menu" onClick={() => setMenuOpen(false)}>
             <X size={22} />
           </button>

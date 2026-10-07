@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import type Lenis from 'lenis';
 
 export const prefersReducedMotion = () =>
@@ -42,3 +42,15 @@ export const scrollToElement = (el: Element | null, offset = -140) => {
   if (lenis) lenis.scrollTo(el as HTMLElement, { offset });
   else el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
+
+/** Live media-query match (e.g. render the desktop gallery only on desktop). */
+export const useMediaQuery = (query: string) =>
+  useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia(query);
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    },
+    () => window.matchMedia(query).matches,
+    () => false
+  );

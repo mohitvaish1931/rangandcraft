@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { responsiveImage } from '../utils/mediaHelper';
 
 const STEPS = [
   { title: 'Designed in Jaipur', text: 'Every collection begins in the Pink City — its colours, arches and centuries of craft shape each print and silhouette.', image: '/images/heritage-edit-men.jpg' },
@@ -23,7 +24,7 @@ const StickyStory = () => {
   return (
     <div className="rc-sticky-story">
       <div className="rc-sticky-story__media">
-        {STEPS.map((s, i) => <img key={s.image} src={s.image} alt="" className={i === active ? 'is-current' : ''} loading="lazy" />)}
+        {STEPS.map((s, i) => <img key={s.image} {...responsiveImage(s.image, '(max-width: 900px) 100vw, 50vw')} alt="" className={i === active ? 'is-current' : ''} loading="lazy" />)}
         <span className="rc-sticky-story__counter">0{active + 1} / 0{STEPS.length}</span>
       </div>
       <div>

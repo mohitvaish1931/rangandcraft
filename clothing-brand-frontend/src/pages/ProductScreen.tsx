@@ -7,7 +7,7 @@ import ProductReviews from '../components/ProductReviews';
 import Seo from '../components/Seo';
 import { Stars } from '../components/StarRating';
 import { API_ENDPOINTS } from '../utils/api';
-import { getImageUrl, handleImageError } from '../utils/mediaHelper';
+import { getImageUrl, handleImageError, responsiveImage } from '../utils/mediaHelper';
 import { discountPercent, formatPrice, productId } from '../lib/format';
 import { isSoldOut } from '../lib/catalog';
 import { useToast } from '../lib/toast';
@@ -15,7 +15,7 @@ import { whatsappLink } from '../lib/brand';
 import NotFound from './NotFound';
 import Lightbox from '../components/Lightbox';
 import { flyToBag } from '../lib/flyToBag';
-import { scrollToElement, useScrollLock } from '../lib/motion';
+import { scrollToElement, useMediaQuery, useScrollLock } from '../lib/motion';
 
 const SIZE_CHART = [
   { size: 'S', chest: 36, waist: 32, hip: 38 },
@@ -68,7 +68,7 @@ const Gallery = ({ images, name, onOpen }: { images: string[]; name: string; onO
           }}
         >
           <img
-            src={getImageUrl(images[index], 1200)}
+            {...responsiveImage(images[index], '100vw', 1080)}
             alt={`${name} — image ${index + 1} of ${count}`}
             fetchPriority={index === 0 ? 'high' : 'auto'}
             onError={handleImageError}
@@ -142,6 +142,7 @@ const ProductDetail = ({ id }: { id: string }) => {
   const [added, setAdded] = useState(false);
   const buyRef = useRef<HTMLDivElement>(null);
   const firstImageRef = useRef<HTMLButtonElement>(null);
+  const isDesktop = useMediaQuery('(min-width: 901px)');
 
   useEffect(() => {
     let alive = true;
@@ -231,7 +232,7 @@ const ProductDetail = ({ id }: { id: string }) => {
     }
     setAdded(true);
     window.setTimeout(() => setAdded(false), 2000);
-    const from = window.matchMedia('(min-width: 901px)').matches ? firstImageRef.current : document.querySelector('.rc-gallery__main');
+    const from = isDesktop ? firstImageRef.current : document.querySelector('.rc-gallery__main');
     flyToBag(getImageUrl(product.image, 400), from).then(() => dispatch({ type: 'TOGGLE_CART', payload: true }));
   };
 
@@ -277,16 +278,19 @@ const ProductDetail = ({ id }: { id: string }) => {
 
         <div className="rc-pdp rc-pdp--stack">
           <div>
+            {isDesktop ? (
             <div className="rc-stack">
               {images.map((img, i) => (
                 <button key={img + i} ref={i === 0 ? firstImageRef : undefined} type="button" onClick={() => setLightbox(i)} data-cursor="Zoom" aria-label={`View image ${i + 1} full screen`} data-reveal={i === 0 ? undefined : 'fade'}>
-                  <img src={getImageUrl(img, i === 0 ? 1400 : 900)} alt={i === 0 ? product.name : ''} loading={i < 2 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : 'auto'} onError={handleImageError} />
+                  <img {...responsiveImage(img, i === 0 ? '60vw' : '30vw', i === 0 ? 1280 : 720)} alt={i === 0 ? product.name : ''} loading={i < 2 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : 'auto'} onError={handleImageError} />
                 </button>
               ))}
             </div>
+            ) : (
             <div className="rc-pdp-mobile-gallery">
               <Gallery images={images.length ? images : ['']} name={product.name} onOpen={setLightbox} />
             </div>
+            )}
           </div>
 
           <div className="rc-pdp__info">

@@ -164,7 +164,7 @@ const ProductReviews = ({ productId, productName }: { productId: string; product
                 <div className="rc-review__head">
                   <div>
                     <Stars value={r.rating} />
-                    <h4>{r.title}</h4>
+                    <h3 className="rc-review__title">{r.title}</h3>
                   </div>
                   <span className="rc-muted" style={{ fontSize: 13 }}>{formatDate(r.createdAt)}</span>
                 </div>

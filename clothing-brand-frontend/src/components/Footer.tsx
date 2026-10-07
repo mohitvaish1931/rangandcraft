@@ -16,7 +16,7 @@ const Footer = () => {
       <div className="rc-container">
         <div className="rc-footer__grid">
           <div className="rc-footer__brand">
-            <img src={logoImg} alt="Rang and Craft" loading="lazy" />
+            <img src={logoImg} alt="Rang and Craft" loading="lazy" width={66} height={64} />
             <p>Menswear rooted in the royal legacy of Jaipur — breathable printed cotton, honest prices, made to be worn every day.</p>
             <div className="rc-footer__contact">
               <a href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`}><Phone size={16} /> {SUPPORT_PHONE}</a>
@@ -32,7 +32,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4>Shop</h4>
+            <h2 className="rc-footer__title">Shop</h2>
             <ul>
               <li><Link to="/shop">All products</Link></li>
               <li><Link to="/shop?sort=newest">New in</Link></li>
@@ -44,7 +44,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4>Help</h4>
+            <h2 className="rc-footer__title">Help</h2>
             <ul>
               <li><Link to="/track-order">Track your order</Link></li>
               <li><Link to="/shipping-policy">Shipping</Link></li>
@@ -56,7 +56,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4>Rang and Craft</h4>
+            <h2 className="rc-footer__title">Rang and Craft</h2>
             <ul>
               <li><Link to="/about">Our story</Link></li>
               <li><Link to="/gallery">Gallery</Link></li>

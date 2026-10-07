@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
-import { getImageUrl } from '../utils/mediaHelper';
+import { getImageUrl, responsiveImage } from '../utils/mediaHelper';
 import { FALLBACK_IMAGES } from '../lib/brand';
 
 interface Category { name: string; count: number; image?: string }
@@ -10,7 +10,7 @@ interface Category { name: string; count: number; image?: string }
 const CategoryList = ({ categories }: { categories: Category[] }) => {
   const floatRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState<number | null>(null);
-  const images = categories.map((c, i) => (c.image ? getImageUrl(c.image, 500) : FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]));
+  const images = categories.map((c, i) => (c.image ? getImageUrl(c.image, 480) : responsiveImage(FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]).src.replace('.webp', '-640.webp')));
 
   const onMove = (e: React.MouseEvent) => {
     if (floatRef.current) {

@@ -13,6 +13,7 @@ import { Stars } from '../components/StarRating';
 import { categoriesOf, isOnSale, isSoldOut, sortProducts } from '../lib/catalog';
 import { productId } from '../lib/format';
 import { useLatestReviews } from '../lib/useLatestReviews';
+import { responsiveImage } from '../utils/mediaHelper';
 import logoImg from '../assets/logo.png';
 
 const VALUES = [
@@ -91,13 +92,13 @@ const HomePage = () => {
       <section className="rc-hero rc-hero--home">
         <div className="rc-hero__media">
           <div className="rc-plx" data-parallax="0.18">
-            <img src="/images/hero-banner.webp" alt="" fetchPriority="high" />
+            <img {...responsiveImage('/images/hero-banner.png')} alt="" fetchPriority="high" decoding="async" />
           </div>
         </div>
         <span className="rc-hero__side" aria-hidden>Rang &amp; Craft — Jaipur, Rajasthan</span>
         <div className="rc-container rc-hero__layout">
           <span className="rc-eyebrow rc-rise rc-rise--1">The Jaipur Edit</span>
-          <SplitText as="h1" className="rc-hero__title" text={'Jaipur prints,\n*everyday ease.*'} delay={250} />
+          <SplitText as="h1" className="rc-hero__title" text={'Jaipur prints,\n*everyday ease.*'} delay={150} soft />
           <div className="rc-hero__foot">
             <div>
               <p className="rc-hero__text rc-rise rc-rise--3">
@@ -116,7 +117,7 @@ const HomePage = () => {
                   <defs><path id="rc-circle" d="M66,66 m-54,0 a54,54 0 1,1 108,0 a54,54 0 1,1 -108,0" /></defs>
                   <text><textPath href="#rc-circle">Rang &amp; Craft • Crafted in Jaipur • Since day one •</textPath></text>
                 </svg>
-                <img src={logoImg} alt="" />
+                <img src={logoImg} alt="" width={38} height={37} />
               </div>
             </div>
           </div>
@@ -154,7 +155,7 @@ const HomePage = () => {
       </section>
 
       {/* ---------- New arrivals rail ---------- */}
-      <section className="rc-section rc-section--tint">
+      <section className="rc-section rc-section--tint rc-cv">
         <div className="rc-container">
           <div className="rc-section-head">
             <div>
@@ -188,11 +189,11 @@ const HomePage = () => {
       )}
 
       {/* ---------- Dark festive edit ---------- */}
-      <section className="rc-section rc-dark">
+      <section className="rc-section rc-dark rc-cv">
         <div className="rc-container rc-edit">
           <div className="rc-edit__media" data-reveal="mask">
             <div className="rc-plx" data-parallax="0.08">
-              <img src="/images/suits-men.jpg" alt="Festive wear from Rang and Craft" loading="lazy" />
+              <img {...responsiveImage('/images/suits-men.jpg', '(max-width: 900px) 100vw, 50vw')} alt="Festive wear from Rang and Craft" loading="lazy" />
             </div>
           </div>
           <div>
@@ -212,7 +213,7 @@ const HomePage = () => {
       </section>
 
       {/* ---------- Sticky story ---------- */}
-      <section className="rc-section">
+      <section className="rc-section rc-cv">
         <div className="rc-container">
           <div className="rc-section-head">
             <div>
@@ -226,7 +227,7 @@ const HomePage = () => {
 
       {/* ---------- Reviews ---------- */}
       {quotes.length > 0 && (
-        <section className="rc-section rc-section--tint">
+        <section className="rc-section rc-section--tint rc-cv">
           <div className="rc-container">
             <div className="rc-section-head rc-section-head--center">
               <span className="rc-eyebrow">Customer love</span>
@@ -245,7 +246,7 @@ const HomePage = () => {
       )}
 
       {/* ---------- Lookbook ---------- */}
-      <section className="rc-section">
+      <section className="rc-section rc-cv">
         <div className="rc-container">
           <div className="rc-section-head">
             <div>
@@ -255,9 +256,9 @@ const HomePage = () => {
             <Link to="/gallery" className="rc-link">Open the lookbook <ArrowRight size={14} /></Link>
           </div>
           <div className="rc-lookbook">
-            {['/images/indowestern-men.jpg', '/images/tops-men.jpg', '/images/saree-men.jpg', '/images/clothing_rack_hero.webp'].map((src, i) => (
+            {['/images/indowestern-men.jpg', '/images/tops-men.jpg', '/images/saree-men.jpg', '/images/clothing_rack_hero.png'].map((src, i) => (
               <Link key={src} to="/gallery" data-reveal="mask" data-cursor="View" style={{ '--d': `${i * 120}ms` } as React.CSSProperties} aria-label="Open the lookbook">
-                <img src={src} alt="" loading="lazy" />
+                <img {...responsiveImage(src, '(max-width: 1100px) 50vw, 25vw')} alt="" loading="lazy" />
               </Link>
             ))}
           </div>

@@ -2,17 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import Seo from '../components/Seo';
-import { getImageUrl } from '../utils/mediaHelper';
+import { responsiveImage } from '../utils/mediaHelper';
 
 const EDITORIAL = [
-  '/images/hero-banner.webp',
+  '/images/hero-banner.png',
   '/images/kurta-men.jpg',
   '/images/suits-men.jpg',
   '/images/indowestern-men.jpg',
   '/images/tops-men.jpg',
   '/images/saree-men.jpg',
   '/images/heritage-edit-men.jpg',
-  '/images/clothing_rack_hero.webp',
+  '/images/clothing_rack_hero.png',
 ];
 
 const Gallery = () => {
@@ -55,7 +55,7 @@ const Gallery = () => {
               style={{ display: 'block', width: '100%', marginBottom: 16, padding: 0, border: 0, borderRadius: 12, overflow: 'hidden', cursor: 'zoom-in', breakInside: 'avoid', background: 'var(--rc-sand)' }}
               aria-label={`Open image ${i + 1}`}
             >
-              <img src={getImageUrl(src, 600)} alt="" loading="lazy" style={{ width: '100%', display: 'block' }} />
+              <img {...responsiveImage(src, '(max-width: 640px) 100vw, 33vw', 600)} alt="" loading="lazy" style={{ width: '100%', display: 'block' }} />
             </button>
           ))}
         </div>
@@ -63,7 +63,7 @@ const Gallery = () => {
 
       {open !== null && (
         <div className="rc-modal" role="dialog" aria-modal="true" aria-label="Image viewer" onClick={() => setOpen(null)} style={{ background: 'rgba(10,9,8,0.92)' }}>
-          <img src={getImageUrl(images[open], 1400)} alt="" style={{ maxWidth: '92vw', maxHeight: '88vh', objectFit: 'contain', borderRadius: 8 }} onClick={(e) => e.stopPropagation()} />
+          <img src={responsiveImage(images[open], '100vw', 1400).src} alt="" style={{ maxWidth: '92vw', maxHeight: '88vh', objectFit: 'contain', borderRadius: 8 }} onClick={(e) => e.stopPropagation()} />
           <button type="button" className="rc-icon-btn" style={{ position: 'fixed', top: 16, right: 16, color: '#fff' }} onClick={() => setOpen(null)} aria-label="Close"><X size={24} /></button>
           <button type="button" className="rc-icon-btn" style={{ position: 'fixed', left: 12, top: '50%', color: '#fff' }} onClick={(e) => { e.stopPropagation(); setOpen((open - 1 + images.length) % images.length); }} aria-label="Previous"><ChevronLeft size={28} /></button>
           <button type="button" className="rc-icon-btn" style={{ position: 'fixed', right: 12, top: '50%', color: '#fff' }} onClick={(e) => { e.stopPropagation(); setOpen((open + 1) % images.length); }} aria-label="Next"><ChevronRight size={28} /></button>

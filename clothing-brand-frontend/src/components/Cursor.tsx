@@ -16,19 +16,20 @@ const Cursor = () => {
     document.documentElement.classList.add('rc-has-cursor');
     let x = -100, y = -100, tx = -100, ty = -100, frame = 0;
 
+    // The loop only runs while the follower is catching up with the pointer.
     const loop = () => {
       x += (tx - x) * 0.2;
       y += (ty - y) * 0.2;
       el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      frame = requestAnimationFrame(loop);
+      frame = Math.abs(tx - x) + Math.abs(ty - y) > 0.3 ? requestAnimationFrame(loop) : 0;
     };
     const onMove = (e: PointerEvent) => {
       tx = e.clientX; ty = e.clientY;
+      if (!frame) frame = requestAnimationFrame(loop);
       const zone = (e.target as Element).closest<HTMLElement>('[data-cursor]');
       setLabel(zone?.dataset.cursor ?? '');
     };
     const onLeave = () => setLabel('');
-    frame = requestAnimationFrame(loop);
     window.addEventListener('pointermove', onMove, { passive: true });
     document.addEventListener('pointerleave', onLeave);
     return () => {

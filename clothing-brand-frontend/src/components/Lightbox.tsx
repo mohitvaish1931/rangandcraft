@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { getImageUrl } from '../utils/mediaHelper';
+import { responsiveImage } from '../utils/mediaHelper';
 import { useScrollLock } from '../lib/motion';
 
 interface Props { images: string[]; start: number; onClose: () => void; alt?: string }
@@ -23,7 +23,7 @@ const Lightbox = ({ images, start, onClose, alt = '' }: Props) => {
 
   return (
     <div className="rc-lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onClick={onClose} data-lenis-prevent>
-      <img key={index} src={getImageUrl(images[index], 1600)} alt={alt} onClick={(e) => e.stopPropagation()} />
+      <img key={index} src={responsiveImage(images[index], '100vw', 1600).src} alt={alt} onClick={(e) => e.stopPropagation()} />
       <div className="rc-lightbox__count">{index + 1} / {count}</div>
       <button type="button" className="rc-icon-btn rc-lightbox__close" onClick={onClose} aria-label="Close"><X size={24} /></button>
       {count > 1 && (

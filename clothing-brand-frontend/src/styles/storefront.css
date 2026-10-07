@@ -7,7 +7,7 @@
 :root {
   --rc-ink: #1d1b18;
   --rc-ink-soft: #4b453e;
-  --rc-muted: #857b70;
+  --rc-muted: #6e655b;
   --rc-line: #e7dfd3;
   --rc-line-strong: #d6cab9;
   --rc-paper: #fffdf9;
@@ -16,7 +16,8 @@
   --rc-brand: #1f4645;
   --rc-brand-deep: #143130;
   --rc-brand-soft: #e3ecea;
-  --rc-gold: #b07d45;
+  --rc-gold: #9a6a36;
+  --rc-gold-ink: #8c5f2f; /* small text on light backgrounds (AA) */
   --rc-gold-soft: #ead7bb;
   --rc-sale: #a2412c;
   --rc-success: #2d6a4f;
@@ -75,7 +76,7 @@ a { color: inherit; }
 .rc-h3 { font-size: clamp(1.35rem, 2vw, 1.6rem); line-height: 1.2; }
 .rc-eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
-  font-size: 12px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--rc-gold);
+  font-size: 12px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--rc-gold-ink);
 }
 .rc-eyebrow::before { content: ''; width: 24px; height: 1px; background: currentColor; }
 .rc-lead { font-size: clamp(1rem, 1.3vw, 1.125rem); color: var(--rc-ink-soft); font-weight: 300; max-width: 60ch; }
@@ -108,7 +109,7 @@ a { color: inherit; }
 .rc-btn--ghost-light { --btn-bg: transparent; --btn-fg: #fff; --btn-border: rgba(255, 255, 255, 0.7); }
 .rc-btn--ghost-light:hover { --btn-bg: #fff; --btn-fg: var(--rc-ink); --btn-border: #fff; }
 .rc-btn--gold { --btn-bg: var(--rc-gold); --btn-border: var(--rc-gold); }
-.rc-btn--gold:hover { --btn-bg: #966837; --btn-border: #966837; }
+.rc-btn--gold:hover { --btn-bg: #7c5428; --btn-border: #7c5428; }
 .rc-link {
   display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 0; cursor: pointer;
   font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rc-ink);
@@ -413,7 +414,7 @@ a { color: inherit; }
 .rc-bar span { display: block; height: 100%; background: var(--rc-gold); border-radius: inherit; }
 .rc-review { padding: 24px 0; border-bottom: 1px solid var(--rc-line); }
 .rc-review__head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
-.rc-review h4 { font-weight: 500; font-size: 16px; margin: 6px 0; }
+.rc-review .rc-review__title { font-weight: 500; font-size: 16px; margin: 6px 0; }
 .rc-review p { color: var(--rc-ink-soft); }
 .rc-verified { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--rc-success); }
 .rc-star-input { display: inline-flex; gap: 4px; }
@@ -505,7 +506,7 @@ a { color: inherit; }
 .rc-footer__grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 40px; padding-block: clamp(48px, 7vw, 88px) 40px; }
 .rc-footer__brand img { height: 64px; width: auto; filter: brightness(0) invert(0.93) sepia(0.2); margin-bottom: 18px; }
 .rc-footer__brand p { font-weight: 300; max-width: 34ch; font-size: 15px; }
-.rc-footer h4 { font-family: var(--rc-font-body); font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rc-gold-soft); margin-bottom: 18px; }
+.rc-footer .rc-footer__title { font-family: var(--rc-font-body); font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rc-gold-soft); margin-bottom: 18px; }
 .rc-footer ul { list-style: none; padding: 0; display: grid; gap: 10px; font-size: 15px; font-weight: 300; }
 .rc-footer__contact { display: grid; gap: 10px; font-size: 15px; font-weight: 300; margin-top: 18px; }
 .rc-footer__contact a { display: inline-flex; gap: 10px; align-items: center; }
@@ -565,8 +566,10 @@ a { color: inherit; }
   .rc-gallery__main { border-radius: 0; }
   .rc-gallery__thumbs { display: none; }
   .rc-gallery__dots { display: flex; justify-content: center; gap: 6px; padding-top: 12px; }
-  .rc-gallery__dots button { width: 7px; height: 7px; border-radius: 50%; border: 0; padding: 0; background: var(--rc-line-strong); cursor: pointer; }
-  .rc-gallery__dots button.is-active { background: var(--rc-ink); width: 20px; border-radius: 999px; }
+  .rc-gallery__dots { gap: 0; }
+  .rc-gallery__dots button { width: 24px; height: 24px; border: 0; padding: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+  .rc-gallery__dots button::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: var(--rc-line-strong); transition: width 0.3s var(--rc-ease), background 0.3s; }
+  .rc-gallery__dots button.is-active::before { background: var(--rc-ink); width: 20px; }
   .rc-summary, .rc-reviews__summary, .rc-account__nav { position: static; }
   .rc-summary { order: -1; }
   .rc-account__nav { flex-direction: row; overflow-x: auto; }

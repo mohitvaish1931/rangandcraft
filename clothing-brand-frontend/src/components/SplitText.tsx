@@ -6,17 +6,19 @@ interface Props {
   className?: string;
   delay?: number;
   id?: string;
+  /** Rise without a mask, so the text paints immediately (use for above-the-fold LCP text). */
+  soft?: boolean;
 }
 
 /**
  * Headline whose words rise from a mask when scrolled into view.
  * Wrap words in *asterisks* for italics; "\n" forces a line break.
  */
-const SplitText = ({ text, as: Tag = 'h2', className = '', delay = 0, id }: Props) => {
+const SplitText = ({ text, as: Tag = 'h2', className = '', delay = 0, id, soft = false }: Props) => {
   let index = 0;
   const lines = text.split('\n');
   return (
-    <Tag className={`rc-splittext ${className}`} data-reveal="" aria-label={text.replace(/\*/g, '').replace(/\n/g, ' ')} id={id} style={{ '--split-delay': `${delay}ms` } as React.CSSProperties}>
+    <Tag className={`rc-splittext${soft ? ' rc-splittext--soft' : ''} ${className}`} data-reveal="" aria-label={text.replace(/\*/g, '').replace(/\n/g, ' ')} id={id} style={{ '--split-delay': `${delay}ms` } as React.CSSProperties}>
       {lines.map((line, li) => (
         <Fragment key={li}>
           {line.split(/(\*[^*]+\*)/).filter(Boolean).flatMap((chunk, ci) => {
