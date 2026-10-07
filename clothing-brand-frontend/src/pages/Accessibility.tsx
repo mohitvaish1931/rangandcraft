@@ -1,171 +1,60 @@
-import React from 'react';
-import { useSEO } from '../utils/useSEO';
-import { Eye, Globe, Users, Headphones, Mail, ShieldCheck, Lock, RefreshCcw } from 'lucide-react';
+import { Eye, Globe, Headphones, Keyboard, Users } from 'lucide-react';
+import Seo from '../components/Seo';
+import { HelpBand, InfoHero, PolicyList } from '../components/InfoPage';
 
-const Accessibility = () => {
-  useSEO({
-    title: 'Accessibility Statement - RANG AND CRAFT',
-    description: 'Our commitment to making our website accessible to everyone.',
-    keywords: 'accessibility, inclusive design, RANG AND CRAFT accessibility',
-    url: 'https://rangandcraft.store/accessibility',
-    type: 'website'
-  });
+const Accessibility = () => (
+  <>
+    <Seo title="Accessibility" description="Our commitment to making Rang and Craft easy to use for everyone." path="/accessibility" />
+    <InfoHero
+      eyebrow="For everyone"
+      title={<>Accessibility <em>statement</em></>}
+      intro="Shopping with us should be easy for everyone, whatever device or assistive technology you use."
+      policyNav
+    />
 
-  const sections = [
-    {
-      icon: <Users size={30} />,
-      title: "OUR COMMITMENT",
-      text: "At RANG AND CRAFT, we are committed to ensuring that our website is accessible to the widest possible audience, regardless of technology or ability. We are actively working to increase the usability of our website and adhere to available standards."
-    },
-    {
-      icon: <Globe size={30} />,
-      title: "STANDARDS & GUIDELINES",
-      text: "We aim to comply with all relevant accessibility standards, including the World Wide Web Consortium (W3C) Web Content Accessibility Guidelines (WCAG) 2.1. These guidelines explain how to make web content more accessible for people with disabilities."
-    },
-    {
-      icon: <Eye size={30} />,
-      title: "ACCESSIBILITY FEATURES",
-      text: "We use semantic HTML, proper contrast ratios, and keyboard navigation features to ensure a seamless experience. Our team is trained on accessibility best practices to incorporate them into our digital presence."
-    },
-    {
-      icon: <Headphones size={30} />,
-      title: "FEEDBACK",
-      text: "We welcome your feedback on the accessibility of our website. If you encounter any barriers or have suggestions on how we can improve, please reach out to us."
-    }
-  ];
+    <section className="rc-section">
+      <div className="rc-container rc-info-body">
+        <PolicyList
+          items={[
+            {
+              icon: <Users size={22} strokeWidth={1.5} />,
+              title: 'Our commitment',
+              body: <p>We want our website to be usable by the widest possible audience, regardless of technology or ability, and we keep improving it as we grow.</p>,
+            },
+            {
+              icon: <Globe size={22} strokeWidth={1.5} />,
+              title: 'Standards we follow',
+              body: <p>We aim to meet the W3C Web Content Accessibility Guidelines (WCAG) 2.1 at level AA, and we check new pages with automated audits and manual testing.</p>,
+            },
+            {
+              icon: <Keyboard size={22} strokeWidth={1.5} />,
+              title: 'What we’ve built in',
+              body: (
+                <ul>
+                  <li>Every page can be used with a keyboard, with visible focus and a “Skip to content” link.</li>
+                  <li>Text and buttons meet AA colour-contrast ratios.</li>
+                  <li>Images have text descriptions, and form fields have clear labels and error messages.</li>
+                  <li>Animations are switched off when your device asks for reduced motion.</li>
+                </ul>
+              ),
+            },
+            {
+              icon: <Eye size={22} strokeWidth={1.5} />,
+              title: 'Known limitations',
+              body: <p>Some product photos and older reviews may have limited descriptions. If anything gets in your way, tell us and we’ll help you complete your order directly.</p>,
+            },
+            {
+              icon: <Headphones size={22} strokeWidth={1.5} />,
+              title: 'Feedback',
+              body: <p>We welcome your feedback. If you run into a barrier or have a suggestion, please reach out by WhatsApp, email or phone.</p>,
+            },
+          ]}
+        />
 
-  return (
-    <div className="policy-page-v2" style={{ 
-      backgroundColor: '#f9fafa', 
-      color: '#295454', 
-      minHeight: '100vh', 
-      fontFamily: "'Inter', sans-serif",
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      {/* Background Patterns */}
-      <div style={{ position: 'absolute', top: '100px', left: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px' }} />
+        <HelpBand title="Having trouble using the site?" text="Tell us what happened and we’ll help you right away." message="Hi Rang and Craft! I had trouble using your website." />
       </div>
-      <div style={{ position: 'absolute', top: '150px', right: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px', transform: 'scaleX(-1)' }} />
-      </div>
-
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>INCLUSIVITY</span>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#295454' }}>Accessibility</h1>
-          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
-          <p style={{ fontSize: '1.1rem', color: '#666' }}>Our commitment to making our website accessible to everyone.</p>
-        </div>
-
-        {/* Sections */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '80px', maxWidth: '800px', margin: '0 auto 80px' }}>
-          {sections.map((section, index) => (
-            <div key={index} style={{ 
-              display: 'flex', 
-              gap: '30px', 
-              padding: '30px', 
-              backgroundColor: '#fff', 
-              borderRadius: '20px', 
-              boxShadow: '0 5px 25px rgba(0,0,0,0.02)',
-              border: '1px solid #f8f8f8',
-              alignItems: 'flex-start'
-            }}>
-              <div style={{ 
-                width: '70px', 
-                height: '70px', 
-                borderRadius: '50%', 
-                backgroundColor: '#FDF7F2', 
-                color: '#295454', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                {section.icon}
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: '800', letterSpacing: '1px', marginBottom: '12px', color: '#295454' }}>{section.title}</h3>
-                <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}>{section.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Contact CTA */}
-        <div style={{ 
-          backgroundColor: '#F9F6FF', 
-          borderRadius: '24px', 
-          padding: '60px 40px', 
-          textAlign: 'center',
-          marginBottom: '80px'
-        }}>
-          <h2 className="font-serif" style={{ fontSize: '2.2rem', marginBottom: '10px', color: '#295454' }}>EXPERIENCING DIFFICULTIES?</h2>
-          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
-          <p style={{ color: '#666', marginBottom: '40px' }}>If you encounter any difficulty in accessing our website, please let us know:</p>
-          
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
-            <ContactCard 
-              icon={<Mail size={24} />} 
-              label="EMAIL" 
-              value="rangandcraft.fashion.jaipur@gmail.com" 
-              href="mailto:rangandcraft.fashion.jaipur@gmail.com"
-            />
-          </div>
-        </div>
-
-        {/* Trust Bar Footer */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', borderTop: '1px solid #eee', paddingTop: '60px' }}>
-            <TrustItem icon={<ShieldCheck size={28} />} title="PREMIUM QUALITY" sub="Finest fabrics & craftsmanship" />
-            <TrustItem icon={<Lock size={28} />} title="SECURE PAYMENTS" sub="100% secure & trusted" />
-            <TrustItem icon={<RefreshCcw size={28} />} title="7-DAY EXCHANGE" sub="Hassle-free size swaps" />
-            <TrustItem icon={<Globe size={28} />} title="PAN-INDIA SHIPPING" sub="Free on prepaid orders" />
-        </div>
-      </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .policy-page-v2 h1 { font-size: 2.5rem !important; }
-          .policy-page-v2 h2 { font-size: 1.8rem !important; }
-          .policy-page-v2 > div > div:nth-child(3) { padding: 40px 20px !important; }
-        }
-      `}</style>
-    </div>
-  );
-};
-
-const ContactCard = ({ icon, label, value, href }: { icon: React.ReactNode, label: string, value: string, href: string }) => (
-  <a href={href} style={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '20px', 
-    padding: '25px 40px', 
-    backgroundColor: '#fff', 
-    borderRadius: '16px', 
-    textDecoration: 'none', 
-    color: '#295454',
-    boxShadow: '0 10px 20px rgba(0,0,0,0.02)',
-    minWidth: '320px',
-    border: '1px solid #f0f0f0'
-  }}>
-    <div style={{ color: '#295454', backgroundColor: '#F9F6FF', padding: '12px', borderRadius: '12px' }}>{icon}</div>
-    <div style={{ textAlign: 'left' }}>
-      <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#999', display: 'block' }}>{label}</span>
-      <span style={{ fontSize: '1rem', fontWeight: '700' }}>{value}</span>
-    </div>
-  </a>
-);
-
-const TrustItem = ({ icon, title, sub }: { icon: React.ReactNode, title: string, sub: string }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-    <div style={{ color: '#295454', opacity: 0.8 }}>{icon}</div>
-    <div style={{ textAlign: 'left' }}>
-      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '2px' }}>{title}</h5>
-      <p style={{ fontSize: '0.65rem', color: '#888' }}>{sub}</p>
-    </div>
-  </div>
+    </section>
+  </>
 );
 
 export default Accessibility;

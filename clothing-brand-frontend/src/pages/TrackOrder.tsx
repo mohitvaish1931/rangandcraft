@@ -1,301 +1,207 @@
-import React, { useState } from 'react';
-import { Search, Truck, AlertCircle, Loader2, Package, Mail, Headphones, ShieldCheck, RefreshCcw, Globe, Lock, ChevronRight } from 'lucide-react';
-import { useSEO } from '../utils/useSEO';
-import { API_ENDPOINTS, fetchJSON } from '../utils/api';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ExternalLink, PackageSearch, Search } from 'lucide-react';
+import Seo from '../components/Seo';
+import { HelpBand, InfoHero } from '../components/InfoPage';
+import { useAppContext } from '../context/AppContext';
+import { API_ENDPOINTS, postJSON } from '../utils/api';
+import { errorMessage, formatDate, formatPrice } from '../lib/format';
+import { getImageUrl } from '../utils/mediaHelper';
 
-interface OrderTrackingResponse {
-  success: boolean;
-  order: {
-    _id: string;
-    orderNumber: string;
-    status: string;
-    createdAt: string;
-    totalAmount: number;
-    shippingAddress: {
-      name: string;
-      address: string;
-      city: string;
-      state: string;
-      pincode: string;
-    };
-    items: Array<{
-      name: string;
-      quantity: number;
-      price: number;
-      image?: string;
-    }>;
-    courierName?: string;
-    awbNumber?: string;
-  };
+interface TrackedOrder {
+  _id: string;
+  orderNumber: string;
+  status: string;
+  paymentStatus?: string;
+  isPaid?: boolean;
+  createdAt: string;
+  totalAmount: number;
+  shippingAddress: { name: string; address: string; city: string; pincode: string };
+  items: { product?: string; name: string; quantity: number; price: number; image?: string; size?: string }[];
+  courierName?: string;
+  awbNumber?: string;
+  trackingUrl?: string;
 }
 
-const TrackOrder = () => {
-  useSEO({
-    title: 'Track Your Order - RANG AND CRAFT',
-    description: 'Track your RANG AND CRAFT clothing order in real-time. Get live updates on your shipment status.',
-    keywords: 'track order, clothing delivery status, rang and craft tracking',
-    url: 'https://rangandcraft.store/track-order',
-    type: 'website'
-  });
-
-  const [orderNumber, setOrderNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [trackingResult, setTrackingResult] = useState<OrderTrackingResponse | null>(null);
-
-  const handleTrackOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setTrackingResult(null);
-
-    try {
-      const data = await fetchJSON<OrderTrackingResponse>(API_ENDPOINTS.ORDERS.TRACK, {
-        method: 'POST',
-        body: JSON.stringify({ orderNumber, email }),
-      });
-
-      if (data.success) {
-        setTrackingResult(data);
-      } else {
-        setError('Order not found. Please check your order number and email.');
-      }
-    } catch (err) {
-      console.error('Tracking error:', err);
-      setError(err instanceof Error && err.message ? err.message : 'Something went wrong. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="track-order-page-v3" style={{ 
-      backgroundColor: '#f9fafa', 
-      minHeight: '100vh', 
-      paddingBottom: '100px',
-      fontFamily: "'Inter', sans-serif",
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      {/* Background Floral Patterns */}
-      <div style={{ position: 'absolute', top: '100px', left: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px' }} />
-      </div>
-      <div style={{ position: 'absolute', top: '150px', right: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px', transform: 'scaleX(-1)' }} />
-      </div>
-
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1 }}>
-        {/* Header Section */}
-        <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>REAL-TIME UPDATES</span>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', color: '#295454', marginBottom: '15px' }}>Track Your Order</h1>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '25px' }}>
-             <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56' }}></div>
-          </div>
-          <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
-            Enter your order details below to see the current status of your handcrafted apparel.
-          </p>
-        </div>
-
-        {/* Tracking Card */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '80px' }}>
-          <div style={{ 
-            backgroundColor: '#fff', 
-            padding: '50px', 
-            borderRadius: '24px', 
-            boxShadow: '0 20px 60px rgba(0,0,0,0.03)', 
-            border: '1px solid #f8f8f8',
-            maxWidth: '700px',
-            width: '100%'
-          }}>
-            <form onSubmit={handleTrackOrder} style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-              <div className="form-group">
-                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }} htmlFor="track-order-id">ORDER NUMBER</label>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#295454' }}>
-                    <Package size={20} strokeWidth={1.5} />
-                  </div>
-                  <input
-                    id="track-order-id"
-                    type="text"
-                    value={orderNumber}
-                    onChange={(e) => setOrderNumber(e.target.value)}
-                    style={{ width: '100%', padding: '15px 20px 15px 55px', borderRadius: '12px', border: '1px solid #e0e0e0', outline: 'none' }}
-                    placeholder="e.g. #A1B2C3D4"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '10px' }} htmlFor="track-email">EMAIL ADDRESS</label>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#295454' }}>
-                    <Mail size={20} strokeWidth={1.5} />
-                  </div>
-                  <input
-                    id="track-email"
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    style={{ width: '100%', padding: '15px 20px 15px 55px', borderRadius: '12px', border: '1px solid #e0e0e0', outline: 'none' }}
-                    placeholder="The email used during checkout"
-                    required
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                style={{ 
-                  width: '100%', 
-                  padding: '18px', 
-                  backgroundColor: '#295454', 
-                  color: '#fff', 
-                  border: 'none', 
-                  borderRadius: '12px', 
-                  fontWeight: '700', 
-                  fontSize: '0.9rem',
-                  letterSpacing: '2px', 
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '12px',
-                  marginTop: '10px'
-                }}
-              >
-                {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
-                TRACK MY SHIPMENT
-              </button>
-            </form>
-
-            {error && (
-              <div style={{ marginTop: '25px', padding: '15px', backgroundColor: '#FFF5F5', borderRadius: '12px', color: '#C53030', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <AlertCircle size={18} />
-                <p style={{ fontSize: '0.85rem', fontWeight: '600' }}>{error}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Tracking Result View */}
-        {trackingResult && (
-           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '80px' }}>
-              <div style={{ 
-                backgroundColor: '#295454', 
-                color: '#fff', 
-                padding: '40px', 
-                borderRadius: '24px', 
-                boxShadow: '0 30px 60px rgba(45,10,78,0.2)',
-                maxWidth: '700px',
-                width: '100%'
-              }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
-                    <div>
-                      <span style={{ fontSize: '0.6rem', fontWeight: '700', letterSpacing: '3px', opacity: 0.6, textTransform: 'uppercase' }}>Shipment Status</span>
-                      <h2 className="font-serif" style={{ fontSize: '2.5rem', marginTop: '5px' }}>{trackingResult.order.status}</h2>
-                    </div>
-                    <Truck size={40} color="#c48f56" />
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      <span style={{ fontSize: '0.55rem', fontWeight: '700', letterSpacing: '2px', opacity: 0.5, textTransform: 'uppercase' }}>Order Number</span>
-                      <p style={{ fontSize: '1.1rem', fontWeight: '500', marginTop: '5px' }}>{trackingResult.order.orderNumber}</p>
-                    </div>
-                    <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      <span style={{ fontSize: '0.55rem', fontWeight: '700', letterSpacing: '2px', opacity: 0.5, textTransform: 'uppercase' }}>Courier Partner</span>
-                      <p style={{ fontSize: '1.1rem', fontWeight: '500', marginTop: '5px' }}>{trackingResult.order.courierName || 'Awaiting dispatch'}</p>
-                    </div>
-                  </div>
-              </div>
-           </div>
-        )}
-
-        {/* Need Help Section */}
-        <div style={{ backgroundColor: '#F9F6FF', borderRadius: '24px', padding: '60px 40px', marginBottom: '40px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h3 className="font-serif" style={{ fontSize: '2rem', color: '#295454', marginBottom: '10px' }}>Need Help?</h3>
-            <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto' }}></div>
-          </div>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '25px' }}>
-            <HelpCard 
-              icon={<Headphones size={24} />} 
-              title="Contact Us" 
-              desc="Our support team is here to help you." 
-              linkText="Get in Touch" 
-              href="/contact"
-            />
-            <HelpCard 
-              icon={<Truck size={24} />} 
-              title="Shipping Info" 
-              desc="Learn more about our shipping & delivery." 
-              linkText="View Details" 
-              href="/shipping-policy"
-            />
-            <HelpCard 
-              icon={<RefreshCcw size={24} />} 
-              title="Returns & Exchange" 
-              desc="Hassle-free returns for your peace of mind." 
-              linkText="Learn More" 
-              href="/refund-policy"
-            />
-            <HelpCard 
-              icon={<ShieldCheck size={24} />} 
-              title="Secure & Safe" 
-              desc="Your information is 100% secure with us." 
-              linkText="Privacy Policy" 
-              href="/privacy-policy"
-            />
-          </div>
-        </div>
-
-        {/* Trust Bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', borderTop: '1px solid #eee', paddingTop: '40px' }}>
-            <TrustItem icon={<ShieldCheck size={28} />} title="PREMIUM QUALITY" sub="Finest fabrics & craftsmanship" />
-            <TrustItem icon={<Lock size={28} />} title="SECURE PAYMENTS" sub="100% secure & trusted" />
-            <TrustItem icon={<RefreshCcw size={28} />} title="7-DAY EXCHANGE" sub="Hassle-free size swaps" />
-            <TrustItem icon={<Globe size={28} />} title="PAN-INDIA SHIPPING" sub="Free on prepaid orders" />
-        </div>
-      </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .track-order-page-v3 h1 { font-size: 2.5rem !important; }
-          .track-order-page-v3 > div > div:nth-child(2) { padding: 40px 20px !important; }
-        }
-      `}</style>
-    </div>
-  );
+const STEPS = ['Placed', 'Processing', 'Shipped', 'Delivered'];
+const stepIndex = (o: TrackedOrder) => {
+  if (o.status === 'Delivered') return 3;
+  if (o.status === 'Shipped') return 2;
+  if (o.isPaid || o.status === 'Processing') return 1;
+  return 0;
+};
+const statusLabel = (o: TrackedOrder) => (o.status === 'Pending' && !o.isPaid ? 'Awaiting payment' : o.status);
+const statusNote = (o: TrackedOrder) => {
+  switch (o.status) {
+    case 'Delivered': return 'Your order has been delivered. We hope you love it!';
+    case 'Shipped': return 'Your parcel is on its way. Delivery usually takes 4–8 working days from dispatch.';
+    case 'Cancelled': return 'This order was cancelled. If you were charged, the amount is refunded to your original payment method. Message us if you have any questions.';
+    default: return o.isPaid
+      ? 'We’re preparing your order. It’s usually dispatched within 2–3 working days.'
+      : 'We haven’t received payment for this order yet. If money was debited, message us and we’ll sort it out.';
+  }
 };
 
-const HelpCard = ({ icon, title, desc, linkText, href }: { icon: React.ReactNode, title: string, desc: string, linkText: string, href: string }) => (
-  <div style={{ backgroundColor: 'transparent', textAlign: 'left' }}>
-    <div style={{ width: '50px', height: '50px', backgroundColor: '#FDF7F2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#295454', marginBottom: '20px', border: '1px solid rgba(45,10,78,0.05)' }}>
-      {icon}
-    </div>
-    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#295454', marginBottom: '8px' }}>{title}</h4>
-    <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: '1.6', marginBottom: '12px' }}>{desc}</p>
-    <a href={href} style={{ fontSize: '0.75rem', fontWeight: '800', color: '#295454', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}>
-      {linkText} <ChevronRight size={14} />
-    </a>
-  </div>
-);
+const TrackOrder = () => {
+  const [params] = useSearchParams();
+  const { state } = useAppContext();
+  const [orderNumber, setOrderNumber] = useState(params.get('order') ?? '');
+  const [email, setEmail] = useState(params.get('email') ?? state.user?.email ?? '');
+  const [loading, setLoading] = useState(Boolean(params.get('order') && params.get('email')));
+  const [error, setError] = useState('');
+  const [order, setOrder] = useState<TrackedOrder | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
-const TrustItem = ({ icon, title, sub }: { icon: React.ReactNode, title: string, sub: string }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-    <div style={{ color: '#295454', opacity: 0.8 }}>{icon}</div>
-    <div style={{ textAlign: 'left' }}>
-      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '2px' }}>{title}</h5>
-      <p style={{ fontSize: '0.65rem', color: '#888' }}>{sub}</p>
-    </div>
-  </div>
-);
+  const lookup = useCallback((num: string, mail: string) =>
+    postJSON<{ order: TrackedOrder }>(API_ENDPOINTS.ORDERS.TRACK, { orderNumber: num.trim(), email: mail.trim() })
+      .then((data) => {
+        setOrder(data.order);
+        setError('');
+        requestAnimationFrame(() => resultRef.current?.focus({ preventScroll: true }));
+      })
+      .catch((err) => {
+        setOrder(null);
+        setError(errorMessage(err, 'We could not find an order with those details.'));
+      })
+      .finally(() => setLoading(false)), []);
+
+  // Links from order emails carry ?order=…&email=… so the result shows straight away.
+  useEffect(() => {
+    const num = params.get('order');
+    const mail = params.get('email');
+    if (num && mail) void lookup(num, mail);
+  }, [params, lookup]);
+
+  const track = (num: string, mail: string) => {
+    setLoading(true);
+    setError('');
+    void lookup(num, mail);
+  };
+
+  const cancelled = order?.status === 'Cancelled';
+  const current = order ? stepIndex(order) : 0;
+
+  return (
+    <>
+      <Seo title="Track Your Order" description="Check the status of your Rang and Craft order with your order number and email." path="/track-order" />
+      <InfoHero
+        eyebrow="Customer care"
+        title={<>Track your <em>order</em></>}
+        intro="Enter your order number and the email you used at checkout."
+      />
+
+      <section className="rc-section">
+        <div className="rc-container">
+          <div className="rc-track">
+            <form
+              className="rc-panel"
+              onSubmit={(e) => { e.preventDefault(); track(orderNumber, email); }}
+              noValidate
+            >
+              <h2 className="rc-panel__title">Find your order</h2>
+              <div className="rc-field">
+                <label className="rc-label" htmlFor="track-order">Order number</label>
+                <input
+                  id="track-order"
+                  className="rc-input"
+                  value={orderNumber}
+                  onChange={(e) => setOrderNumber(e.target.value)}
+                  placeholder="e.g. #A1B2C3D4"
+                  autoComplete="off"
+                  required
+                />
+              </div>
+              <div className="rc-field" style={{ marginTop: 16 }}>
+                <label className="rc-label" htmlFor="track-email">Email address</label>
+                <input
+                  id="track-email"
+                  className="rc-input"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  required
+                />
+              </div>
+              {error && <div className="rc-alert rc-alert--error" role="alert" style={{ marginTop: 16 }}>{error}</div>}
+              <button type="submit" className="rc-btn rc-btn--block rc-btn--lg" style={{ marginTop: 20 }} disabled={loading || !orderNumber.trim() || !email.trim()}>
+                {loading ? <><span className="rc-spinner" /> Searching…</> : <><Search size={16} /> Track order</>}
+              </button>
+              <p className="rc-muted" style={{ fontSize: 13, marginTop: 14 }}>
+                Your order number is in your confirmation{state.user ? <>, and all your orders are in <Link to="/profile" className="rc-link">your account</Link></> : ''}.
+              </p>
+            </form>
+
+            <div ref={resultRef} tabIndex={-1} aria-live="polite" style={{ outline: 'none' }}>
+              {order ? (
+                <article className="rc-panel rc-track__result">
+                  <h2 className="rc-panel__title">
+                    <span>Order #{order.orderNumber}</span>
+                    <span className={`rc-status rc-status--${order.status}`}>{statusLabel(order)}</span>
+                  </h2>
+                  {!cancelled && (
+                    <div className="rc-timeline" aria-label={`Order progress: ${STEPS[current]}`}>
+                      {STEPS.map((s, i) => <div key={s} className={i <= current ? 'is-done' : ''}>{s}</div>)}
+                    </div>
+                  )}
+                  <p className="rc-muted" style={{ fontSize: 14, marginTop: 10 }}>{statusNote(order)}</p>
+
+                  {(order.courierName || order.awbNumber) && (
+                    <div className="rc-alert rc-alert--info" style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>
+                        {order.courierName && <>Shipped with <strong>{order.courierName}</strong></>}
+                        {order.awbNumber && <> · AWB <strong>{order.awbNumber}</strong></>}
+                      </span>
+                      {order.trackingUrl && (
+                        <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="rc-btn rc-btn--sm">
+                          Track with courier <ExternalLink size={14} />
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="rc-track__items">
+                    {order.items.map((item, i) => (
+                      <div className="rc-track__item" key={i}>
+                        <img src={getImageUrl(item.image, 120)} alt="" loading="lazy" />
+                        <div>
+                          {item.product ? <Link to={`/product/${item.product}`} className="rc-line__name">{item.name}</Link> : <span className="rc-line__name">{item.name}</span>}
+                          <div className="rc-line__meta">Qty {item.quantity}{item.size ? ` · Size ${item.size}` : ''}</div>
+                        </div>
+                        <div>{formatPrice(item.price * item.quantity)}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <dl className="rc-track__facts">
+                    <div><dt>Placed on</dt><dd>{formatDate(order.createdAt)}</dd></div>
+                    <div><dt>Order total</dt><dd>{formatPrice(order.totalAmount)}</dd></div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <dt>Delivering to</dt>
+                      <dd>{order.shippingAddress.name}, {order.shippingAddress.address}, {order.shippingAddress.city} – {order.shippingAddress.pincode}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ) : (
+                <div className="rc-track__empty">
+                  <PackageSearch size={44} strokeWidth={1.2} aria-hidden />
+                  <p style={{ color: 'var(--rc-ink)', fontWeight: 500 }}>Your order status will appear here</p>
+                  <p style={{ fontSize: 14, maxWidth: '36ch' }}>Orders are dispatched within 2–3 working days and delivered in 4–8 working days.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <HelpBand
+            title="Can’t find your order?"
+            text="Message us with your name and phone number and we’ll look it up for you."
+            message="Hi Rang and Craft! I need help tracking my order."
+          />
+        </div>
+      </section>
+    </>
+  );
+};
 
 export default TrackOrder;

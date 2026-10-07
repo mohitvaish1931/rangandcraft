@@ -1,151 +1,69 @@
-import React from 'react';
-import { useSEO } from '../utils/useSEO';
-import { Sparkles, Archive, Droplets, Info, Wind, MessageCircle } from 'lucide-react';
+import { Archive, Droplets, Scissors, Sparkles, Sun, Wind } from 'lucide-react';
+import Seo from '../components/Seo';
+import { HelpBand, InfoHero, PolicyList } from '../components/InfoPage';
 
-const ApparelCareGuide = () => {
-  useSEO({
-    title: 'Garment Care Guide - RANG AND CRAFT',
-    description: 'Expert tips on preserving the life and beauty of your luxury handcrafted ethnic wear.',
-    keywords: 'garment care, clothing maintenance, silk care, embroidery care, RANG AND CRAFT guide',
-    url: 'https://rangandcraft.store/apparel-care-guide',
-    type: 'website'
-  });
+const ApparelCareGuide = () => (
+  <>
+    <Seo title="Garment Care Guide" description="How to wash, dry, iron and store your printed cotton kurtas and shirts so they last for years." path="/care-guide" />
+    <InfoHero
+      eyebrow="Made to last"
+      title={<>The care <em>guide</em></>}
+      intro="A few small habits keep your prints bright and your cotton soft, wash after wash."
+    />
 
-  const sections = [
-    {
-      icon: <Droplets size={30} />,
-      title: "PROFESSIONAL CLEANING",
-      text: "Printed cotton kurtas and shirts are best hand washed separately in cold water with a mild detergent for the first few washes, as natural dyes can bleed slightly. Festive suits and pieces with embroidery or zari work should be dry cleaned only.",
-      note: "Important: Always inform your dry cleaner about the specific material and embroidery type."
-    },
-    {
-      icon: <Archive size={30} />,
-      title: "PERFECT STORAGE",
-      text: "Store your kurtas and suits in breathable cotton garment bags or on wide hangers. Avoid plastic covers as they trap moisture and can cause yellowing. Keep printed pieces away from direct sunlight to prevent fading."
-    },
-    {
-      icon: <Wind size={30} />,
-      title: "IRONING & STEAMING",
-      text: "Always iron on the reverse side of the garment using a low-to-medium heat setting. Steam ironing works well for linen and cotton blends; avoid direct contact with any embroidery or buttons."
-    },
-    {
-      icon: <Sparkles size={30} />,
-      title: "USAGE & MAINTENANCE",
-      text: "Avoid spraying perfumes or deodorants directly onto your clothes, as chemicals can stain the fabric and darken prints. Let deodorant dry fully before dressing."
-    },
-    {
-      icon: <Info size={30} />,
-      title: "SPECIFIC CARE",
-      text: "If a thread comes loose, never pull it. Instead, carefully snip it with small scissors. Dry printed garments inside out in the shade, and fold heavier festive suits flat rather than hanging them for long periods."
-    }
-  ];
-
-  return (
-    <div className="policy-page-v2" style={{ 
-      backgroundColor: '#fff', 
-      color: '#295454', 
-      minHeight: '100vh', 
-      padding: '80px 20px',
-      fontFamily: "'Inter', sans-serif"
-    }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#295454' }}>Garment Care Guide</h1>
-          <div style={{ width: '60px', height: '2px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
-          <p style={{ fontSize: '1.1rem', color: '#666' }}>Preserve the beauty and longevity of your handcrafted ethnic wear with these expert tips.</p>
+    <section className="rc-section">
+      <div className="rc-container rc-info-body">
+        <div className="rc-highlights" data-reveal="up">
+          <div className="rc-highlight"><strong>Cold</strong><span>hand wash, mild detergent</span></div>
+          <div className="rc-highlight"><strong>Shade</strong><span>dry inside out</span></div>
+          <div className="rc-highlight"><strong>Reverse</strong><span>iron on low–medium</span></div>
         </div>
 
-        {/* Sections */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '60px' }}>
-          {sections.map((section, index) => (
-            <div key={index} style={{ 
-              display: 'flex', 
-              gap: '30px', 
-              padding: '30px', 
-              backgroundColor: '#fff', 
-              borderRadius: '20px', 
-              boxShadow: '0 5px 25px rgba(0,0,0,0.03)',
-              border: '1px solid #f8f8f8',
-              alignItems: 'flex-start'
-            }}>
-              <div style={{ 
-                width: '70px', 
-                height: '70px', 
-                borderRadius: '50%', 
-                backgroundColor: '#FDF7F2', 
-                color: '#295454', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                {section.icon}
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', letterSpacing: '1px', marginBottom: '12px', color: '#295454' }}>{section.title}</h3>
-                <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}>{section.text}</p>
-                {section.note && (
-                  <p style={{ color: '#777', fontStyle: 'italic', fontSize: '0.85rem', marginTop: '10px' }}>{section.note}</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <PolicyList
+          items={[
+            {
+              icon: <Droplets size={22} strokeWidth={1.5} />,
+              title: 'Washing',
+              body: (
+                <>
+                  <p>Hand wash printed cotton kurtas and shirts <strong>separately in cold water</strong> with a mild detergent for the first few washes, as natural dyes can bleed slightly. Don’t soak, scrub or bleach prints.</p>
+                  <p>Pieces with embroidery or zari work should be <strong>dry cleaned only</strong>.</p>
+                  <p className="rc-policy__note">Tell your dry cleaner about the fabric and any embroidery so they can choose the right treatment.</p>
+                </>
+              ),
+            },
+            {
+              icon: <Sun size={22} strokeWidth={1.5} />,
+              title: 'Drying',
+              body: <p>Turn garments inside out and dry them in the shade. Strong direct sunlight fades prints over time. Avoid wringing; gently press out the water instead.</p>,
+            },
+            {
+              icon: <Wind size={22} strokeWidth={1.5} />,
+              title: 'Ironing & steaming',
+              body: <p>Iron on the reverse side on a low-to-medium heat. Steam works beautifully on cotton and linen blends; just keep the iron away from embroidery and buttons.</p>,
+            },
+            {
+              icon: <Archive size={22} strokeWidth={1.5} />,
+              title: 'Storing',
+              body: <p>Keep your pieces in breathable cotton garment bags or on wide hangers, away from direct sunlight. Avoid plastic covers, which trap moisture and can cause yellowing. Fold heavier festive pieces flat rather than hanging them for long periods.</p>,
+            },
+            {
+              icon: <Sparkles size={22} strokeWidth={1.5} />,
+              title: 'Everyday wear',
+              body: <p>Spray perfume or deodorant before you dress and let it dry fully. Chemicals can stain cotton and darken prints.</p>,
+            },
+            {
+              icon: <Scissors size={22} strokeWidth={1.5} />,
+              title: 'Loose threads',
+              body: <p>Never pull a loose thread. Snip it carefully with small scissors, close to the fabric.</p>,
+            },
+          ]}
+        />
 
-        {/* Raise a Request */}
-        <div style={{ 
-          backgroundColor: '#F9F6FF', 
-          borderRadius: '24px', 
-          padding: '60px 40px', 
-          textAlign: 'center'
-        }}>
-          <h2 className="font-serif" style={{ fontSize: '2.5rem', marginBottom: '15px', color: '#295454' }}>NEED ADVICE?</h2>
-          <div style={{ width: '40px', height: '2px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
-          <p style={{ color: '#666', marginBottom: '40px' }}>Our styling experts are here to help you preserve your heirloom pieces:</p>
-          
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
-            <ContactCard 
-              icon={<MessageCircle size={24} />} 
-              label="WHATSAPP CONCIERGE" 
-              value="+91 93513 25459" 
-              href="https://wa.me/919351325459"
-            />
-          </div>
-        </div>
+        <HelpBand title="Not sure how to care for a piece?" text="Send us a photo of the label on WhatsApp and we’ll tell you exactly what to do." message="Hi Rang and Craft! I have a question about caring for my garment." />
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .policy-page-v2 h1 { font-size: 2.5rem !important; }
-          .policy-page-v2 h2 { font-size: 2rem !important; }
-          .policy-page-v2 > div > div:nth-child(2) > div { flex-direction: column; align-items: center; text-align: center; }
-        }
-      `}</style>
-    </div>
-  );
-};
-
-const ContactCard = ({ icon, label, value, href }: { icon: React.ReactNode, label: string, value: string, href: string }) => (
-  <a href={href} style={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '20px', 
-    padding: '25px 40px', 
-    backgroundColor: '#fff', 
-    borderRadius: '16px', 
-    textDecoration: 'none', 
-    color: '#295454',
-    boxShadow: '0 10px 20px rgba(0,0,0,0.02)',
-    minWidth: '320px',
-    border: '1px solid #f0f0f0'
-  }}>
-    <div style={{ color: '#295454', backgroundColor: '#F9F6FF', padding: '12px', borderRadius: '12px' }}>{icon}</div>
-    <div style={{ textAlign: 'left' }}>
-      <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#999', display: 'block' }}>{label}</span>
-      <span style={{ fontSize: '1rem', fontWeight: '700' }}>{value}</span>
-    </div>
-  </a>
+    </section>
+  </>
 );
 
 export default ApparelCareGuide;

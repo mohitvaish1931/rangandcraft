@@ -1,166 +1,69 @@
-import React from 'react';
-import { useSEO } from '../utils/useSEO';
-import { Scale, ShieldAlert, Gavel, Mail, ShieldCheck, Lock, RefreshCcw, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BadgePercent, Gavel, Image, Receipt, Scale, ShoppingBag, Truck } from 'lucide-react';
+import Seo from '../components/Seo';
+import { HelpBand, InfoHero, PolicyList } from '../components/InfoPage';
 
-const TermsConditions = () => {
-  useSEO({
-    title: 'Terms & Conditions - RANG AND CRAFT',
-    description: 'Read our terms of service and business guidelines.',
-    keywords: 'terms and conditions, service agreement, RANG AND CRAFT rules',
-    url: 'https://rangandcraft.store/terms-conditions',
-    type: 'website'
-  });
+const TermsConditions = () => (
+  <>
+    <Seo title="Terms & Conditions" description="The terms that apply when you browse and shop at Rang and Craft." path="/terms-conditions" />
+    <InfoHero
+      eyebrow="The fine print"
+      title={<>Terms <em>&amp;</em> conditions</>}
+      intro="By using this website or placing an order, you agree to the terms below."
+      policyNav
+    />
 
-  const sections = [
-    {
-      icon: <Gavel size={30} />,
-      title: "GOVERNING LAW",
-      text: "These terms and conditions are governed by and construed in accordance with the laws of India. Any disputes relating to these terms will be subject to the exclusive jurisdiction of the courts of Jaipur."
-    },
-    {
-      icon: <Scale size={30} />,
-      title: "USE OF WEBSITE",
-      text: "By accessing this website, you warrant and represent that you are at least 18 years of age and will use the site only for lawful purposes in accordance with these terms."
-    },
-    {
-      icon: <ShieldAlert size={30} />,
-      title: "INTELLECTUAL PROPERTY",
-      text: "All content, designs, and images on this website are the intellectual property of RANG AND CRAFT. Unauthorized use or reproduction is strictly prohibited and may lead to legal action."
-    }
-  ];
+    <section className="rc-section">
+      <div className="rc-container rc-info-body">
+        <PolicyList
+          items={[
+            {
+              icon: <Scale size={22} strokeWidth={1.5} />,
+              title: 'Using this website',
+              body: <p>You must be at least 18 years old, or shopping with a parent or guardian’s permission, and use the site only for lawful purposes. Please keep your account password private; you’re responsible for activity on your account.</p>,
+            },
+            {
+              icon: <ShoppingBag size={22} strokeWidth={1.5} />,
+              title: 'Products & pricing',
+              body: (
+                <>
+                  <p>Prices are in Indian Rupees and include all taxes. Our prints are made in small batches, so colours can vary slightly from what you see on screen.</p>
+                  <p>Your order is confirmed once payment succeeds. If an item turns out to be unavailable or was listed with an obvious pricing error, we’ll contact you and refund the amount in full.</p>
+                </>
+              ),
+            },
+            {
+              icon: <BadgePercent size={22} strokeWidth={1.5} />,
+              title: 'Offers & coupons',
+              body: <p>Bundle offers are applied automatically at checkout. A coupon can’t be combined with a bundle offer on the same items, and each coupon is subject to its own validity and usage limits. We may end or change an offer at any time; orders already placed keep the price you paid.</p>,
+            },
+            {
+              icon: <Receipt size={22} strokeWidth={1.5} />,
+              title: 'Payments',
+              body: <p>Payments are processed securely by Razorpay using UPI, cards, net banking or wallets. We don’t store your payment details.</p>,
+            },
+            {
+              icon: <Truck size={22} strokeWidth={1.5} />,
+              title: 'Shipping, exchanges & refunds',
+              body: <p>Delivery, exchange and refund terms are set out in our <Link to="/shipping-policy">Shipping policy</Link> and <Link to="/refund-policy">Exchange &amp; refund policy</Link>, which form part of these terms.</p>,
+            },
+            {
+              icon: <Image size={22} strokeWidth={1.5} />,
+              title: 'Intellectual property',
+              body: <p>All designs, prints, photographs and content on this website belong to Rang and Craft. Please don’t copy or reuse them without our written permission.</p>,
+            },
+            {
+              icon: <Gavel size={22} strokeWidth={1.5} />,
+              title: 'Governing law',
+              body: <p>These terms are governed by the laws of India. Any disputes are subject to the exclusive jurisdiction of the courts of Jaipur, Rajasthan.</p>,
+            },
+          ]}
+        />
 
-  return (
-    <div className="policy-page-v2" style={{ 
-      backgroundColor: '#f9fafa', 
-      color: '#295454', 
-      minHeight: '100vh', 
-      fontFamily: "'Inter', sans-serif",
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      {/* Background Patterns */}
-      <div style={{ position: 'absolute', top: '100px', left: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px' }} />
+        <HelpBand title="Questions about these terms?" text="We’re happy to clarify anything before you order." />
       </div>
-      <div style={{ position: 'absolute', top: '150px', right: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px', transform: 'scaleX(-1)' }} />
-      </div>
-
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>LEGAL</span>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#295454' }}>Terms & Conditions</h1>
-          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
-          <p style={{ fontSize: '1.1rem', color: '#666' }}>Read our terms of service and business guidelines.</p>
-        </div>
-
-        {/* Sections */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '80px', maxWidth: '800px', margin: '0 auto 80px' }}>
-          {sections.map((section, index) => (
-            <div key={index} style={{ 
-              display: 'flex', 
-              gap: '30px', 
-              padding: '30px', 
-              backgroundColor: '#fff', 
-              borderRadius: '20px', 
-              boxShadow: '0 5px 25px rgba(0,0,0,0.02)',
-              border: '1px solid #f8f8f8',
-              alignItems: 'flex-start'
-            }}>
-              <div style={{ 
-                width: '70px', 
-                height: '70px', 
-                borderRadius: '50%', 
-                backgroundColor: '#FDF7F2', 
-                color: '#295454', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                {section.icon}
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: '800', letterSpacing: '1px', marginBottom: '12px', color: '#295454' }}>{section.title}</h3>
-                <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}>{section.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Contact CTA */}
-        <div style={{ 
-          backgroundColor: '#F9F6FF', 
-          borderRadius: '24px', 
-          padding: '60px 40px', 
-          textAlign: 'center',
-          marginBottom: '80px'
-        }}>
-          <h2 className="font-serif" style={{ fontSize: '2.2rem', marginBottom: '10px', color: '#295454' }}>LEGAL QUESTIONS?</h2>
-          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
-          <p style={{ color: '#666', marginBottom: '40px' }}>If you have any questions regarding our terms, please contact us:</p>
-          
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
-            <ContactCard 
-              icon={<Mail size={24} />} 
-              label="EMAIL" 
-              value="rangandcraft.fashion.jaipur@gmail.com" 
-              href="mailto:rangandcraft.fashion.jaipur@gmail.com"
-            />
-          </div>
-        </div>
-
-        {/* Trust Bar Footer */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', borderTop: '1px solid #eee', paddingTop: '60px' }}>
-            <TrustItem icon={<ShieldCheck size={28} />} title="PREMIUM QUALITY" sub="Finest fabrics & craftsmanship" />
-            <TrustItem icon={<Lock size={28} />} title="SECURE PAYMENTS" sub="100% secure & trusted" />
-            <TrustItem icon={<RefreshCcw size={28} />} title="7-DAY EXCHANGE" sub="Hassle-free size swaps" />
-            <TrustItem icon={<Globe size={28} />} title="PAN-INDIA SHIPPING" sub="Free on prepaid orders" />
-        </div>
-      </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .policy-page-v2 h1 { font-size: 2.5rem !important; }
-          .policy-page-v2 h2 { font-size: 1.8rem !important; }
-          .policy-page-v2 > div > div:nth-child(3) { padding: 40px 20px !important; }
-        }
-      `}</style>
-    </div>
-  );
-};
-
-const ContactCard = ({ icon, label, value, href }: { icon: React.ReactNode, label: string, value: string, href: string }) => (
-  <a href={href} style={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '20px', 
-    padding: '25px 40px', 
-    backgroundColor: '#fff', 
-    borderRadius: '16px', 
-    textDecoration: 'none', 
-    color: '#295454',
-    boxShadow: '0 10px 20px rgba(0,0,0,0.02)',
-    minWidth: '320px',
-    border: '1px solid #f0f0f0'
-  }}>
-    <div style={{ color: '#295454', backgroundColor: '#F9F6FF', padding: '12px', borderRadius: '12px' }}>{icon}</div>
-    <div style={{ textAlign: 'left' }}>
-      <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#999', display: 'block' }}>{label}</span>
-      <span style={{ fontSize: '1rem', fontWeight: '700' }}>{value}</span>
-    </div>
-  </a>
-);
-
-const TrustItem = ({ icon, title, sub }: { icon: React.ReactNode, title: string, sub: string }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-    <div style={{ color: '#295454', opacity: 0.8 }}>{icon}</div>
-    <div style={{ textAlign: 'left' }}>
-      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '2px' }}>{title}</h5>
-      <p style={{ fontSize: '0.65rem', color: '#888' }}>{sub}</p>
-    </div>
-  </div>
+    </section>
+  </>
 );
 
 export default TermsConditions;

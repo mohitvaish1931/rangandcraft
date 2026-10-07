@@ -148,6 +148,7 @@ router.post('/track', writeLimiter, asyncHandler(async (req, res) => {
       orderNumber: String(order._id).slice(-8).toUpperCase(),
       status: order.status,
       paymentStatus: order.paymentStatus,
+      isPaid: order.isPaid,
       createdAt: order.createdAt,
       totalAmount: order.totalPrice,
       shippingAddress: {
@@ -157,7 +158,7 @@ router.post('/track', writeLimiter, asyncHandler(async (req, res) => {
         state: '',
         pincode: order.shippingAddress.postalCode,
       },
-      items: order.orderItems.map((i) => ({ name: i.name, quantity: i.qty, price: i.price, image: i.image })),
+      items: order.orderItems.map((i) => ({ product: i.product, name: i.name, quantity: i.qty, price: i.price, image: i.image, size: i.selectedSize })),
       courierName: order.courierName,
       awbNumber: order.awbNumber,
       trackingUrl: order.trackingUrl,

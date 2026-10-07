@@ -1,205 +1,176 @@
-import React, { useState } from 'react';
-import { useSEO } from '../utils/useSEO';
-import { ChevronDown, Headphones, ChevronRight, ShieldCheck, Lock, RefreshCcw, Globe } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Plus, Search } from 'lucide-react';
+import Seo from '../components/Seo';
+import { HelpBand, InfoHero } from '../components/InfoPage';
+import { formatPrice } from '../lib/format';
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../lib/offers';
+
+interface Faq {
+  q: string;
+  a: string;
+  link?: { to: string; label: string };
+}
+
+const FREE = formatPrice(FREE_SHIPPING_THRESHOLD);
+
+const GROUPS: { title: string; items: Faq[] }[] = [
+  {
+    title: 'Orders & shipping',
+    items: [
+      {
+        q: 'What are the shipping charges?',
+        a: `Shipping is free on all orders of ${FREE} and above across India. Orders below ${FREE} have a flat shipping fee of ${formatPrice(SHIPPING_FEE)}, shown in your bag before you pay.`,
+        link: { to: '/shipping-policy', label: 'Read the shipping policy' },
+      },
+      {
+        q: 'How long will it take to receive my order?',
+        a: 'Orders are usually dispatched within 2–3 working days. Once shipped, delivery takes 4–8 working days depending on your location.',
+      },
+      {
+        q: 'How do I track my order?',
+        a: 'Once your order ships you’ll get the courier name and tracking number. You can check the status any time with your order number and email.',
+        link: { to: '/track-order', label: 'Track your order' },
+      },
+      {
+        q: 'Do I need an account to order?',
+        a: 'No. You can check out as a guest. Creating an account lets you save your wishlist and see all your orders in one place.',
+      },
+      {
+        q: 'Do you ship internationally?',
+        a: 'Right now we ship only within India. We’re working on bringing Rang and Craft to customers abroad soon.',
+      },
+    ],
+  },
+  {
+    title: 'Offers & payments',
+    items: [
+      {
+        q: 'How do the “any 2 @ ₹1499” offers work?',
+        a: 'Add any 2 short kurtas, or any 2 half sleeve shirts, to your bag and the pair is automatically priced at ₹1499 at checkout. Add 4 and you get the offer twice. Coupons can’t be combined with the bundle offer on the same items.',
+        link: { to: '/shop', label: 'Shop the collection' },
+      },
+      {
+        q: 'Which payment methods do you accept?',
+        a: 'We accept UPI, debit and credit cards, net banking and popular wallets, processed securely by Razorpay. Cash on delivery isn’t available at the moment.',
+      },
+      {
+        q: 'Are prices inclusive of taxes?',
+        a: 'Yes. All prices include taxes. The only possible extra is shipping on orders below ' + FREE + ', and that’s always shown before you pay.',
+      },
+    ],
+  },
+  {
+    title: 'Exchanges & returns',
+    items: [
+      {
+        q: 'Can I exchange a product for another size?',
+        a: 'Yes. You can exchange unworn, unwashed pieces with their original tags within 7 days of delivery, subject to availability of the size you need.',
+        link: { to: '/refund-policy', label: 'Read the exchange & refund policy' },
+      },
+      {
+        q: 'What if my product arrives damaged?',
+        a: 'We’ll send a replacement or give you a full refund. Please record an unboxing video when you open your parcel. It’s required to process damage requests.',
+      },
+      {
+        q: 'Do you accept returns?',
+        a: 'We accept returns only for damaged or incorrect items. If the fit isn’t right, the 7-day size exchange is the quickest way to get the right piece.',
+      },
+    ],
+  },
+  {
+    title: 'Products & care',
+    items: [
+      {
+        q: 'How do I find my size?',
+        a: 'Every product page has a size guide with the chest measurement for every size. If you’re between sizes, message us on WhatsApp and we’ll help you choose.',
+      },
+      {
+        q: 'How do I care for my Rang and Craft clothing?',
+        a: 'Hand wash printed cotton pieces separately in cold water with a mild detergent for the first few washes, and dry them inside out in the shade. Pieces with embroidery or zari work should be dry cleaned.',
+        link: { to: '/care-guide', label: 'See the full care guide' },
+      },
+      {
+        q: 'Will the colours look exactly like the photos?',
+        a: 'We photograph every piece in natural light, but prints are made in small batches and screens differ, so slight variations in shade are part of their character.',
+      },
+    ],
+  },
+];
 
 const FAQ = () => {
-  useSEO({
-    title: 'FAQs - RANG AND CRAFT',
-    description: 'Find answers to common questions about our products and services.',
-    keywords: 'faq, questions, help, RANG AND CRAFT',
-    url: 'https://rangandcraft.store/faq',
-    type: 'website'
-  });
+  const [query, setQuery] = useState('');
+  const q = query.trim().toLowerCase();
 
-  const faqs = [
-    {
-      question: "How do I care for my RANG AND CRAFT clothing?",
-      answer: "Most of our ethnic wear requires professional dry cleaning to maintain the fabric and embroidery quality. Please refer to our Garment Care Guide for detailed instructions on storage and maintenance."
-    },
-    {
-      question: "What are the shipping charges?",
-      answer: "We offer free shipping on all orders above ₹1999 across India. For orders below this amount, a flat shipping fee of ₹99 applies."
-    },
-    {
-      question: "How long will it take to receive my order?",
-      answer: "Orders are typically dispatched within 3-5 working days as many of our pieces are handcrafted. Once shipped, delivery takes approximately 4-8 working days."
-    },
-    {
-      question: "Do you offer international shipping?",
-      answer: "Currently, we only ship within India. We are working on bringing Rang and Craft to our international customers very soon."
-    },
-    {
-      question: "Can I return or exchange a product?",
-      answer: "We accept size exchanges for unworn garments with original tags within 7 days of delivery. For returns, we only accept damaged products with mandatory unboxing video proof."
-    },
-    {
-      question: "Is your clothing authentic?",
-      answer: "Yes, all our garments are crafted using premium fabrics and authentic hand-embroidery techniques. Each piece goes through rigorous quality checks."
-    }
-  ];
+  const groups = useMemo(
+    () => GROUPS
+      .map((g) => ({ ...g, items: g.items.filter((f) => !q || `${f.q} ${f.a}`.toLowerCase().includes(q)) }))
+      .filter((g) => g.items.length),
+    [q],
+  );
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: GROUPS.flatMap((g) => g.items).map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
 
   return (
-    <div className="faq-page-v2" style={{ 
-      backgroundColor: '#f9fafa', 
-      color: '#295454', 
-      minHeight: '100vh', 
-      fontFamily: "'Inter', sans-serif",
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      {/* Background Patterns */}
-      <div style={{ position: 'absolute', top: '100px', left: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px' }} />
-      </div>
-      <div style={{ position: 'absolute', top: '150px', right: '-50px', opacity: 0.05, pointerEvents: 'none' }}>
-         <img src="/images/floral-pattern.png" alt="" style={{ width: '400px', transform: 'scaleX(-1)' }} />
-      </div>
+    <>
+      <Seo title="FAQs" description="Answers about shipping, offers, payments, exchanges, sizing and garment care at Rang and Craft." path="/faq" jsonLd={jsonLd} />
+      <InfoHero eyebrow="Help centre" title={<>Questions, <em>answered</em></>} intro="Shipping, offers, exchanges and care. Everything you might want to know before you order." />
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <span style={{ color: '#c48f56', letterSpacing: '4px', fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', display: 'block', marginBottom: '20px' }}>SUPPORT</span>
-          <h1 className="font-serif" style={{ fontSize: '3.5rem', fontWeight: '700', marginBottom: '15px', color: '#295454' }}>FAQs</h1>
-          <div style={{ width: '40px', height: '1.5px', backgroundColor: '#c48f56', margin: '0 auto 20px' }}></div>
-          <p style={{ fontSize: '1.1rem', color: '#666' }}>Find answers to common questions about our products and services.</p>
-        </div>
-
-        {/* FAQ Accordion */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '80px', maxWidth: '800px', margin: '0 auto 80px' }}>
-          {faqs.map((faq, index) => (
-            <AccordionItem key={index} question={faq.question} answer={faq.answer} />
-          ))}
-        </div>
-
-        {/* Footer CTA */}
-        <div style={{ 
-          backgroundColor: '#F9F6FF', 
-          borderRadius: '24px', 
-          padding: '40px 60px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          gap: '40px',
-          flexWrap: 'wrap',
-          marginBottom: '80px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
-             <div style={{ 
-               width: '80px', 
-               height: '80px', 
-               backgroundColor: '#fff', 
-               borderRadius: '50%', 
-               display: 'flex', 
-               alignItems: 'center', 
-               justifyContent: 'center',
-               boxShadow: '0 10px 30px rgba(0,0,0,0.02)',
-               border: '1px solid rgba(45,10,78,0.05)'
-             }}>
-                <Headphones size={32} color="#295454" strokeWidth={1.5} />
-             </div>
-             <div>
-                <h2 className="font-serif" style={{ fontSize: '1.8rem', marginBottom: '5px', color: '#295454' }}>Still have questions?</h2>
-                <div style={{ width: '30px', height: '1.5px', backgroundColor: '#c48f56', marginBottom: '10px' }}></div>
-                <p style={{ color: '#666', fontSize: '0.9rem', maxWidth: '400px' }}>Our luxury consultants are available to assist you with any inquiries you may have.</p>
-             </div>
+      <section className="rc-section rc-faq">
+        <div className="rc-container rc-info-body">
+          <div className="rc-faq-search" role="search">
+            <Search size={18} aria-hidden />
+            <label htmlFor="faq-search" className="rc-sr-only">Search questions</label>
+            <input
+              id="faq-search"
+              className="rc-input"
+              type="search"
+              placeholder="Search e.g. exchange, shipping, size"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
           </div>
-          
-          <Link to="/contact" style={{ 
-            backgroundColor: '#295454', 
-            color: '#fff', 
-            padding: '18px 40px', 
-            borderRadius: '12px', 
-            textDecoration: 'none', 
-            fontWeight: '700', 
-            fontSize: '0.85rem',
-            letterSpacing: '1px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            boxShadow: '0 10px 30px rgba(45,10,78,0.1)'
-          }}>
-             CONTACT CUSTOMER CARE <ChevronRight size={18} />
-          </Link>
-        </div>
 
-        {/* Trust Bar Footer */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', borderTop: '1px solid #eee', paddingTop: '60px' }}>
-            <TrustItem icon={<ShieldCheck size={28} />} title="PREMIUM QUALITY" sub="Finest fabrics & craftsmanship" />
-            <TrustItem icon={<Lock size={28} />} title="SECURE PAYMENTS" sub="100% secure & trusted" />
-            <TrustItem icon={<RefreshCcw size={28} />} title="7-DAY EXCHANGE" sub="Hassle-free size swaps" />
-            <TrustItem icon={<Globe size={28} />} title="PAN-INDIA SHIPPING" sub="Free on prepaid orders" />
-        </div>
-      </div>
+          <p className="rc-sr-only" aria-live="polite">
+            {q ? `${groups.reduce((n, g) => n + g.items.length, 0)} questions found` : ''}
+          </p>
 
-      <style>{`
-        @media (max-width: 768px) {
-          .faq-page-v2 h1 { font-size: 2.5rem !important; }
-          .faq-page-v2 h2 { font-size: 1.5rem !important; }
-          .faq-page-v2 > div > div:nth-child(3) { flex-direction: column; text-align: center; padding: 40px 20px; }
-          .faq-page-v2 > div > div:nth-child(3) > div { flex-direction: column; }
-        }
-      `}</style>
-    </div>
+          {groups.length === 0 && (
+            <div className="rc-empty" style={{ padding: '24px 0' }}>
+              <p>No answers match “{query}”. Try another word, or ask us directly below.</p>
+            </div>
+          )}
+
+          {groups.map((g) => (
+            <div className="rc-faq-group" key={g.title}>
+              <h2 className="rc-faq-group__title">{g.title}</h2>
+              <div className="rc-accordion">
+                {g.items.map((f) => (
+                  <details key={f.q} open={Boolean(q)}>
+                    <summary>{f.q}<Plus size={18} aria-hidden /></summary>
+                    <div className="rc-accordion__body">
+                      <p>{f.a}</p>
+                      {f.link && <p style={{ marginTop: 10 }}><Link to={f.link.to}>{f.link.label}</Link></p>}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <HelpBand title="Still have a question?" text="Our team is on WhatsApp, email and phone Monday to Saturday, 10 AM – 7 PM." />
+        </div>
+      </section>
+    </>
   );
 };
-
-const AccordionItem = ({ question, answer }: { question: string, answer: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div style={{ 
-      backgroundColor: '#fff', 
-      borderRadius: '20px', 
-      boxShadow: '0 5px 25px rgba(0,0,0,0.02)',
-      border: '1px solid #f8f8f8',
-      overflow: 'hidden'
-    }}>
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ 
-          width: '100%', 
-          padding: '25px 35px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '25px', 
-          background: 'none', 
-          border: 'none', 
-          cursor: 'pointer',
-          textAlign: 'left'
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0 }}>
-           <div style={{ width: '26px', height: '26px', backgroundColor: '#295454', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: '800' }}>Q</div>
-           <div style={{ width: '26px', height: '26px', backgroundColor: '#c48f56', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: '800' }}>A</div>
-        </div>
-        <span style={{ flex: 1, fontSize: '1rem', fontWeight: '700', color: '#295454' }}>{question}</span>
-        <ChevronDown 
-          size={20} 
-          color="#295454" 
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} 
-        />
-      </button>
-      <div style={{ 
-        maxHeight: isOpen ? '500px' : '0', 
-        overflow: 'hidden', 
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-        padding: isOpen ? '0 35px 30px 88px' : '0 35px 0 88px'
-      }}>
-        <p style={{ color: '#666', lineHeight: '1.8', fontSize: '0.95rem' }}>{answer}</p>
-      </div>
-    </div>
-  );
-};
-
-const TrustItem = ({ icon, title, sub }: { icon: React.ReactNode, title: string, sub: string }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-    <div style={{ color: '#295454', opacity: 0.8 }}>{icon}</div>
-    <div style={{ textAlign: 'left' }}>
-      <h5 style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '1px', color: '#295454', marginBottom: '2px' }}>{title}</h5>
-      <p style={{ fontSize: '0.65rem', color: '#888' }}>{sub}</p>
-    </div>
-  </div>
-);
 
 export default FAQ;
