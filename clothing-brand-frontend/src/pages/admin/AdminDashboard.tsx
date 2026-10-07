@@ -4,8 +4,11 @@ import {
   Plus, ImageIcon, Settings, Calendar as CalendarIcon,
   Zap, Database
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
-import { API_ENDPOINTS } from '../../utils/api';
+import { API_ENDPOINTS, fetchJSON } from '../../utils/api';
+import { isSoldOut } from '../../lib/catalog';
+import { shortOrderId } from '../../lib/format';
 import { orderUserId, orderUserName, type AdminOrder } from '../../lib/adminTypes';
 
 const AdminDashboard = () => {
@@ -13,58 +16,63 @@ const AdminDashboard = () => {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
 
   useEffect(() => {
-    // We would fetch actual orders here, but for exact visual matching of the screenshot
-    // we might use static data if the fetch fails or is empty, but let's stick to dynamic
-    // as much as possible while maintaining the visual style.
-    const fetchOrders = async () => {
-      try {
-        const res = await fetch(API_ENDPOINTS.ORDERS.BASE, { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          setOrders(data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch orders:', err);
-      }
-    };
-    fetchOrders();
+    fetchJSON<AdminOrder[]>(API_ENDPOINTS.ORDERS.BASE).then(setOrders).catch(() => setOrders([]));
   }, []);
 
-  const totalRevenue = orders.reduce((sum, order) => {
-    if (order.paymentStatus === 'Paid') return sum + (order.totalAmount || 0);
-    return sum;
-  }, 0);
+  const DAY = 86_400_000;
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  // Seven calendar days ending today, oldest first.
+  const days = Array.from({ length: 7 }, (_, i) => new Date(startOfToday.getTime() - (6 - i) * DAY));
+  const dayLabels = days.map((d) => d.toLocaleDateString('en-IN', { weekday: 'short' }));
+  const dayIndex = (iso?: string) => {
+    if (!iso) return -1;
+    const t = new Date(iso).getTime();
+    const i = Math.floor((t - days[0].getTime()) / DAY);
+    return i >= 0 && i < 7 ? i : -1;
+  };
+  const inPrevWeek = (iso?: string) => {
+    if (!iso) return false;
+    const t = new Date(iso).getTime();
+    return t >= days[0].getTime() - 7 * DAY && t < days[0].getTime();
+  };
 
-  const uniqueCustomers = new Set(orders.map(o => orderUserId(o) || o.shippingAddress?.email || o.shippingAddress?.name)).size;
+  const paid = orders.filter((o) => o.isPaid || o.paymentStatus === 'Paid');
+  const orderTotal = (o: AdminOrder) => o.totalPrice || o.totalAmount || 0;
+  const customerKey = (o: AdminOrder) => orderUserId(o) || o.shippingAddress?.email || o.shippingAddress?.name || '';
+  const totalRevenue = paid.reduce((sum, o) => sum + orderTotal(o), 0);
+  const uniqueCustomers = new Set(paid.map(customerKey).filter(Boolean)).size;
 
-  const getDayName = (dateStr: string) => new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short' });
-
-  const weeklyRevenue = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-  const weeklyOrders = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-  const weeklyCustomers: Record<string, Set<string>> = { Mon: new Set(), Tue: new Set(), Wed: new Set(), Thu: new Set(), Fri: new Set(), Sat: new Set(), Sun: new Set() };
-  
-  orders.forEach(order => {
-    if (order.createdAt) {
-      const day = getDayName(order.createdAt);
-      if (weeklyOrders[day as keyof typeof weeklyOrders] !== undefined) {
-        weeklyOrders[day as keyof typeof weeklyOrders]++;
-        
-        if (order.paymentStatus === 'Paid' || order.isPaid) {
-          weeklyRevenue[day as keyof typeof weeklyRevenue] += (order.totalPrice || order.totalAmount || 0);
-        }
-        
-        const customerId = orderUserId(order) || order.shippingAddress?.email || order.shippingAddress?.name;
-        if (customerId) {
-          weeklyCustomers[day].add(customerId);
-        }
-      }
-    }
+  const revenueData = [0, 0, 0, 0, 0, 0, 0];
+  const orderData = [0, 0, 0, 0, 0, 0, 0];
+  const customerSets = days.map(() => new Set<string>());
+  paid.forEach((o) => {
+    const i = dayIndex(o.createdAt);
+    if (i < 0) return;
+    revenueData[i] += orderTotal(o);
+    orderData[i] += 1;
+    customerSets[i].add(customerKey(o));
   });
+  const customerData = customerSets.map((set) => set.size);
+  const productData = days.map((_, i) => state.products.filter((p) => dayIndex(p.createdAt) === i).length);
 
-  const revenueData = Object.values(weeklyRevenue);
-  const orderData = Object.values(weeklyOrders);
-  const customerData = Object.values(weeklyCustomers).map(set => set.size);
-  const productData = [0, 0, 0, 0, 0, 0, state.products.length]; 
+  const prevPaid = paid.filter((o) => inPrevWeek(o.createdAt));
+  const sum = (list: number[]) => list.reduce((a, b) => a + b, 0);
+  const trend = (current: number, previous: number, money = false) => {
+    if (!current && !previous) return { text: 'No activity in the last 7 days', color: 'text-gray-500' };
+    if (!previous) return { text: `${money ? '₹' : ''}${current.toLocaleString('en-IN')} in the last 7 days`, color: 'text-green-600' };
+    const pct = Math.round(((current - previous) / previous) * 100);
+    return { text: `${pct >= 0 ? '↑' : '↓'} ${Math.abs(pct)}% vs previous 7 days`, color: pct >= 0 ? 'text-green-600' : 'text-red-600' };
+  };
+  const revenueTrend = trend(sum(revenueData), sum(prevPaid.map(orderTotal)), true);
+  const orderTrend = trend(sum(orderData), prevPaid.length);
+  const customerTrend = trend(new Set(customerSets.flatMap((set) => [...set])).size, new Set(prevPaid.map(customerKey)).size);
+  const productTrend = sum(productData)
+    ? { text: `${sum(productData)} added in the last 7 days`, color: 'text-green-600' }
+    : { text: 'None added in the last 7 days', color: 'text-gray-500' };
+
+  const lowStock = state.products.filter((p) => !isSoldOut(p) && (p.countInStock ?? 99) <= 3);
+  const outOfStock = state.products.filter(isSoldOut);
 
   const createSmoothPath = (x: number[], y: number[]) => {
     if (x.length === 0) return '';
@@ -87,7 +95,7 @@ const AdminDashboard = () => {
   };
 
   const maxRevenue = Math.max(...revenueData, 1);
-  const yAxisMax = Math.max(Math.ceil(maxRevenue / 20000) * 20000, 80000);
+  const yAxisMax = Math.max(Math.ceil(maxRevenue / 5000) * 5000, 5000);
   
   const mainGraphX = [0, 16.66, 33.33, 50, 66.66, 83.33, 100];
   const mainGraphY = revenueData.map(val => 100 - ((val / yAxisMax) * 100));
@@ -97,46 +105,46 @@ const AdminDashboard = () => {
   const stats = [
     {
       title: 'Total Revenue',
-      value: `₹${totalRevenue.toLocaleString()}`,
-      change: orders.length > 0 ? '↑ 18.4% vs last 7 days' : '0% vs last 7 days',
+      value: `₹${totalRevenue.toLocaleString('en-IN')}`,
+      change: revenueTrend.text,
       icon: ShoppingBag,
       color: 'text-purple-600',
       bg: 'bg-purple-100',
       line: '#9333ea',
-      changeColor: orders.length > 0 ? 'text-green-500' : 'text-gray-500',
+      changeColor: revenueTrend.color,
       spark: getSparklinePath(revenueData)
     },
     {
-      title: 'Total Orders',
-      value: orders.length,
-      change: orders.length > 0 ? '↑ 12.5% vs last 7 days' : '0% vs last 7 days',
+      title: 'Paid Orders',
+      value: paid.length,
+      change: orderTrend.text,
       icon: Package,
       color: 'text-emerald-600',
       bg: 'bg-emerald-100',
       line: '#10b981',
-      changeColor: orders.length > 0 ? 'text-green-500' : 'text-gray-500',
+      changeColor: orderTrend.color,
       spark: getSparklinePath(orderData)
     },
     {
       title: 'Total Customers',
       value: uniqueCustomers,
-      change: uniqueCustomers > 0 ? '↑ 8% vs last 7 days' : '0% vs last 7 days',
+      change: customerTrend.text,
       icon: Users,
       color: 'text-blue-600',
       bg: 'bg-blue-100',
       line: '#3b82f6',
-      changeColor: uniqueCustomers > 0 ? 'text-green-500' : 'text-gray-500',
+      changeColor: customerTrend.color,
       spark: getSparklinePath(customerData)
     },
     {
       title: 'Total Products',
       value: state.products.length,
-      change: state.products.length > 0 ? '↑ 5% vs last 7 days' : '0% vs last 7 days',
+      change: productTrend.text,
       icon: Package,
       color: 'text-orange-600',
       bg: 'bg-orange-100',
       line: '#f97316',
-      changeColor: state.products.length > 0 ? 'text-green-500' : 'text-gray-500',
+      changeColor: productTrend.color,
       spark: getSparklinePath(productData)
     }
   ];
@@ -153,24 +161,24 @@ const AdminDashboard = () => {
     const productName = firstItem.name || 'Various Items';
     const image = firstItem.image || '';
     
-    const status = order.isDelivered ? 'Delivered' : (order.isPaid ? 'Processing' : (order.status || 'Pending'));
+    const status = order.status === 'Pending' && !order.isPaid ? 'Unpaid' : order.status || 'Pending';
 
     return {
-      id: `#${(order._id || '').substring(0, 8).toUpperCase()}`,
+      id: shortOrderId(order._id),
       initial,
       name: customerName,
       initialBg: bgColors[colorIndex],
       initialColor: textColors[colorIndex],
       product: productName,
       image,
-      amount: `₹${(order.totalPrice || order.totalAmount || 0).toLocaleString()}`,
+      amount: `₹${orderTotal(order).toLocaleString('en-IN')}`,
       status,
       date: order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'
     };
   });
 
   const productSales: Record<string, {name: string, price: number, image: string, count: number}> = {};
-  orders.forEach(order => {
+  paid.forEach(order => {
     const items = order.orderItems || order.items || [];
     items.forEach((item) => {
       const pid = item.product || item._id || item.name;
@@ -192,8 +200,8 @@ const AdminDashboard = () => {
     .slice(0, 3)
     .map(p => ({
       name: p.name,
-      price: `₹${p.price.toLocaleString()}`,
-      orders: `${p.count} Orders`,
+      price: `₹${p.price.toLocaleString('en-IN')}`,
+      orders: `${p.count} sold`,
       image: p.image
     }));
 
@@ -325,17 +333,17 @@ const AdminDashboard = () => {
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-lg font-bold text-gray-900">Sales Overview</h2>
-              <div className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 flex items-center gap-2 cursor-pointer hover:bg-gray-50">
-                This Week <ChevronRight className="w-4 h-4 rotate-90" />
+              <div className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600">
+                Last 7 days
               </div>
             </div>
             <div className="h-64 w-full relative">
               {/* Y-Axis Labels */}
               <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-[11px] font-medium text-gray-400">
-                <span>₹{(yAxisMax).toLocaleString()}</span>
-                <span>₹{(yAxisMax * 0.75).toLocaleString()}</span>
-                <span>₹{(yAxisMax * 0.5).toLocaleString()}</span>
-                <span>₹{(yAxisMax * 0.25).toLocaleString()}</span>
+                <span>₹{(yAxisMax).toLocaleString('en-IN')}</span>
+                <span>₹{(yAxisMax * 0.75).toLocaleString('en-IN')}</span>
+                <span>₹{(yAxisMax * 0.5).toLocaleString('en-IN')}</span>
+                <span>₹{(yAxisMax * 0.25).toLocaleString('en-IN')}</span>
                 <span>₹0</span>
               </div>
               {/* Chart Area */}
@@ -366,13 +374,7 @@ const AdminDashboard = () => {
               </div>
               {/* X-Axis Labels */}
               <div className="absolute left-12 right-0 bottom-0 flex justify-between text-[12px] font-medium text-gray-500">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
+                {dayLabels.map((label, i) => <span key={i}>{label}</span>)}
               </div>
             </div>
           </div>
@@ -441,26 +443,35 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Storage Status */}
+          {/* Inventory health */}
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Database className="w-5 h-5 text-gray-800" />
-                <h2 className="text-[15px] font-bold text-gray-900">Storage Status</h2>
+                <h2 className="text-[15px] font-bold text-gray-900">Inventory Health</h2>
               </div>
-              <span className="text-[12px] font-medium text-gray-500">75% of 5GB used</span>
+              <Link to="/admin/inventory" className="text-[12px] font-semibold text-[#6B21A8] hover:text-[#581C87]">Manage</Link>
             </div>
-            <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden mb-3">
-              <div className="w-3/4 h-full bg-[#6B21A8] rounded-full"></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-orange-50 p-3">
+                <p className="text-2xl font-bold text-orange-700">{lowStock.length}</p>
+                <p className="text-[12px] font-medium text-orange-700">Low stock (3 or fewer)</p>
+              </div>
+              <div className="rounded-xl bg-red-50 p-3">
+                <p className="text-2xl font-bold text-red-700">{outOfStock.length}</p>
+                <p className="text-[12px] font-medium text-red-700">Sold out</p>
+              </div>
             </div>
-            <p className="text-[13px] font-bold text-gray-900">3.75 GB <span className="text-gray-400 font-medium">/ 5 GB</span></p>
+            {lowStock.length > 0 && (
+              <p className="mt-3 text-[12px] text-gray-500 truncate">Running low: {lowStock.slice(0, 3).map((p) => p.name).join(', ')}{lowStock.length > 3 ? '…' : ''}</p>
+            )}
           </div>
 
           {/* Top Products */}
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-[15px] font-bold text-gray-900">Top Products</h2>
-              <button className="text-[12px] font-semibold text-[#6B21A8] hover:text-[#581C87]">View All</button>
+              <Link to="/admin/reports/products" className="text-[12px] font-semibold text-[#6B21A8] hover:text-[#581C87]">View All</Link>
             </div>
             <div className="space-y-4">
               {topProducts.length > 0 ? topProducts.map((product, idx) => (
