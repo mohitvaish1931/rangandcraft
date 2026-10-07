@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom';
 import { Gift, Truck } from 'lucide-react';
 import { formatPrice } from '../lib/format';
 import { FREE_SHIPPING_THRESHOLD, type BagEstimate } from '../lib/offers';
 
 /** Free-shipping progress, applied bundle savings and a gentle "one more" nudge. */
-const BagPerks = ({ estimate }: { estimate: BagEstimate }) => {
+const BagPerks = ({ estimate, onNavigate }: { estimate: BagEstimate; onNavigate?: () => void }) => {
   const merchandise = estimate.itemsPrice - estimate.offerDiscount;
   const progress = Math.min(100, (merchandise / FREE_SHIPPING_THRESHOLD) * 100);
   const unlocked = estimate.toFreeShipping === 0;
@@ -30,7 +31,12 @@ const BagPerks = ({ estimate }: { estimate: BagEstimate }) => {
       {estimate.nudge && (
         <div className="rc-perks-box__row">
           <Gift size={16} strokeWidth={1.6} aria-hidden />
-          <span>Add 1 more {estimate.nudge.noun} to get <strong>{estimate.nudge.label.replace(/^Any /, 'any ')}</strong></span>
+          <span>
+            Add 1 more {estimate.nudge.noun} to get <strong>{estimate.nudge.label.replace(/^Any /, 'any ')}</strong>
+            {estimate.nudge.category && (
+              <> · <Link to={`/shop?category=${encodeURIComponent(estimate.nudge.category)}`} className="rc-link" onClick={onNavigate}>Pick one</Link></>
+            )}
+          </span>
         </div>
       )}
     </div>

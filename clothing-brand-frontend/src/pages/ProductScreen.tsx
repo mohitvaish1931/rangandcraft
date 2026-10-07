@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, RefreshCcw, Ruler, ShieldCheck, Truck, X } from 'lucide-react';
+import { CalendarClock, Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, RefreshCcw, Ruler, Share2, ShieldCheck, Truck, X } from 'lucide-react';
 import { MAX_LINE_QUANTITY, useAppContext, type Product } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import ProductReviews from '../components/ProductReviews';
@@ -16,6 +16,8 @@ import NotFound from './NotFound';
 import Lightbox from '../components/Lightbox';
 import { flyToBag } from '../lib/flyToBag';
 import { scrollToElement, useMediaQuery, useScrollLock } from '../lib/motion';
+import { deliveryWindow } from '../lib/delivery';
+import { getRecentlyViewed, rememberViewed } from '../lib/recentlyViewed';
 
 const SIZE_CHART = [
   { size: 'S', chest: 36, waist: 32, hip: 38 },
@@ -143,6 +145,8 @@ const ProductDetail = ({ id }: { id: string }) => {
   const buyRef = useRef<HTMLDivElement>(null);
   const firstImageRef = useRef<HTMLButtonElement>(null);
   const isDesktop = useMediaQuery('(min-width: 901px)');
+  // Read before this product is recorded, so it never lists itself.
+  const [recentIds] = useState(getRecentlyViewed);
 
   useEffect(() => {
     let alive = true;
@@ -154,6 +158,7 @@ const ProductDetail = ({ id }: { id: string }) => {
         const data = await res.json();
         setProduct({ ...data, id: data._id });
         setStatus('ready');
+        rememberViewed(String(data._id));
       })
       .catch(() => alive && setStatus((s) => (s === 'ready' ? s : 'error')));
     return () => { alive = false; };
@@ -173,6 +178,31 @@ const ProductDetail = ({ id }: { id: string }) => {
       .filter((p) => productId(p) !== id && p.category === product.category && !isSoldOut(p))
       .slice(0, 4);
   }, [state.products, product, id]);
+
+  const recent = useMemo(() => {
+    const byId = new Map(state.products.map((p) => [productId(p), p]));
+    const relatedIds = new Set(related.map(productId));
+    return recentIds
+      .filter((rid) => rid !== id && !relatedIds.has(rid))
+      .map((rid) => byId.get(rid))
+      .filter((p): p is Product => Boolean(p))
+      .slice(0, 4);
+  }, [state.products, recentIds, related, id]);
+
+  const share = async () => {
+    const url = `${window.location.origin}/product/${id}`;
+    const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+    if (nav.share) {
+      try { await nav.share({ title: product?.name, text: `${product?.name} from Rang and Craft`, url }); } catch { /* dismissed */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied');
+    } catch {
+      window.open(whatsappLink(`${product?.name}: ${url}`), '_blank', 'noopener');
+    }
+  };
 
   if (status === 'missing') return <NotFound />;
 
@@ -295,8 +325,13 @@ const ProductDetail = ({ id }: { id: string }) => {
 
           <div className="rc-pdp__info">
             <div>
-              <span className="rc-eyebrow">{product.category}</span>
-              <h1 className="rc-pdp__title" style={{ marginTop: 10 }}>{product.name}</h1>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                <span className="rc-eyebrow">{product.category}</span>
+                <button type="button" className="rc-icon-btn" onClick={share} aria-label="Share this product" data-cursor="Share">
+                  <Share2 size={18} strokeWidth={1.6} />
+                </button>
+              </div>
+              <h1 className="rc-pdp__title" style={{ marginTop: 6 }}>{product.name}</h1>
               {reviewCount > 0 && (
                 <a href="#reviews" className="rc-rating" style={{ marginTop: 10, textDecoration: 'none' }}>
                   <Stars value={rating} /> {rating.toFixed(1)} · {reviewCount} review{reviewCount === 1 ? '' : 's'}
@@ -383,6 +418,13 @@ const ProductDetail = ({ id }: { id: string }) => {
               </>
             )}
 
+            {!soldOut && (
+              <p className="rc-delivery">
+                <CalendarClock size={18} strokeWidth={1.5} aria-hidden />
+                <span>Order today for delivery between <strong>{deliveryWindow().label}</strong></span>
+              </p>
+            )}
+
             <div className="rc-perks">
               <div className="rc-perk"><Truck size={20} strokeWidth={1.4} />Free shipping above ₹1499</div>
               <div className="rc-perk"><RefreshCcw size={20} strokeWidth={1.4} />7-day size exchange</div>
@@ -442,6 +484,17 @@ const ProductDetail = ({ id }: { id: string }) => {
               <div><span className="rc-eyebrow">You may also like</span><h2 className="rc-h2">More from {product.category}</h2></div>
             </div>
             <div className="rc-grid">{related.map((p) => <ProductCard key={productId(p)} product={p} />)}</div>
+          </div>
+        </section>
+      )}
+
+      {recent.length > 0 && (
+        <section className="rc-section rc-section--tint">
+          <div className="rc-container">
+            <div className="rc-section-head">
+              <div><span className="rc-eyebrow">Pick up where you left off</span><h2 className="rc-h2">Recently viewed</h2></div>
+            </div>
+            <div className="rc-grid">{recent.map((p) => <ProductCard key={productId(p)} product={p} />)}</div>
           </div>
         </section>
       )}

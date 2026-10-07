@@ -49,7 +49,7 @@ const CartDrawer = () => {
         ) : (
           <>
             <div className="rc-drawer__body">
-              <BagPerks estimate={estimate} />
+              <BagPerks estimate={estimate} onNavigate={close} />
               {state.cart.map((item) => <CartLine key={item.key} item={item} onNavigate={close} />)}
             </div>
             <div className="rc-drawer__foot">

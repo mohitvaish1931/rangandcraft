@@ -18,7 +18,7 @@ export interface BagEstimate {
   /** Amount still needed for free shipping (0 when unlocked). */
   toFreeShipping: number;
   /** An offer the shopper is one item away from. */
-  nudge: { label: string; noun: string } | null;
+  nudge: { label: string; noun: string; category: string } | null;
 }
 
 export const estimateBag = (cart: CartItem[]): BagEstimate => {
@@ -27,8 +27,8 @@ export const estimateBag = (cart: CartItem[]): BagEstimate => {
   let nudge: BagEstimate['nudge'] = null;
 
   for (const offer of BUNDLE_OFFERS) {
-    const units = cart
-      .filter((i) => offer.match.test(i.category || ''))
+    const matching = cart.filter((i) => offer.match.test(i.category || ''));
+    const units = matching
       .flatMap((i) => Array.from({ length: i.quantity }, () => i.price))
       .sort((a, b) => b - a);
     for (let k = 0; k + offer.size <= units.length; k += offer.size) {
@@ -37,7 +37,7 @@ export const estimateBag = (cart: CartItem[]): BagEstimate => {
       offerDiscount += full - offer.price;
     }
     if (!nudge && units.length % offer.size === offer.size - 1 && units[units.length - 1] * offer.size > offer.price) {
-      nudge = { label: offer.label, noun: offer.noun };
+      nudge = { label: offer.label, noun: offer.noun, category: matching[0].category || '' };
     }
   }
 

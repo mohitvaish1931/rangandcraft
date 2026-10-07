@@ -59,3 +59,27 @@ const DEFAULT_CATEGORIES = ['Short Kurtas', 'Long Kurtas', 'Half Sleeves Shirts'
 /** Category choices for admin forms: defaults plus everything already in use. */
 export const categoryOptions = (products: Product[], current?: string) =>
   [...new Set([...DEFAULT_CATEGORIES, ...products.map((p) => p.category), current].filter(Boolean) as string[])].sort();
+
+const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', 'XXXL', '4XL', 'FREE SIZE'];
+const sizeRank = (s: string) => {
+  const i = SIZE_ORDER.indexOf(s.toUpperCase());
+  return i === -1 ? SIZE_ORDER.length + (Number.parseFloat(s) || 0) : i;
+};
+
+/** Every size offered across the catalogue, in wearing order. */
+export const sizesOf = (products: Product[]) =>
+  [...new Set(products.flatMap((p) => p.sizes || []).map((s) => s.trim()).filter(Boolean))]
+    .sort((a, b) => sizeRank(a) - sizeRank(b) || a.localeCompare(b));
+
+export const PRICE_RANGES = [
+  { value: '0-799', label: 'Under ₹800', min: 0, max: 799 },
+  { value: '800-1199', label: '₹800 – ₹1,199', min: 800, max: 1199 },
+  { value: '1200-1999', label: '₹1,200 – ₹1,999', min: 1200, max: 1999 },
+  { value: '2000-', label: '₹2,000 & above', min: 2000, max: Infinity },
+];
+
+export const inPriceRanges = (p: Product, ranges: string[]) =>
+  !ranges.length || PRICE_RANGES.some((r) => ranges.includes(r.value) && p.price >= r.min && p.price <= r.max);
+
+export const hasAnySize = (p: Product, sizes: string[]) =>
+  !sizes.length || (p.sizes || []).some((s) => sizes.includes(s.trim()));
