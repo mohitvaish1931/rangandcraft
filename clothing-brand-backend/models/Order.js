@@ -137,6 +137,9 @@ const orderSchema = mongoose.Schema(
     trackingStatus: {
       type: String,
     },
+    shippedNotifiedAt: {
+      type: Date,
+    },
     stockAdjusted: {
       type: Boolean,
       default: false,

@@ -19,20 +19,19 @@ export const createShipmozoOrder = async (order, user) => {
     };
 
 
-    // Without a token, return mock data in development only. In production a
-    // fake AWB would be shown to customers as real tracking information.
+    // Without a token the shipment is booked by hand from the admin panel.
+    // SHIPMOZO_MOCK=true returns fake data for local demos only; it must never
+    // be on in production, where a fake AWB would be shown to customers.
     if (!process.env.SHIPMOZO_API_TOKEN) {
-      if (process.env.NODE_ENV === 'production') {
-        console.warn('SHIPMOZO_API_TOKEN not set; shipment must be booked manually for order', String(order._id));
-        return null;
+      if (process.env.SHIPMOZO_MOCK === 'true' && process.env.NODE_ENV !== 'production') {
+        return {
+          awbNumber: 'MOCK_AWB_' + Date.now(),
+          courierName: 'BlueDart (Mock)',
+          trackingUrl: 'https://shipmozo.com/track/mock',
+          labelPdf: 'https://shipmozo.com/label/mock.pdf'
+        };
       }
-      console.log('SHIPMOZO_API_TOKEN not found, returning mock shipping data');
-      return {
-        awbNumber: 'MOCK_AWB_' + Date.now(),
-        courierName: 'BlueDart (Mock)',
-        trackingUrl: 'https://shipmozo.com/track/mock',
-        labelPdf: 'https://shipmozo.com/label/mock.pdf'
-      };
+      return null;
     }
 
     const response = await axios.post(`${SHIPMOZO_BASE_URL}/orders`, payload, {
@@ -43,10 +42,10 @@ export const createShipmozoOrder = async (order, user) => {
     });
 
     return {
-      awbNumber: response.data.awb_number || 'N/A',
-      courierName: response.data.courier_name || 'N/A',
-      trackingUrl: response.data.tracking_url || '',
-      labelPdf: response.data.label_pdf || ''
+      awbNumber: response.data.awb_number || undefined,
+      courierName: response.data.courier_name || undefined,
+      trackingUrl: response.data.tracking_url || undefined,
+      labelPdf: response.data.label_pdf || undefined
     };
   } catch (error) {
     console.error('Shipmozo Order Creation Failed:', error.response?.data || error.message);

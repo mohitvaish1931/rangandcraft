@@ -45,7 +45,14 @@ CI (`.github/workflows/ci.yml`) runs all three on every pull request.
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | yes, to take payments | Without them, production refuses online payments (development uses a mock flow). |
 | `ALLOW_MOCK_PAYMENTS` | no | `true` enables the mock payment flow outside development (staging only — orders are marked paid without charging). |
 | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | yes, for uploads | Product image and video uploads from the admin panel |
-| `SHIPMOZO_API_TOKEN` | optional | Automatic shipment booking after payment. Without it, shipments are booked manually. |
+| `SHIPMOZO_API_TOKEN` | optional | Automatic shipment booking after payment. Without it, book the parcel yourself and enter the courier, AWB and tracking link in **Admin → Orders → Ship**. |
+| `SHIPMOZO_MOCK` | no | `true` fills in a fake courier/AWB after payment for local demos. Ignored in production. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | recommended | Sends order emails. For Gmail use `smtp.gmail.com`, port `465` and an [app password](https://support.google.com/accounts/answer/185833). Without them no emails are sent and everything else works. |
+| `SMTP_SECURE` | no | `true` for implicit TLS (port 465 sets it automatically) |
+| `MAIL_FROM` | no | Sender, e.g. `Rang and Craft <orders@rangandcraft.store>`. Defaults to `SMTP_USER`. |
+| `MAIL_REPLY_TO` | no | Where customer replies go, if different from the sender |
+| `ADMIN_NOTIFY_EMAIL` | recommended | Receives an alert for every paid order and every contact-form message |
+| `SITE_URL` | no | Storefront address used in email links. Defaults to `https://rangandcraft.store`. |
 | `SHIPROCKET_WEBHOOK_TOKEN` | yes, if using the Shiprocket webhook | Must match the token configured in the Shiprocket panel (sent as `x-api-key`). The webhook is rejected in production without it. |
 | `CORS_ORIGINS` | recommended | Comma-separated list of sites allowed to call the API, e.g. `https://rangandcraft.store,https://www.rangandcraft.store` |
 | `PORT` | no | Defaults to 5000 |
@@ -57,7 +64,8 @@ Frontend: `VITE_API_BASE` (in `clothing-brand-frontend/.env.production`) points 
 1. The browser sends only product ids, quantities, sizes and an optional coupon code.
 2. `POST /api/orders` loads the products, checks stock and the coupon, and computes every price on the server.
 3. `POST /api/payment/razorpay` creates a Razorpay order for the stored total and remembers its id.
-4. After checkout, `POST /api/payment/verify` checks Razorpay's signature **and** that the payment belongs to that order, then marks it paid, reduces stock, counts the coupon use and books the shipment, exactly once.
+4. After checkout, `POST /api/payment/verify` checks Razorpay's signature **and** that the payment belongs to that order, then marks it paid, reduces stock, counts the coupon use and books the shipment, exactly once. The customer gets a confirmation email and the store gets a new-order alert.
+5. When an order is marked **Shipped** (from the admin panel or the Shiprocket webhook), the customer is emailed the courier, AWB and tracking link, once.
 
 ## Admin
 

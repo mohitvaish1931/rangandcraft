@@ -4,6 +4,7 @@ import Subscriber from '../models/Subscriber.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 import { writeLimiter } from '../middleware/rateLimit.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { notifyInquiry } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -25,6 +26,7 @@ router.post('/', writeLimiter, asyncHandler(async (req, res) => {
   if (inquiry.message.length < 5) return res.status(400).json({ message: 'Please tell us a little more in your message.' });
 
   await Inquiry.create(inquiry);
+  notifyInquiry(inquiry);
   res.status(201).json({ message: 'Thank you — we usually reply within 24 hours.' });
 }));
 

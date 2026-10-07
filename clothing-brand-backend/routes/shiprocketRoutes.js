@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import crypto from 'crypto';
 import Order from '../models/Order.js';
+import { claimShippedNotice, notifyOrderShipped } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -58,7 +59,9 @@ router.post('/webhook', async (req, res) => {
       order.status = 'Cancelled';
     }
 
+    const sendShipped = claimShippedNotice(order);
     await order.save();
+    if (sendShipped) notifyOrderShipped(order);
 
     res.json({ success: true });
   } catch (err) {

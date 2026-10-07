@@ -17,6 +17,7 @@ const { default: User } = await import('../models/User.js');
 const { default: Product } = await import('../models/Product.js');
 const { default: Coupon } = await import('../models/Coupon.js');
 const { default: Order } = await import('../models/Order.js');
+const { setMailTransport } = await import('../utils/mailer.js');
 
 const MONGO = process.env.MONGO_TEST_URI || 'mongodb://127.0.0.1:27017/rangandcraft_test';
 
@@ -394,5 +395,93 @@ describe('contact and newsletter', () => {
     const res = await request(app).get('/api/reviews/latest');
     assert.equal(res.status, 200);
     assert.ok(res.body.reviews.every((r) => r.userEmail === undefined));
+  });
+});
+
+describe('emails', () => {
+  const sent = [];
+  const flush = () => new Promise((r) => setTimeout(r, 20));
+  let item;
+
+  before(async () => {
+    process.env.ADMIN_NOTIFY_EMAIL = 'owner@example.com';
+    setMailTransport({ sendMail: async (m) => { sent.push(m); } });
+    item = await Product.create({
+      user: product.user, name: 'Email Test Kurta', image: '/images/kurta-men.jpg', brand: 'RC', category: 'Long Kurtas',
+      description: 'x', price: 1200, countInStock: 5, sizes: ['L'],
+    });
+  });
+  after(() => {
+    setMailTransport(null);
+    delete process.env.ADMIN_NOTIFY_EMAIL;
+  });
+
+  const paidOrder = async (email = 'buyer@example.com') => {
+    const order = await request(app).post('/api/orders').send({
+      orderItems: [{ _id: item._id, qty: 1, selectedSize: 'L' }],
+      shippingAddress: { ...address, email, name: '<b>Asha</b> Verma' },
+    });
+    const rzp = await request(app).post('/api/payment/razorpay').send({ orderId: order.body._id });
+    await request(app).post('/api/payment/verify').send({
+      mongo_order_id: order.body._id, razorpay_order_id: rzp.body.id, razorpay_payment_id: 'mock', razorpay_signature: 'mock',
+    });
+    await flush();
+    return order.body;
+  };
+
+  test('paying an order emails the customer and the store once', async () => {
+    sent.length = 0;
+    const order = await paidOrder();
+    assert.equal(sent.length, 2);
+    const [customer, store] = sent;
+    assert.equal(customer.to, 'buyer@example.com');
+    assert.match(customer.subject, new RegExp(String(order._id).slice(-8).toUpperCase()));
+    assert.match(customer.html, /₹1,270/); // ₹1200 + ₹70 shipping
+    assert.match(customer.html, /track-order\?order=/);
+    assert.ok(!customer.html.includes('<b>Asha</b>'), 'customer-supplied text is escaped');
+    assert.equal(store.to, 'owner@example.com');
+
+    // Verifying again must not resend.
+    await request(app).post('/api/payment/verify').send({ mongo_order_id: order._id, razorpay_order_id: 'x' });
+    await flush();
+    assert.equal(sent.length, 2);
+  });
+
+  test('marking an order shipped sends tracking details exactly once', async () => {
+    const order = await paidOrder('ship@example.com');
+    sent.length = 0;
+    const bad = await request(app).put(`/api/orders/${order._id}/status`).set('Authorization', `Bearer ${adminToken}`)
+      .send({ status: 'Shipped', trackingUrl: 'javascript:alert(1)' });
+    assert.equal(bad.status, 400);
+
+    const res = await request(app).put(`/api/orders/${order._id}/status`).set('Authorization', `Bearer ${adminToken}`)
+      .send({ status: 'Shipped', courierName: 'Delhivery', awbNumber: 'AWB123', trackingUrl: 'https://track.example.com/AWB123' });
+    assert.equal(res.status, 200);
+    assert.equal(res.body.awbNumber, 'AWB123');
+    await flush();
+    assert.equal(sent.length, 1);
+    assert.equal(sent[0].to, 'ship@example.com');
+    assert.match(sent[0].html, /Delhivery/);
+    assert.match(sent[0].html, /https:\/\/track\.example\.com\/AWB123/);
+
+    await request(app).put(`/api/orders/${order._id}/status`).set('Authorization', `Bearer ${adminToken}`).send({ status: 'Shipped' });
+    await flush();
+    assert.equal(sent.length, 1);
+  });
+
+  test('contact messages alert the store with reply-to set', async () => {
+    sent.length = 0;
+    await request(app).post('/api/contact').send({ name: 'Ravi', email: 'ravi@example.com', subject: 'sizing', message: 'Which size for 40 chest?' });
+    await flush();
+    assert.equal(sent.length, 1);
+    assert.equal(sent[0].replyTo, 'ravi@example.com');
+  });
+
+  test('without SMTP settings nothing is sent and orders still work', async () => {
+    setMailTransport(null);
+    const order = await paidOrder('nosmtp@example.com');
+    const saved = await Order.findById(order._id);
+    assert.equal(saved.isPaid, true);
+    setMailTransport({ sendMail: async (m) => { sent.push(m); } });
   });
 });

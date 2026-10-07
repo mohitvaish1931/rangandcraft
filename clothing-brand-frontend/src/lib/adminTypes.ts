@@ -36,6 +36,11 @@ export interface AdminOrder {
   couponCode?: string;
   awbNumber?: string;
   courierName?: string;
+  trackingUrl?: string;
+  itemsPrice?: number;
+  offerDiscount?: number;
+  discountAmount?: number;
+  shippingPrice?: number;
 }
 
 const orderUser = (o: AdminOrder) => (o.user && typeof o.user === 'object' ? o.user : null);

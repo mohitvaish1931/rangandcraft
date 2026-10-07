@@ -6,6 +6,7 @@ import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import Coupon from '../models/Coupon.js';
 import { createShipmozoOrder } from '../utils/shipmozo.js';
+import { notifyOrderPaid } from '../utils/mailer.js';
 import { writeLimiter } from '../middleware/rateLimit.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
@@ -70,7 +71,9 @@ const finalizePaidOrder = async (order, payment = {}) => {
     order.orderStatus = 'packed';
   }
 
-  return order.save();
+  const saved = await order.save();
+  notifyOrderPaid(saved);
+  return saved;
 };
 
 // @desc    Get Razorpay Key ID

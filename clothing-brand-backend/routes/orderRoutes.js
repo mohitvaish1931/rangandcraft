@@ -7,6 +7,7 @@ import { protect, admin, optionalAuth } from '../middleware/authMiddleware.js';
 import { writeLimiter } from '../middleware/rateLimit.js';
 import { HttpError } from '../middleware/errorMiddleware.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { claimShippedNotice, notifyOrderShipped } from '../utils/mailer.js';
 import { buildOrderLines, couponUnavailableReason, priceOrder, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../utils/pricing.js';
 
 const router = express.Router();
@@ -204,7 +205,21 @@ router.put('/:id/status', protect, admin, asyncHandler(async (req, res) => {
     }
   }
 
-  res.json(await order.save());
+  // Shipment details entered by hand when a parcel is booked outside Shipmozo.
+  if (req.body.courierName !== undefined) order.courierName = str(req.body.courierName, 60) || undefined;
+  if (req.body.awbNumber !== undefined) order.awbNumber = str(req.body.awbNumber, 60) || undefined;
+  if (req.body.trackingUrl !== undefined) {
+    const url = str(req.body.trackingUrl, 500);
+    if (url && !/^https?:\/\/[^\s]+$/i.test(url)) {
+      return res.status(400).json({ message: 'Tracking link must start with http:// or https://' });
+    }
+    order.trackingUrl = url || undefined;
+  }
+
+  const sendShipped = claimShippedNotice(order);
+  const saved = await order.save();
+  if (sendShipped) notifyOrderShipped(saved);
+  res.json(saved);
 }));
 
 // @desc    Delete an order (Admin)
