@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 // Transactional email. Everything here is best-effort: when SMTP isn't
 // configured, or a send fails, the order flow carries on untouched.
 
-const SITE_URL = () => (process.env.SITE_URL || 'https://rangandcraft.store').replace(/\/$/, '');
+const SITE_URL = () => (process.env.SITE_URL || 'https://www.rangandcrafts.com').replace(/\/$/, '');
 const BRAND = 'Rang and Craft';
 const SUPPORT_PHONE = '+91 93513 25459';
 const WHATSAPP_URL = 'https://wa.me/919828152444';

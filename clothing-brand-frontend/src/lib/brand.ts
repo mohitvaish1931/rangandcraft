@@ -5,6 +5,8 @@ export const SUPPORT_PHONE = '+91 93513 25459';
 export const SUPPORT_EMAIL = 'rangandcraft.fashion.jaipur@gmail.com';
 // Keep the name, address and phone identical everywhere (site, invoices, Google Merchant Center).
 export const BUSINESS_NAME = 'Rang and Craft';
+/** The live storefront address, used for canonical links, sharing and structured data. */
+export const SITE_URL = 'https://www.rangandcrafts.com';
 export const BUSINESS_ADDRESS = '455, Mandhi Khatikan, Pahadiya Chowk, Jaipur - 302002, Rajasthan, India';
 
 export const ANNOUNCEMENTS = [

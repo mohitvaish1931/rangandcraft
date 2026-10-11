@@ -8,4 +8,4 @@ Disallow: /order-success
 Disallow: /login
 Disallow: /register
 
-Sitemap: https://rangandcraft.store/api/sitemap.xml
+Sitemap: https://www.rangandcrafts.com/sitemap.xml

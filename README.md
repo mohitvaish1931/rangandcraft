@@ -49,13 +49,13 @@ CI (`.github/workflows/ci.yml`) runs all three on every pull request.
 | `SHIPMOZO_MOCK` | no | `true` fills in a fake courier/AWB after payment for local demos. Ignored in production. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | recommended | Sends order emails. For Gmail use `smtp.gmail.com`, port `465` and an [app password](https://support.google.com/accounts/answer/185833). Without them no emails are sent and everything else works. |
 | `SMTP_SECURE` | no | `true` for implicit TLS (port 465 sets it automatically) |
-| `MAIL_FROM` | no | Sender, e.g. `Rang and Craft <orders@rangandcraft.store>`. Defaults to `SMTP_USER`. |
+| `MAIL_FROM` | no | Sender, e.g. `Rang and Craft <orders@rangandcrafts.com>`. Defaults to `SMTP_USER`. |
 | `MAIL_REPLY_TO` | no | Where customer replies go, if different from the sender |
 | `ADMIN_NOTIFY_EMAIL` | recommended | Receives an alert for every paid order and every contact-form message |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | recommended | Your admin login. Applied on every start: the admin account is created if missing and always uses this password (8+ characters). Defaults to `admin@rangandcraft.store` when only the password is set. |
-| `SITE_URL` | no | Storefront address used in email links. Defaults to `https://rangandcraft.store`. |
+| `SITE_URL` | no | Storefront address used in email links. Defaults to `https://www.rangandcrafts.com`. |
 | `SHIPROCKET_WEBHOOK_TOKEN` | yes, if using the Shiprocket webhook | Must match the token configured in the Shiprocket panel (sent as `x-api-key`). The webhook is rejected in production without it. |
-| `CORS_ORIGINS` | recommended | Comma-separated list of sites allowed to call the API, e.g. `https://rangandcraft.store,https://www.rangandcraft.store` |
+| `CORS_ORIGINS` | recommended | Comma-separated list of sites allowed to call the API, e.g. `https://rangandcrafts.com,https://www.rangandcrafts.com` |
 | `PORT` | no | Defaults to 5000 |
 
 Frontend: `VITE_API_BASE` (in `clothing-brand-frontend/.env.production`) points the storefront at the API.

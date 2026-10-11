@@ -11,7 +11,7 @@ import { getImageUrl, handleImageError, responsiveImage } from '../utils/mediaHe
 import { discountPercent, formatPrice, productId } from '../lib/format';
 import { isSoldOut } from '../lib/catalog';
 import { useToast } from '../lib/toast';
-import { whatsappLink } from '../lib/brand';
+import { SITE_URL, whatsappLink } from '../lib/brand';
 import NotFound from './NotFound';
 import Lightbox from '../components/Lightbox';
 import { flyToBag } from '../lib/flyToBag';
@@ -268,12 +268,12 @@ const ProductDetail = ({ id }: { id: string }) => {
     flyToBag(getImageUrl(product.image, 400), from).then(() => dispatch({ type: 'TOGGLE_CART', payload: true }));
   };
 
-  const canonical = `https://rangandcraft.store/product/${id}`;
+  const canonical = `${SITE_URL}/product/${id}`;
   const jsonLd = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
     name: product.name,
-    image: images.map((i) => (i.startsWith('http') ? i : `https://rangandcraft.store${i}`)),
+    image: images.map((i) => (i.startsWith('http') ? i : `${SITE_URL}${i}`)),
     description: product.description,
     sku: id,
     category: product.category,
@@ -306,7 +306,7 @@ const ProductDetail = ({ id }: { id: string }) => {
         merchantReturnDays: 7,
         returnMethod: 'https://schema.org/ReturnByMail',
         refundType: 'https://schema.org/ExchangeRefund',
-        merchantReturnLink: 'https://rangandcraft.store/refund-policy',
+        merchantReturnLink: `${SITE_URL}/refund-policy`,
       },
     },
   };

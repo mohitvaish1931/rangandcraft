@@ -1,6 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-
-const SITE = 'https://rangandcraft.store';
+import { SITE_URL as SITE } from '../lib/brand';
 // Brand mark for pages without a photo of their own; pages with products pass one.
 const DEFAULT_IMAGE = `${SITE}/icon-512.png`;
 
