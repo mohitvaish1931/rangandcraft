@@ -498,7 +498,9 @@ describe('uploads', () => {
 });
 
 describe('admin password recovery', () => {
-  after(() => { delete process.env.ADMIN_RESET_PASSWORD; delete process.env.ADMIN_RESET_EMAIL; });
+  after(() => {
+    for (const k of ['ADMIN_RESET_PASSWORD', 'ADMIN_RESET_EMAIL', 'ADMIN_PASSWORD', 'ADMIN_EMAIL']) delete process.env[k];
+  });
 
   test('does nothing without the variable or with a short password', async () => {
     delete process.env.ADMIN_RESET_PASSWORD;
@@ -514,6 +516,17 @@ describe('admin password recovery', () => {
     const res = await request(app).post('/api/users/login').send({ email: 'admin@example.com', password: 'brand-new-pass-1' });
     assert.equal(res.status, 200);
     assert.equal(res.body.isAdmin, true);
+  });
+
+  test('ADMIN_EMAIL and ADMIN_PASSWORD from the host work as the admin login', async () => {
+    delete process.env.ADMIN_RESET_PASSWORD; delete process.env.ADMIN_RESET_EMAIL;
+    process.env.ADMIN_EMAIL = 'store@example.com';
+    process.env.ADMIN_PASSWORD = 'store-pass-123';
+    assert.equal(await applyAdminReset(), 'store@example.com');
+    const res = await request(app).post('/api/users/login').send({ email: 'store@example.com', password: 'store-pass-123' });
+    assert.equal(res.status, 200);
+    assert.equal(res.body.isAdmin, true);
+    delete process.env.ADMIN_EMAIL; delete process.env.ADMIN_PASSWORD;
   });
 
   test('creates the admin when the account is missing', async () => {
