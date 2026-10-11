@@ -3,7 +3,7 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 import Video from '../models/Video.js';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary, { withUploadErrors } from '../config/cloudinary.js';
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
 });
 
 // Accept multipart form with optional file field 'file' or JSON body { title, url }
-router.post('/', protect, admin, upload.single('file'), async (req, res) => {
+router.post('/', protect, admin, withUploadErrors(upload.single('file')), async (req, res) => {
   try {
     const body = { title: req.body?.title, url: req.body?.url };
     if (req.file) {

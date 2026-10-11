@@ -44,7 +44,7 @@ CI (`.github/workflows/ci.yml`) runs all three on every pull request.
 | `NODE_ENV` | yes in production | Set to `production` |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | yes, to take payments | Without them, production refuses online payments (development uses a mock flow). |
 | `ALLOW_MOCK_PAYMENTS` | no | `true` enables the mock payment flow outside development (staging only — orders are marked paid without charging). |
-| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | yes, for uploads | Product image and video uploads from the admin panel |
+| `CLOUDINARY_URL` | yes, for uploads | Product image and video uploads from the admin panel. Copy the `cloudinary://<api_key>:<api_secret>@<cloud_name>` value from the Cloudinary dashboard. You can instead set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` separately. |
 | `SHIPMOZO_API_TOKEN` | optional | Automatic shipment booking after payment. Without it, book the parcel yourself and enter the courier, AWB and tracking link in **Admin → Orders → Ship**. |
 | `SHIPMOZO_MOCK` | no | `true` fills in a fake courier/AWB after payment for local demos. Ignored in production. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | recommended | Sends order emails. For Gmail use `smtp.gmail.com`, port `465` and an [app password](https://support.google.com/accounts/answer/185833). Without them no emails are sent and everything else works. |

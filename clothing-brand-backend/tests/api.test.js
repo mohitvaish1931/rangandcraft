@@ -485,3 +485,13 @@ describe('emails', () => {
     setMailTransport({ sendMail: async (m) => { sent.push(m); } });
   });
 });
+
+describe('uploads', () => {
+  test('without Cloudinary settings an image upload explains what is missing', async () => {
+    const res = await request(app).post('/api/products').set('Authorization', `Bearer ${adminToken}`)
+      .field('name', 'Upload Test').field('price', '999').field('category', 'Short Kurtas')
+      .attach('image', Buffer.from([0xff, 0xd8, 0xff, 0xd9]), { filename: 'tiny.jpg', contentType: 'image/jpeg' });
+    assert.equal(res.status, 503);
+    assert.match(res.body.message, /CLOUDINARY_URL/);
+  });
+});

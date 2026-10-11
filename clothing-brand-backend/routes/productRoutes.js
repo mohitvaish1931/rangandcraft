@@ -2,7 +2,7 @@ import express from 'express';
 import Product from '../models/Product.js';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary, { withUploadErrors } from '../config/cloudinary.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
@@ -61,7 +61,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
 
 // @desc    Create new product
 // @route   POST /api/products
-router.post('/', protect, admin, upload.array('image', 10), async (req, res) => {
+router.post('/', protect, admin, withUploadErrors(upload.array('image', 10)), async (req, res) => {
   try {
     const imageUrls = req.files ? req.files.map(f => f.secure_url || f.url || f.path) : [];
     
@@ -105,7 +105,7 @@ router.post('/', protect, admin, upload.array('image', 10), async (req, res) => 
 
 // @desc    Update a product
 // @route   PUT /api/products/:id
-router.put('/:id', protect, admin, upload.array('image', 10), async (req, res) => {
+router.put('/:id', protect, admin, withUploadErrors(upload.array('image', 10)), async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
