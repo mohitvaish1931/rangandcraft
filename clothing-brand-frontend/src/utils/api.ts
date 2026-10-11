@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   REVIEWS: `${API_BASE_URL}/api/reviews`,
   CONTACT: `${API_BASE_URL}/api/contact`,
   ADMIN_SUMMARY: `${API_BASE_URL}/api/admin/summary`,
+  ADMIN_UPLOADS_CHECK: `${API_BASE_URL}/api/admin/uploads-check`,
   NEWSLETTER: `${API_BASE_URL}/api/contact/newsletter`,
   AUTH: {
     LOGIN: `${API_BASE_URL}/api/users/login`,

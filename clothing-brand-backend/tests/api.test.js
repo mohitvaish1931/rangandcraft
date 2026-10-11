@@ -563,3 +563,14 @@ describe('product updates', () => {
     assert.equal(res2.body.countInStock, 3);
   });
 });
+
+describe('uploads check', () => {
+  test('is admin-only and explains when Cloudinary is not set up', async () => {
+    assert.equal((await request(app).get('/api/admin/uploads-check')).status, 401);
+    const res = await request(app).get('/api/admin/uploads-check').set('Authorization', `Bearer ${adminToken}`);
+    assert.equal(res.status, 200);
+    assert.equal(res.body.ok, false);
+    assert.equal(res.body.configured, false);
+    assert.match(res.body.message, /CLOUDINARY/);
+  });
+});

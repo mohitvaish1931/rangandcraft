@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  CreditCard, Database, Gift, KeyRound, Mail, Phone, RefreshCw, Server,
+  CreditCard, Database, Gift, ImageUp, KeyRound, Mail, Phone, RefreshCw, Server,
 } from 'lucide-react';
 import { API_ENDPOINTS, API_BASE_URL, fetchJSON } from '../../utils/api';
 import { BUNDLE_OFFERS, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../../lib/offers';
@@ -22,17 +22,30 @@ const BADGE: Record<Level, { label: string; tone: 'success' | 'warning' | 'dange
 const ENV_GROUPS = [
   { label: 'Payments', names: ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'] },
   { label: 'Email', names: ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'ADMIN_NOTIFY_EMAIL'] },
-  { label: 'Image uploads', names: ['CLOUDINARY_URL'] },
+  { label: 'Image uploads', names: ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'] },
   { label: 'Admin login', names: ['ADMIN_EMAIL', 'ADMIN_PASSWORD'] },
 ];
 
+interface UploadsCheck { ok: boolean; configured: boolean; status?: number; message: string; cloudName?: string; apiKey?: string }
+
+const uploadHint = (u: UploadsCheck) => {
+  const m = u.message.toLowerCase();
+  if (u.status === 401 || /api_key|api key|signature|cloud_name/.test(m)) return 'The cloud name, API key or secret on Render doesn’t match Cloudinary → Settings → API Keys.';
+  if (/ip|address/.test(m)) return 'This API key only allows certain IP addresses. Remove the IP restriction in Cloudinary → Settings → API Keys.';
+  if (/permission|not allowed|restricted|role/.test(m)) return 'This API key isn’t allowed to upload. Use a key with upload (or full) access from Cloudinary → Settings → API Keys.';
+  if (/disabled|suspend|limit|quota|exceed|plan/.test(m)) return 'Your Cloudinary account is disabled or over its limits. Check the banner on the Cloudinary dashboard.';
+  return 'Check the API key in Cloudinary → Settings → API Keys and the account status on the dashboard.';
+};
+
 const runChecks = async (): Promise<Check[]> => {
-  const [health, pay] = await Promise.allSettled([
+  const [health, pay, uploads] = await Promise.allSettled([
     fetchJSON<{ status: string; db: string }>(API_ENDPOINTS.HEALTH),
     fetchJSON<{ enabled: boolean; mock: boolean; keyId: string | null }>(API_ENDPOINTS.PAYMENT.CONFIG),
+    fetchJSON<UploadsCheck>(API_ENDPOINTS.ADMIN_UPLOADS_CHECK),
   ]);
   const h = health.status === 'fulfilled' ? health.value : null;
   const p = pay.status === 'fulfilled' ? pay.value : null;
+  const u = uploads.status === 'fulfilled' ? uploads.value : null;
   return [
     { label: 'Store server', icon: Server, detail: h ? `Online and answering at ${API_BASE_URL}` : `Can’t reach ${API_BASE_URL}. The store may be starting up; check again in a minute.`, level: h ? 'ok' : 'error' },
     { label: 'Database', icon: Database, detail: h ? (h.db === 'connected' ? 'Connected. Products, orders and customers are being saved.' : `MongoDB is ${h.db}. Orders can’t be saved until it reconnects.`) : 'Unknown, because the server can’t be reached.', level: h?.db === 'connected' ? 'ok' : 'error' },
@@ -44,6 +57,15 @@ const runChecks = async (): Promise<Check[]> => {
           : p.mock ? 'Practice payments only (development). No money is collected.'
             : 'Not set up. Customers can’t pay online until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are added.',
       level: !p ? 'error' : p.keyId?.startsWith('rzp_live') ? 'ok' : 'warn',
+    },
+    {
+      label: 'Image uploads',
+      icon: ImageUp,
+      detail: !u ? 'Couldn’t run the test. Make sure the server is up to date, then check again.'
+        : u.ok ? `Cloudinary is connected (cloud ${u.cloudName}, key ${u.apiKey}). Product photos will upload.`
+          : !u.configured ? u.message
+            : `Cloudinary refused a test upload${u.status ? ` (${u.status})` : ''}: “${u.message}”${u.cloudName ? ` — cloud ${u.cloudName}, key ${u.apiKey}` : ''}. ${uploadHint(u)}`,
+      level: u?.ok ? 'ok' : 'error',
     },
   ];
 };
