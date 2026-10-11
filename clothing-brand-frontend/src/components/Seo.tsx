@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 
 const SITE = 'https://rangandcraft.store';
-const DEFAULT_IMAGE = `${SITE}/images/hero-banner.png`;
+// Brand mark for pages without a photo of their own; pages with products pass one.
+const DEFAULT_IMAGE = `${SITE}/icon-512.png`;
 
 interface SeoProps {
   title: string;

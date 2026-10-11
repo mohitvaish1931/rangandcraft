@@ -1,7 +1,11 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Award, Gem, HandHeart, Leaf, Scissors, Sparkles } from 'lucide-react';
 import Seo from '../components/Seo';
 import { InfoHero } from '../components/InfoPage';
+import { useAppContext } from '../context/AppContext';
+import { productId } from '../lib/format';
+import { pickLooks } from '../lib/media';
 import { responsiveImage } from '../utils/mediaHelper';
 
 const FOUNDED = 2005;
@@ -14,13 +18,14 @@ const PILLARS = [
 
 const AboutUs = () => {
   const years = new Date().getFullYear() - FOUNDED;
-  const photo = responsiveImage('/images/heritage-edit-men.jpg', '(max-width: 900px) 100vw, 50vw');
+  const { state } = useAppContext();
+  const [look] = useMemo(() => pickLooks(state.products, 1, { shot: 1, salt: 11 }), [state.products]);
 
   return (
     <>
       <Seo
         title="About Us"
-        description="Rang and Craft brings Jaipur’s printing and tailoring heritage to modern menswear: kurtas, shirts and co-ords made in the Pink City since 2005."
+        description="Rang and Craft brings Jaipur’s block-printing heritage to modern menswear: hand block printed cotton short kurtas and shirts from our studio in Jaipur."
         path="/about"
       />
       <InfoHero
@@ -37,9 +42,13 @@ const AboutUs = () => {
       <section className="rc-section">
         <div className="rc-container rc-story">
           <div className="rc-story__media" data-reveal="mask">
-            <div className="rc-story__frame">
-              <img {...photo} alt="Model wearing a printed Rang and Craft kurta in Jaipur" loading="lazy" decoding="async" width={1200} height={1500} />
-            </div>
+            {look ? (
+              <Link to={`/product/${productId(look.product)}`} className="rc-story__frame" style={{ display: 'block' }} data-cursor="View">
+                <img {...responsiveImage(look.src, '(max-width: 900px) 100vw, 50vw', 960)} alt={look.product.name} loading="lazy" decoding="async" width={1200} height={1500} />
+              </Link>
+            ) : (
+              <div className="rc-story__frame rc-skeleton" style={{ aspectRatio: '4 / 5' }} aria-hidden />
+            )}
             <div className="rc-story__stamp">
               <strong>{years} years</strong>
               of printing, cutting and stitching in the Pink City.
@@ -57,7 +66,7 @@ const AboutUs = () => {
               the bridge between that tradition and the way you dress today.
             </p>
             <div className="rc-story__points">
-              <div><Scissors size={22} strokeWidth={1.4} aria-hidden /><strong>100% handcrafted</strong><span>Cut, stitched and finished in our Jaipur atelier.</span></div>
+              <div><Scissors size={22} strokeWidth={1.4} aria-hidden /><strong>Hand block printed</strong><span>Printed by hand with wooden blocks, then cut and stitched in Jaipur.</span></div>
               <div><Leaf size={22} strokeWidth={1.4} aria-hidden /><strong>Breathable fabrics</strong><span>Soft cottons made for Indian summers.</span></div>
               <div><HandHeart size={22} strokeWidth={1.4} aria-hidden /><strong>Ethical making</strong><span>Fair wages for every artisan we work with.</span></div>
             </div>
@@ -66,10 +75,10 @@ const AboutUs = () => {
       </section>
 
       <div className="rc-figures" role="list">
-        <div className="rc-figure" role="listitem"><strong>1 lakh+</strong><span>Happy customers</span></div>
-        <div className="rc-figure" role="listitem"><strong>2000+</strong><span>Unique designs</span></div>
-        <div className="rc-figure" role="listitem"><strong>50+</strong><span>Stores worldwide</span></div>
-        <div className="rc-figure" role="listitem"><strong>{years}</strong><span>Years of legacy</span></div>
+        <div className="rc-figure" role="listitem"><strong>1</strong><span>Studio, in Jaipur</span></div>
+        <div className="rc-figure" role="listitem"><strong>100%</strong><span>Cotton fabrics</span></div>
+        <div className="rc-figure" role="listitem"><strong>S–3XL</strong><span>Size range</span></div>
+        <div className="rc-figure" role="listitem"><strong>7 days</strong><span>Size exchange</span></div>
       </div>
 
       <section className="rc-section rc-section--tint">
@@ -96,7 +105,7 @@ const AboutUs = () => {
             <div>
               <span className="rc-eyebrow">Made in Jaipur, for you</span>
               <h2 className="rc-h2" style={{ marginTop: 10 }}>Find your next favourite</h2>
-              <p>Printed kurtas, half sleeve shirts and co-ord sets, with free shipping on orders above ₹1499.</p>
+              <p>Hand block printed short kurtas and half &amp; full sleeve shirts, with free shipping on orders above ₹1499.</p>
             </div>
             <div className="rc-help__actions">
               <Link to="/shop" className="rc-btn rc-btn--light">Shop now</Link>

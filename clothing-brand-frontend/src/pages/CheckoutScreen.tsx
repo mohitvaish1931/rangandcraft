@@ -233,7 +233,7 @@ const CheckoutScreen = () => {
       <Seo title="Checkout" noindex />
       <div className="rc-container" style={{ paddingBlock: 'clamp(28px, 4vw, 48px) clamp(56px, 8vw, 96px)' }}>
         <div className="rc-steps" aria-label="Checkout progress">
-          <Link to="/cart">Bag</Link><span>›</span><span className="is-active">Details & payment</span><span>›</span><span>Confirmation</span>
+          <Link to="/cart">Bag</Link><span>›</span><span className="is-active">Details & secure payment</span><span>›</span><span>Confirmation</span>
         </div>
 
         <form className="rc-checkout" onSubmit={placeOrder} noValidate>
@@ -265,13 +265,13 @@ const CheckoutScreen = () => {
             </section>
 
             <section className="rc-panel">
-              <h2 className="rc-panel__title"><span className="rc-step-num">3</span> Payment</h2>
+              <h2 className="rc-panel__title"><span className="rc-step-num">3</span> Pay securely</h2>
               <p className="rc-muted" style={{ marginBottom: 18 }}>
                 Pay securely with UPI, cards, netbanking or wallets via Razorpay. You’ll be asked to confirm the payment in the next step.
               </p>
               {quoteError && <div className="rc-alert rc-alert--error" role="alert" style={{ marginBottom: 16 }}>{quoteError}</div>}
               <button type="submit" className="rc-btn rc-btn--block rc-btn--lg" disabled={placing || Boolean(quoteError)}>
-                {placing ? <><span className="rc-spinner" /> Processing…</> : <><Lock size={16} /> Pay {formatPrice(total)}</>}
+                {placing ? <><span className="rc-spinner" /> Processing…</> : <><Lock size={16} /> Pay securely · {formatPrice(total)}</>}
               </button>
               <div className="rc-trust-row">
                 <span><ShieldCheck size={14} /> 256-bit SSL secured</span>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  BarChart3, Boxes, ChevronRight, ExternalLink, Images, Inbox, LayoutDashboard, LineChart, LogOut, Megaphone,
+  BarChart3, Boxes, ChevronRight, ExternalLink, Images, Inbox, LayoutDashboard, LayoutTemplate, LineChart, LogOut, Megaphone,
   Menu, Package, PieChart, Search, Settings, ShieldCheck, ShoppingBag, Star, Tag, UserRound, Users, UsersRound,
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
@@ -31,6 +31,7 @@ const NAV: { title: string; items: { to: string; label: string; icon: PaletteLin
       { to: '/admin/reviews', label: 'Reviews', icon: Star, count: 'pendingReviews' },
       { to: '/admin/inbox', label: 'Inbox', icon: Inbox, count: 'newMessages' },
       { to: '/admin/promotions', label: 'Coupons', icon: Tag },
+      { to: '/admin/homepage', label: 'Homepage banner', icon: LayoutTemplate },
       { to: '/admin/banners', label: 'Announcements', icon: Megaphone },
     ],
   },

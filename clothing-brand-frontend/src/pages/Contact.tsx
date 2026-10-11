@@ -6,9 +6,8 @@ import WhatsAppIcon from '../components/WhatsAppIcon';
 import { API_ENDPOINTS, postJSON } from '../utils/api';
 import { errorMessage } from '../lib/format';
 import { useToast } from '../lib/toast';
-import { SUPPORT_EMAIL, SUPPORT_PHONE, whatsappLink } from '../lib/brand';
+import { BUSINESS_ADDRESS as STUDIO_ADDRESS, SUPPORT_EMAIL, SUPPORT_PHONE, whatsappLink } from '../lib/brand';
 
-const STUDIO_ADDRESS = '455, Mandhi Khatikan, Pahadiya Chowk, Jaipur - 302002, Rajasthan, India';
 const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(STUDIO_ADDRESS)}`;
 
 const SUBJECTS = [
@@ -131,7 +130,7 @@ const Contact = () => {
               <span className="rc-eyebrow">Quick help</span>
               <ul className="rc-bullets" style={{ marginTop: 10 }}>
                 <li><Link to="/track-order">Track your order</Link></li>
-                <li><Link to="/refund-policy">Exchanges & refunds</Link></li>
+                <li><Link to="/refund-policy">Return &amp; exchange policy</Link></li>
                 <li><Link to="/shipping-policy">Shipping times</Link></li>
                 <li><Link to="/faq">FAQs</Link></li>
               </ul>

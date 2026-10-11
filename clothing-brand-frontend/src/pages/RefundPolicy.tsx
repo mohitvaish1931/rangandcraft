@@ -6,14 +6,14 @@ import { HelpBand, InfoHero, PolicyList } from '../components/InfoPage';
 const RefundPolicy = () => (
   <>
     <Seo
-      title="Exchange & Refund Policy"
-      description="Easy 7-day size exchange on unworn pieces with tags, and a full refund or replacement for damaged products."
+      title="Return & Exchange Policy"
+      description="7-day size exchange on unworn pieces with tags. Refunds or replacements only for damaged or wrong items, with an unboxing video. No change-of-mind returns."
       path="/refund-policy"
     />
     <InfoHero
       eyebrow="Customer care"
-      title={<>Exchanges <em>&amp;</em> refunds</>}
-      intro="Wrong size? Something not right? Here’s exactly how we make it right."
+      title={<>Returns <em>&amp;</em> exchanges</>}
+      intro="We offer a 7-day size exchange. We refund or replace only damaged or wrong items, reported with an unboxing video. We don’t accept returns for a change of mind."
       policyNav
     />
 
@@ -21,8 +21,8 @@ const RefundPolicy = () => (
       <div className="rc-container rc-info-body">
         <div className="rc-highlights" data-reveal="up">
           <div className="rc-highlight"><strong>7 days</strong><span>for a size exchange</span></div>
-          <div className="rc-highlight"><strong>Full refund</strong><span>or replacement if damaged</span></div>
-          <div className="rc-highlight"><strong>1 message</strong><span>on WhatsApp to start</span></div>
+          <div className="rc-highlight"><strong>Refund</strong><span>only for damaged or wrong items</span></div>
+          <div className="rc-highlight"><strong>Unboxing video</strong><span>needed for damage claims</span></div>
         </div>
 
         <PolicyList

@@ -1,16 +1,15 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
-import { getImageUrl, responsiveImage } from '../utils/mediaHelper';
-import { FALLBACK_IMAGES } from '../lib/brand';
+import { getImageUrl } from '../utils/mediaHelper';
 
 interface Category { name: string; count: number; image?: string }
 
-/** Large editorial category index; an image follows the pointer on hover. */
+/** Large editorial category index; the category's own product photo follows the pointer on hover. */
 const CategoryList = ({ categories }: { categories: Category[] }) => {
   const floatRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState<number | null>(null);
-  const images = categories.map((c, i) => (c.image ? getImageUrl(c.image, 480) : responsiveImage(FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]).src.replace('.webp', '-640.webp')));
+  const images = categories.map((c) => (c.image ? getImageUrl(c.image, 480) : ''));
 
   const onMove = (e: React.MouseEvent) => {
     if (floatRef.current) {
@@ -36,8 +35,8 @@ const CategoryList = ({ categories }: { categories: Category[] }) => {
           <ArrowUpRight size={28} strokeWidth={1.2} />
         </Link>
       ))}
-      <div ref={floatRef} className={`rc-catlist__float${current !== null ? ' is-visible' : ''}`} aria-hidden>
-        {images.map((src, i) => <img key={src + i} src={src} alt="" className={i === current ? 'is-current' : ''} loading="lazy" />)}
+      <div ref={floatRef} className={`rc-catlist__float${current !== null && images[current] ? ' is-visible' : ''}`} aria-hidden>
+        {images.map((src, i) => src && <img key={src + i} src={src} alt="" className={i === current ? 'is-current' : ''} loading="lazy" />)}
       </div>
     </div>
   );
