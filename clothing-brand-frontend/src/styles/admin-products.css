@@ -93,3 +93,8 @@
 .ad-products-pick.is-primary { cursor: default; }
 .ad-products-form [aria-invalid='true'], .ad-products-stepper [aria-invalid='true'] { border-color: var(--ad-danger); }
 .ad-products-table .ad-icon-btn:disabled { opacity: 0.35; cursor: default; background: none; }
+@media (max-width: 760px) {
+  .ad-products-grid .ad-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .ad-products-photos .ad-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .ad-products-tile-hit { opacity: 1; font-size: 11px; padding: 6px; }
+}

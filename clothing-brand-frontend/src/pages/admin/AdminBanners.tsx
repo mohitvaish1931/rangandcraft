@@ -151,7 +151,7 @@ const AdminBanners = () => {
                     <div className="ad-insights-msg">
                       <Preview text={b.text} />
                       <div className="ad-insights-msg__actions">
-                        <Badge tone={t.tone}>{t.label}</Badge>
+                        <span className="ad-insights-msg__type"><Badge tone={t.tone}>{t.label}</Badge></span>
                         <button type="button" className="ad-icon-btn" onClick={() => moveBanner(i, 'up')} disabled={i === 0 || busy !== null} aria-label="Move up"><ArrowUp aria-hidden /></button>
                         <button type="button" className="ad-icon-btn" onClick={() => moveBanner(i, 'down')} disabled={i === banners.length - 1 || busy !== null} aria-label="Move down"><ArrowDown aria-hidden /></button>
                         <button type="button" className="ad-icon-btn" onClick={() => setEditing(b)} aria-label="Edit message"><Pencil aria-hidden /></button>

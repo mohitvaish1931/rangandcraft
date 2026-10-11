@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  CreditCard, Database, Gift, KeyRound, Mail, Phone, RefreshCw, Server, Truck,
+  CreditCard, Database, Gift, KeyRound, Mail, Phone, RefreshCw, Server,
 } from 'lucide-react';
 import { API_ENDPOINTS, API_BASE_URL, fetchJSON } from '../../utils/api';
 import { BUNDLE_OFFERS, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../../lib/offers';
@@ -131,7 +131,7 @@ const AdminSettings = () => {
         <div className="ad-stack">
           <Card title="Shipping & offers" description="Applied automatically at checkout.">
             <dl className="ad-kv">
-              <div><dt><Truck aria-hidden size={14} style={{ verticalAlign: -2, marginRight: 6 }} />Shipping fee</dt><dd>{inr(SHIPPING_FEE)}</dd></div>
+              <div><dt>Shipping fee</dt><dd>{inr(SHIPPING_FEE)}</dd></div>
               <div className="is-good"><dt>Free shipping from</dt><dd>{inr(FREE_SHIPPING_THRESHOLD)}</dd></div>
             </dl>
             <p className="ad-hint" style={{ margin: '8px 0 16px' }}>Measured after bundle savings, before coupons.</p>

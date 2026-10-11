@@ -35,7 +35,9 @@
 .ad-insights-counter.is-over { color: var(--ad-danger); }
 .ad-insights-msg { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .ad-insights-msg .ad-insights-bar { flex: 1; min-width: 0; }
-.ad-insights-msg__actions { display: flex; gap: 2px; flex-shrink: 0; }
+.ad-insights-msg__actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.ad-insights-msg__type { display: inline-flex; justify-content: flex-end; min-width: 112px; margin-right: 6px; }
+.ad-insights-msg__actions .ad-icon-btn:disabled { opacity: 0.35; cursor: default; background: transparent; }
 
 /* ---------- Store status ---------- */
 .ad-insights-status-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; background: var(--ad-brand-soft); color: var(--ad-brand); flex-shrink: 0; }
@@ -74,5 +76,6 @@
   .ad-insights-sticky { position: static; }
   .ad-insights-msg { flex-direction: column; align-items: stretch; gap: 8px; }
   .ad-insights-msg__actions { justify-content: flex-end; }
+  .ad-insights-msg__type { min-width: 0; margin-right: auto; }
   .ad-insights-envs strong { min-width: 0; width: 100%; }
 }
