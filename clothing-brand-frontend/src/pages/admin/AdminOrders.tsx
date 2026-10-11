@@ -1,39 +1,48 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ExternalLink, Search, ShoppingBag, Truck, X } from 'lucide-react';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { Ban, CheckCircle2, Copy, Download, ExternalLink, MapPin, Package, Truck } from 'lucide-react';
 import { API_ENDPOINTS, fetchJSON, postJSON } from '../../utils/api';
 import { orderUserName, type AdminOrder } from '../../lib/adminTypes';
-import { errorMessage, formatDate, formatPrice, shortOrderId } from '../../lib/format';
+import { errorMessage, formatDate, shortOrderId } from '../../lib/format';
 import { getImageUrl } from '../../utils/mediaHelper';
 import { useToast } from '../../lib/toast';
+import { inr, isPaid, orderItems, orderStatus, orderTotal, timeAgo } from '../../lib/adminFormat';
+import { Badge, Card, Drawer, EmptyState, Field, PageHeader, SearchBox, SkeletonRows, Tabs } from '../../components/admin/ui';
+import WhatsAppIcon from '../../components/WhatsAppIcon';
 
-const STATUSES = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] as const;
+type FilterKey = 'to-ship' | 'shipped' | 'delivered' | 'unpaid' | 'cancelled' | 'all';
 
-const FILTERS = [
-  { key: 'to-ship', label: 'To ship', test: (o: AdminOrder) => Boolean(o.isPaid) && (o.status === 'Processing' || o.status === 'Pending') },
-  { key: 'shipped', label: 'Shipped', test: (o: AdminOrder) => o.status === 'Shipped' },
-  { key: 'delivered', label: 'Delivered', test: (o: AdminOrder) => o.status === 'Delivered' },
-  { key: 'unpaid', label: 'Unpaid', test: (o: AdminOrder) => !o.isPaid && o.status !== 'Cancelled' },
-  { key: 'cancelled', label: 'Cancelled', test: (o: AdminOrder) => o.status === 'Cancelled' },
+const FILTERS: { key: FilterKey; label: string; test: (o: AdminOrder) => boolean }[] = [
+  { key: 'to-ship', label: 'To ship', test: (o) => isPaid(o) && (o.status === 'Processing' || o.status === 'Pending') },
+  { key: 'shipped', label: 'Shipped', test: (o) => o.status === 'Shipped' },
+  { key: 'delivered', label: 'Delivered', test: (o) => o.status === 'Delivered' },
+  { key: 'unpaid', label: 'Unpaid', test: (o) => !isPaid(o) && o.status !== 'Cancelled' },
+  { key: 'cancelled', label: 'Cancelled', test: (o) => o.status === 'Cancelled' },
   { key: 'all', label: 'All', test: () => true },
-] as const;
+];
 
-const STATUS_STYLES: Record<string, string> = {
-  Delivered: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-  Shipped: 'bg-blue-50 text-blue-700 border-blue-100',
-  Processing: 'bg-orange-50 text-orange-700 border-orange-100',
-  Cancelled: 'bg-red-50 text-red-700 border-red-100',
-  Pending: 'bg-gray-50 text-gray-700 border-gray-100',
-};
-
-const items = (o: AdminOrder) => o.orderItems || o.items || [];
 const customerName = (o: AdminOrder) => o.shippingAddress?.name || orderUserName(o) || 'Guest';
+const units = (o: AdminOrder) => orderItems(o).reduce((s, i) => s + (i.qty ?? i.quantity ?? 1), 0);
+
+const toCsv = (orders: AdminOrder[]) => {
+  const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = orders.map((o) => [
+    shortOrderId(o._id), o.createdAt ? new Date(o.createdAt).toISOString().slice(0, 10) : '', customerName(o), o.shippingAddress?.email,
+    o.shippingAddress?.phoneNumber, `${o.shippingAddress?.address ?? ''}, ${o.shippingAddress?.city ?? ''} ${o.shippingAddress?.postalCode ?? ''}`,
+    orderItems(o).map((i) => `${i.name}${i.selectedSize ? ` (${i.selectedSize})` : ''} x${i.qty ?? i.quantity ?? 1}`).join('; '),
+    orderTotal(o), isPaid(o) ? 'Paid' : 'Unpaid', o.status, o.courierName, o.awbNumber,
+  ].map(esc).join(','));
+  return ['Order,Date,Customer,Email,Phone,Address,Items,Total,Payment,Status,Courier,AWB', ...rows].join('\n');
+};
 
 const AdminOrders = () => {
   const toast = useToast();
+  const { refreshSummary } = useOutletContext<{ refreshSummary?: () => void }>() ?? {};
+  const [params, setParams] = useSearchParams();
   const [orders, setOrders] = useState<AdminOrder[] | null>(null);
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]['key']>('to-ship');
+  const [filter, setFilter] = useState<FilterKey>('to-ship');
   const [query, setQuery] = useState('');
-  const [openId, setOpenId] = useState<string | null>(null);
+  const openId = params.get('open');
 
   useEffect(() => {
     fetchJSON<AdminOrder[]>(API_ENDPOINTS.ORDERS.BASE)
@@ -42,7 +51,7 @@ const AdminOrders = () => {
   }, [toast]);
 
   const counts = useMemo(
-    () => Object.fromEntries(FILTERS.map((f) => [f.key, (orders || []).filter(f.test).length])),
+    () => Object.fromEntries(FILTERS.map((f) => [f.key, (orders || []).filter(f.test).length])) as Record<FilterKey, number>,
     [orders],
   );
 
@@ -54,11 +63,18 @@ const AdminOrders = () => {
     ].some((v) => String(v || '').toLowerCase().includes(q)));
   }, [orders, filter, query]);
 
+  const setOpen = (id: string | null) => {
+    const next = new URLSearchParams(params);
+    if (id) next.set('open', id); else next.delete('open');
+    setParams(next, { replace: true });
+  };
+
   const update = async (id: string, body: Record<string, unknown>, success?: string) => {
     try {
       const updated = await postJSON<AdminOrder>(`${API_ENDPOINTS.ORDERS.BASE}/${id}/status`, body, 'PUT');
       setOrders((list) => (list || []).map((o) => (o._id === id ? updated : o)));
       if (success) toast.success(success);
+      refreshSummary?.();
       return true;
     } catch (err) {
       toast.error(errorMessage(err));
@@ -66,227 +82,206 @@ const AdminOrders = () => {
     }
   };
 
+  const exportCsv = () => {
+    const url = URL.createObjectURL(new Blob([toCsv(visible)], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const open = orders?.find((o) => o._id === openId) || null;
 
   return (
-    <div className="space-y-8">
-      <div className="bg-white p-8 rounded-3xl border border-gold-primary/10 shadow-sm flex flex-wrap gap-6 items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-black text-text-primary luxury-serif tracking-widest uppercase mb-1">Order Management</h2>
-          <div className="w-12 h-1 bg-primary-purple rounded-full"></div>
-        </div>
-        <div className="flex items-center gap-6">
-          <div className="text-right">
-            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1">Waiting to ship</p>
-            <p className="text-sm font-black text-gold-primary uppercase tracking-widest tabular-nums">{counts['to-ship'] ?? 0} orders</p>
-          </div>
-          <div className="flex items-center space-x-3 px-4 py-3 rounded-2xl border border-gold-primary/10">
-            <ShoppingBag className="h-5 w-5 text-primary-purple" />
-            <span className="text-xs font-bold text-text-primary uppercase tracking-wider">{orders?.length ?? 0} Total</span>
-          </div>
-        </div>
+    <>
+      <PageHeader
+        title="Orders"
+        description={orders ? `${counts['to-ship']} waiting to ship · ${orders.length} in total` : 'Loading orders…'}
+        actions={<button type="button" className="ad-btn ad-btn--secondary" onClick={exportCsv} disabled={!visible.length}><Download aria-hidden /> Export CSV</button>}
+      />
+
+      <div className="ad-toolbar">
+        <Tabs label="Filter orders" value={filter} onChange={setFilter} items={FILTERS.map((f) => ({ key: f.key, label: f.label, count: counts[f.key] ?? 0 }))} />
+        <div className="ad-toolbar__grow" />
+        <SearchBox value={query} onChange={setQuery} placeholder="Order #, name, phone or AWB" label="Search orders" />
       </div>
 
-      <div className="flex flex-wrap gap-3 items-center justify-between">
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter orders">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              type="button"
-              role="tab"
-              aria-selected={filter === f.key}
-              onClick={() => setFilter(f.key)}
-              className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border transition ${filter === f.key ? 'bg-primary-purple text-white border-primary-purple' : 'bg-white text-text-secondary border-gray-200 hover:border-primary-purple'}`}
-            >
-              {f.label} <span className="opacity-70 tabular-nums">{counts[f.key] ?? 0}</span>
-            </button>
-          ))}
-        </div>
-        <label className="relative">
-          <span className="sr-only">Search orders</span>
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Order #, name, phone, AWB"
-            className="pl-9 pr-3 py-2 rounded-full border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary-purple/20"
+      <Card flush>
+        {orders === null ? <SkeletonRows /> : visible.length === 0 ? (
+          <EmptyState
+            icon={filter === 'to-ship' ? CheckCircle2 : Package}
+            title={query ? 'No matching orders' : filter === 'to-ship' ? 'Nothing to ship right now' : 'No orders here yet'}
+            text={query ? 'Try a different order number, name or phone.' : filter === 'to-ship' ? 'New paid orders will appear here, ready to pack.' : undefined}
           />
-        </label>
-      </div>
+        ) : (
+          <div className="ad-table-wrap">
+            <table className="ad-table ad-table--stack">
+              <thead>
+                <tr><th>Order</th><th>Customer</th><th>Items</th><th>Payment</th><th>Status</th><th className="num">Total</th></tr>
+              </thead>
+              <tbody>
+                {visible.map((o) => {
+                  const st = orderStatus(o);
+                  const first = orderItems(o)[0];
+                  return (
+                    <tr key={o._id} className="is-clickable" onClick={() => setOpen(o._id)}>
+                      <td className="is-primary">
+                        <button type="button" className="ad-cell-main" style={{ border: 0, background: 'none', padding: 0, textAlign: 'left', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); setOpen(o._id); }}>
+                          {first && <img src={getImageUrl(first.image, 100)} alt="" />}
+                          <span style={{ minWidth: 0 }}>
+                            <strong>{shortOrderId(o._id)}</strong>
+                            <span title={o.createdAt ? formatDate(o.createdAt) : ''}>{timeAgo(o.createdAt)}</span>
+                          </span>
+                        </button>
+                      </td>
+                      <td data-label="Customer">
+                        <span>
+                          <span style={{ fontWeight: 500 }}>{customerName(o)}</span>
+                          {o.shippingAddress?.city && <span className="muted"> · {o.shippingAddress.city}</span>}
+                        </span>
+                      </td>
+                      <td data-label="Items" className="muted">{units(o)} item{units(o) === 1 ? '' : 's'}</td>
+                      <td data-label="Payment">{isPaid(o) ? <Badge tone="success">Paid</Badge> : <Badge>Unpaid</Badge>}</td>
+                      <td data-label="Status"><Badge tone={st.tone}>{st.label}</Badge></td>
+                      <td data-label="Total" className="num" style={{ fontWeight: 500 }}>{inr(orderTotal(o))}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
 
-      <div className="bg-white border border-gold-primary/10 rounded-3xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-[#FDFBF9]">
-                {['Order', 'Customer', 'Items', 'Total', 'Status', ''].map((h) => (
-                  <th key={h} className="px-6 py-4 text-left text-[10px] font-bold text-text-muted uppercase tracking-widest">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gold-primary/5">
-              {orders === null && (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-text-muted">Loading orders…</td></tr>
-              )}
-              {orders && visible.length === 0 && (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-text-muted">No orders here.</td></tr>
-              )}
-              {visible.map((order) => (
-                <tr key={order._id} className="hover:bg-[#FDFBF9] transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <button type="button" onClick={() => setOpenId(order._id)} className="text-sm font-bold text-primary-purple underline-offset-2 hover:underline tabular-nums">
-                      {shortOrderId(order._id)}
-                    </button>
-                    <div className="text-[11px] text-text-muted">{order.createdAt ? formatDate(order.createdAt) : '—'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-bold text-text-primary">{customerName(order)}</div>
-                    <div className="text-[11px] text-text-muted">{order.shippingAddress?.phoneNumber} · {order.shippingAddress?.city}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-xs text-text-secondary max-w-[240px] truncate">
-                      {items(order).map((it) => `${it.name}${it.selectedSize ? ` (${it.selectedSize})` : ''} ×${it.qty ?? it.quantity ?? 1}`).join(', ')}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-black text-text-primary">{formatPrice(order.totalPrice || order.totalAmount)}</div>
-                    <div className={`text-[10px] font-bold uppercase ${order.isPaid ? 'text-emerald-600' : 'text-orange-600'}`}>{order.isPaid ? 'Paid' : 'Unpaid'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <select
-                      aria-label={`Status of order ${shortOrderId(order._id)}`}
-                      value={order.status || 'Pending'}
-                      onChange={(e) => {
-                        if (e.target.value === 'Shipped' && !order.awbNumber) { setOpenId(order._id); return; }
-                        update(order._id, { status: e.target.value }, `Order ${shortOrderId(order._id)} marked ${e.target.value}`);
-                      }}
-                      className={`border rounded-full py-1 px-3 text-[11px] font-bold focus:outline-none focus:ring-2 focus:ring-primary-purple/20 ${STATUS_STYLES[order.status] || STATUS_STYLES.Pending}`}
-                    >
-                      {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <button type="button" onClick={() => setOpenId(order._id)} className="text-xs font-bold uppercase tracking-wider text-primary-purple hover:underline">
-                      {order.isPaid && order.status === 'Processing' ? 'Ship' : 'View'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {open && <OrderPanel key={open._id} order={open} onClose={() => setOpenId(null)} onUpdate={update} />}
-    </div>
+      {open && <OrderDrawer key={open._id} order={open} onClose={() => setOpen(null)} onUpdate={update} />}
+    </>
   );
 };
 
-interface PanelProps {
+interface DrawerProps {
   order: AdminOrder;
   onClose: () => void;
   onUpdate: (id: string, body: Record<string, unknown>, success?: string) => Promise<boolean>;
 }
 
-const OrderPanel = ({ order, onClose, onUpdate }: PanelProps) => {
+const OrderDrawer = ({ order, onClose, onUpdate }: DrawerProps) => {
+  const toast = useToast();
   const [form, setForm] = useState({ courierName: order.courierName || '', awbNumber: order.awbNumber || '', trackingUrl: order.trackingUrl || '' });
   const [saving, setSaving] = useState(false);
   const a = order.shippingAddress || {};
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  const st = orderStatus(order);
+  const shipped = order.status === 'Shipped' || order.status === 'Delivered';
+  const paid = isPaid(order);
+  const addressText = [a.name, a.address, `${a.city ?? ''} – ${a.postalCode ?? ''}`, a.phoneNumber].filter(Boolean).join('\n');
+  const phoneDigits = (a.phoneNumber || '').replace(/\D/g, '').slice(-10);
 
   const ship = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const markShipped = order.status !== 'Shipped' && order.status !== 'Delivered';
     const ok = await onUpdate(
       order._id,
-      { ...form, ...(markShipped ? { status: 'Shipped' } : {}) },
-      markShipped ? 'Marked as shipped. The customer has been emailed their tracking details.' : 'Shipment details saved',
+      { ...form, ...(shipped ? {} : { status: 'Shipped' }) },
+      shipped ? 'Shipment details saved' : 'Marked as shipped. The customer has been emailed their tracking details.',
     );
     setSaving(false);
-    if (ok && markShipped) onClose();
+    if (ok && !shipped) onClose();
   };
 
-  const row = (label: string, value: number | undefined, negative = false) =>
-    value ? <div className="flex justify-between text-sm"><span className="text-text-muted">{label}</span><span>{negative ? '−' : ''}{formatPrice(value)}</span></div> : null;
+  const setStatus = async (status: string, msg: string) => {
+    if (status === 'Cancelled' && !window.confirm('Cancel this order? Refund the customer separately from your Razorpay dashboard.')) return;
+    await onUpdate(order._id, { status }, msg);
+  };
+
+  const copyAddress = async () => {
+    try { await navigator.clipboard.writeText(addressText); toast.success('Address copied'); } catch { toast.error('Couldn’t copy. Select the address instead.'); }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-label={`Order ${shortOrderId(order._id)}`}>
-      <button type="button" className="absolute inset-0 bg-black/40" aria-label="Close" onClick={onClose} />
-      <div className="relative w-full max-w-lg h-full overflow-y-auto bg-white shadow-2xl p-8 space-y-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Order</p>
-            <h3 className="text-2xl font-black text-text-primary luxury-serif">{shortOrderId(order._id)}</h3>
-            <p className="text-xs text-text-muted">{order.createdAt ? formatDate(order.createdAt) : ''} · {order.isPaid ? 'Paid' : 'Unpaid'} · {order.status}</p>
-          </div>
-          <button type="button" onClick={onClose} className="p-2 rounded-full hover:bg-gray-100" aria-label="Close order"><X size={18} /></button>
-        </div>
-
-        <section className="space-y-3">
-          {items(order).map((it, i) => (
-            <div key={i} className="flex gap-3 items-center">
-              <img src={getImageUrl(it.image, 120)} alt="" className="w-12 h-14 object-cover rounded-lg bg-gray-100" />
-              <div className="flex-1 text-sm">
-                <div className="font-bold text-text-primary">{it.name}</div>
-                <div className="text-xs text-text-muted">Qty {it.qty ?? it.quantity ?? 1}{it.selectedSize ? ` · Size ${it.selectedSize}` : ''}</div>
+    <Drawer
+      title={`Order ${shortOrderId(order._id)}`}
+      description={<>{order.createdAt ? formatDate(order.createdAt) : ''} · <Badge tone={st.tone}>{st.label}</Badge></>}
+      onClose={onClose}
+      footer={(
+        <>
+          {order.status !== 'Cancelled' && order.status !== 'Delivered' && (
+            <button type="button" className="ad-btn ad-btn--danger" onClick={() => setStatus('Cancelled', 'Order cancelled')}><Ban aria-hidden /> Cancel order</button>
+          )}
+          <div style={{ flex: 1 }} />
+          {order.status === 'Shipped' && (
+            <button type="button" className="ad-btn" onClick={() => setStatus('Delivered', 'Marked as delivered')}><CheckCircle2 aria-hidden /> Mark delivered</button>
+          )}
+        </>
+      )}
+    >
+      <section>
+        <div className="ad-section-title">Items</div>
+        <ul className="ad-list" style={{ border: '1px solid var(--ad-line)', borderRadius: 12 }}>
+          {orderItems(order).map((it, i) => (
+            <li key={i}>
+              <img className="ad-list__thumb" src={getImageUrl(it.image, 100)} alt="" />
+              <div className="ad-list__main">
+                <strong>{it.name}</strong>
+                <span>Qty {it.qty ?? it.quantity ?? 1}{it.selectedSize ? ` · Size ${it.selectedSize}` : ''}</span>
               </div>
-              <div className="text-sm">{formatPrice(it.price * (it.qty ?? it.quantity ?? 1))}</div>
-            </div>
+              <span className="tabular">{inr(it.price * (it.qty ?? it.quantity ?? 1))}</span>
+            </li>
           ))}
-          <div className="border-t pt-3 space-y-1">
-            {row('Subtotal', order.itemsPrice)}
-            {row('Bundle offer', order.offerDiscount, true)}
-            {row(`Coupon${order.couponCode ? ` (${order.couponCode})` : ''}`, order.discountAmount, true)}
-            <div className="flex justify-between text-sm"><span className="text-text-muted">Shipping</span><span>{order.shippingPrice ? formatPrice(order.shippingPrice) : 'Free'}</span></div>
-            <div className="flex justify-between text-base font-black pt-1"><span>Total</span><span>{formatPrice(order.totalPrice)}</span></div>
-          </div>
-        </section>
+        </ul>
+        <dl className="ad-kv" style={{ marginTop: 14 }}>
+          {order.itemsPrice ? <div><dt>Subtotal</dt><dd>{inr(order.itemsPrice)}</dd></div> : null}
+          {order.offerDiscount ? <div className="is-good"><dt>Bundle offer</dt><dd>−{inr(order.offerDiscount)}</dd></div> : null}
+          {order.discountAmount ? <div className="is-good"><dt>Coupon{order.couponCode ? ` (${order.couponCode})` : ''}</dt><dd>−{inr(order.discountAmount)}</dd></div> : null}
+          <div><dt>Shipping</dt><dd>{order.shippingPrice ? inr(order.shippingPrice) : 'Free'}</dd></div>
+          <div className="is-total"><dt>Total {paid ? '(paid)' : '(unpaid)'}</dt><dd>{inr(orderTotal(order))}</dd></div>
+        </dl>
+      </section>
 
-        <section className="rounded-2xl bg-[#FDFBF9] p-4 text-sm leading-relaxed">
-          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1">Ship to</p>
-          <p className="font-bold">{a.name}</p>
-          <p>{a.address}</p>
-          <p>{a.city} – {a.postalCode}</p>
-          <p>{a.phoneNumber} · <a className="underline" href={`mailto:${a.email}`}>{a.email}</a></p>
-        </section>
-
-        <form onSubmit={ship} className="space-y-3">
-          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2"><Truck size={14} /> Shipment</p>
-          {(['courierName', 'awbNumber', 'trackingUrl'] as const).map((key) => (
-            <label key={key} className="block">
-              <span className="text-xs font-bold text-text-secondary">{{ courierName: 'Courier', awbNumber: 'AWB / tracking number', trackingUrl: 'Tracking link (optional)' }[key]}</span>
-              <input
-                value={form[key]}
-                onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                type={key === 'trackingUrl' ? 'url' : 'text'}
-                required={key !== 'trackingUrl'}
-                placeholder={{ courierName: 'e.g. Delhivery', awbNumber: 'e.g. 1234567890', trackingUrl: 'https://…' }[key]}
-                className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-purple/20"
-              />
-            </label>
-          ))}
-          {order.trackingUrl && (
-            <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary-purple underline">
-              Open current tracking link <ExternalLink size={12} />
+      <section>
+        <div className="ad-section-title"><MapPin aria-hidden /> Customer & delivery</div>
+        <div className="ad-boxed" style={{ whiteSpace: 'pre-line' }}>
+          <strong style={{ fontWeight: 600 }}>{a.name}</strong>
+          {`\n${a.address ?? ''}\n${a.city ?? ''} – ${a.postalCode ?? ''}\n`}
+          <a href={`tel:${a.phoneNumber}`} className="ad-link">{a.phoneNumber}</a>{' · '}<a href={`mailto:${a.email}`} className="ad-link">{a.email}</a>
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+          <button type="button" className="ad-btn ad-btn--secondary ad-btn--sm" onClick={copyAddress}><Copy aria-hidden /> Copy address</button>
+          {phoneDigits.length === 10 && (
+            <a className="ad-btn ad-btn--secondary ad-btn--sm" href={`https://wa.me/91${phoneDigits}?text=${encodeURIComponent(`Hi ${a.name?.split(' ')[0] ?? ''}, this is Rang and Craft about your order ${shortOrderId(order._id)}.`)}`} target="_blank" rel="noreferrer">
+              <WhatsAppIcon width={15} height={15} /> WhatsApp customer
             </a>
           )}
-          <button
-            type="submit"
-            disabled={saving || !order.isPaid}
-            className="w-full bg-primary-purple text-white rounded-xl py-3 text-xs font-bold uppercase tracking-widest disabled:opacity-50"
-          >
-            {saving ? 'Saving…' : order.status === 'Shipped' || order.status === 'Delivered' ? 'Save shipment details' : 'Mark as shipped & email customer'}
-          </button>
-          {!order.isPaid && <p className="text-xs text-orange-600">This order hasn’t been paid, so it can’t be shipped yet.</p>}
-        </form>
-      </div>
-    </div>
+        </div>
+      </section>
+
+      <form onSubmit={ship}>
+        <div className="ad-section-title"><Truck aria-hidden /> Shipment</div>
+        {!paid ? (
+          <div className="ad-alert ad-alert--warning">This order hasn’t been paid, so it can’t be shipped yet.</div>
+        ) : (
+          <>
+            <div className="ad-form-grid">
+              <Field label="Courier" htmlFor="ship-courier">
+                <input id="ship-courier" className="ad-input" required value={form.courierName} onChange={(e) => setForm((f) => ({ ...f, courierName: e.target.value }))} placeholder="e.g. Delhivery" />
+              </Field>
+              <Field label="AWB / tracking number" htmlFor="ship-awb">
+                <input id="ship-awb" className="ad-input" required value={form.awbNumber} onChange={(e) => setForm((f) => ({ ...f, awbNumber: e.target.value }))} placeholder="e.g. 1234567890" />
+              </Field>
+              <Field label="Tracking link" optional htmlFor="ship-url" className="ad-span-2">
+                <input id="ship-url" className="ad-input" type="url" value={form.trackingUrl} onChange={(e) => setForm((f) => ({ ...f, trackingUrl: e.target.value }))} placeholder="https://…" />
+              </Field>
+            </div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+              <button type="submit" className="ad-btn" disabled={saving || order.status === 'Cancelled'}>
+                {saving ? <span className="ad-spinner" /> : <Truck aria-hidden />}
+                {shipped ? 'Save shipment details' : 'Mark shipped & email customer'}
+              </button>
+              {order.trackingUrl && <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="ad-link">Open tracking <ExternalLink aria-hidden /></a>}
+            </div>
+          </>
+        )}
+      </form>
+    </Drawer>
   );
 };
 

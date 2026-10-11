@@ -1,208 +1,208 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Outlet, NavLink, Link } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, ShoppingBag, Package, Ticket, Users,
-  Image as ImageIcon, Tag, BarChart2, PieChart, LineChart,
-  Settings, UsersRound, ShieldCheck, LogOut, Menu,
-  ExternalLink, Star, Inbox
+  BarChart3, Boxes, ChevronRight, ExternalLink, Images, Inbox, LayoutDashboard, LineChart, LogOut, Megaphone,
+  Menu, Package, PieChart, Search, Settings, ShieldCheck, ShoppingBag, Star, Tag, UserRound, Users, UsersRound,
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { API_ENDPOINTS, fetchJSON } from '../../utils/api';
+import CommandPalette, { type PaletteLink } from '../../components/admin/CommandPalette';
+import { initials } from '../../lib/adminFormat';
+import '../../styles/admin.css';
+
+interface Summary { toShip: number; pendingReviews: number; newMessages: number; lowStock: number }
+type CountKey = keyof Summary;
+
+const NAV: { title: string; items: { to: string; label: string; icon: PaletteLink['icon']; end?: boolean; count?: CountKey }[] }[] = [
+  { title: 'Overview', items: [{ to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true }] },
+  {
+    title: 'Sell',
+    items: [
+      { to: '/admin/orders', label: 'Orders', icon: Package, count: 'toShip' },
+      { to: '/admin/products', label: 'Products', icon: ShoppingBag },
+      { to: '/admin/inventory', label: 'Inventory', icon: Boxes, count: 'lowStock' },
+      { to: '/admin/first-photo', label: 'Product photos', icon: Images },
+      { to: '/admin/customers', label: 'Customers', icon: Users },
+    ],
+  },
+  {
+    title: 'Engage',
+    items: [
+      { to: '/admin/reviews', label: 'Reviews', icon: Star, count: 'pendingReviews' },
+      { to: '/admin/inbox', label: 'Inbox', icon: Inbox, count: 'newMessages' },
+      { to: '/admin/promotions', label: 'Coupons', icon: Tag },
+      { to: '/admin/banners', label: 'Announcements', icon: Megaphone },
+    ],
+  },
+  {
+    title: 'Insights',
+    items: [
+      { to: '/admin/reports/sales', label: 'Sales', icon: BarChart3 },
+      { to: '/admin/reports/products', label: 'Product performance', icon: PieChart },
+      { to: '/admin/reports/customers', label: 'Customer insights', icon: LineChart },
+    ],
+  },
+  {
+    title: 'Settings',
+    items: [
+      { to: '/admin/settings', label: 'Store status', icon: Settings },
+      { to: '/admin/users', label: 'Users & roles', icon: UsersRound },
+    ],
+  },
+];
+
+const LINKS: PaletteLink[] = NAV.flatMap((g) => g.items.map((i) => ({ to: i.to, label: i.label, icon: i.icon, group: g.title })))
+  .concat([{ to: '/admin/products/add', label: 'Add product', icon: ShoppingBag, group: 'Sell' }]);
+
+const titleFor = (path: string) => {
+  if (path.startsWith('/admin/products/add')) return 'Add product';
+  if (/\/admin\/products\/[^/]+\/edit/.test(path)) return 'Edit product';
+  const match = [...LINKS].sort((a, b) => b.to.length - a.to.length).find((l) => path === l.to || path.startsWith(`${l.to}/`));
+  return match?.label ?? 'Dashboard';
+};
+
+const STORE_URL = typeof window !== 'undefined' ? window.location.origin : '/';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { state, dispatch } = useAppContext();
   const user = state.user;
+  const [navOpen, setNavOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const isAdmin = Boolean(user?.isAdmin);
 
   useEffect(() => {
     if (!user) navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`, { replace: true });
   }, [user, navigate, location.pathname]);
 
+  // Badge counts refresh on every page change and once a minute.
+  const loadSummary = useCallback(() => {
+    fetchJSON<Summary>(API_ENDPOINTS.ADMIN_SUMMARY).then(setSummary).catch(() => {});
+  }, []);
+  useEffect(() => {
+    if (!isAdmin) return;
+    loadSummary();
+    const t = window.setInterval(loadSummary, 60_000);
+    return () => window.clearInterval(t);
+  }, [isAdmin, loadSummary, location.pathname]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setPaletteOpen((o) => !o); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e: MouseEvent) => { if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
+  }, [menuOpen]);
+
+  const title = titleFor(location.pathname);
+  useEffect(() => { document.title = `${title} · Admin · Rang and Craft`; }, [title]);
+
   if (!user) return null;
 
-  if (!user.isAdmin) {
+  if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-[#F8F9FC] flex items-center justify-center p-6">
-        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center max-w-md">
-          <ShieldCheck className="w-10 h-10 mx-auto text-gray-400 mb-4" />
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">Admin access required</h1>
-          <p className="text-sm text-gray-500 mb-6">You are signed in as {user.email}, which is not an admin account.</p>
-          <Link to="/" className="inline-block px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium">Back to store</Link>
+      <div className="ad" style={{ display: 'grid', placeItems: 'center', padding: 24 }}>
+        <div className="ad-card" style={{ maxWidth: 420, textAlign: 'center' }}>
+          <div className="ad-empty">
+            <span className="ad-empty__icon"><ShieldCheck aria-hidden /></span>
+            <strong>Admin access required</strong>
+            <p>You’re signed in as {user.email}, which isn’t an admin account.</p>
+            <Link to="/" className="ad-btn">Back to the store</Link>
+          </div>
         </div>
       </div>
     );
   }
 
-  const logout = () => {
-    dispatch({ type: 'LOGOUT' });
-    navigate('/login');
-  };
-
-  const navGroups = [
-    {
-      title: 'MANAGEMENT',
-      items: [
-        { path: '/admin/products', name: 'Products', icon: ShoppingBag },
-        { path: '/admin/first-photo', name: 'First Photo Editor', icon: ImageIcon },
-        { path: '/admin/inventory', name: 'Inventory', icon: Package },
-        { path: '/admin/orders', name: 'Orders', icon: Ticket },
-        { path: '/admin/customers', name: 'Customers', icon: Users },
-        { path: '/admin/reviews', name: 'Reviews', icon: Star },
-        { path: '/admin/inbox', name: 'Inbox', icon: Inbox },
-      ]
-    },
-    {
-      title: 'MARKETING',
-      items: [
-        { path: '/admin/banners', name: 'Banners', icon: ImageIcon },
-        { path: '/admin/promotions', name: 'Promotions', icon: Tag },
-      ]
-    },
-    {
-      title: 'REPORTS',
-      items: [
-        { path: '/admin/reports/sales', name: 'Sales Reports', icon: BarChart2 },
-        { path: '/admin/reports/products', name: 'Product Reports', icon: PieChart },
-        { path: '/admin/reports/customers', name: 'Customer Reports', icon: LineChart },
-      ]
-    },
-    {
-      title: 'SETTINGS',
-      items: [
-        { path: '/admin/settings', name: 'Store Status', icon: Settings },
-        { path: '/admin/users', name: 'Manage Users', icon: UsersRound },
-      ]
-    }
-  ];
+  const logout = () => { dispatch({ type: 'LOGOUT' }); navigate('/login'); };
+  const closeNav = () => setNavOpen(false);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] flex font-sans">
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-white border-r border-gray-100 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        {/* Brand */}
-        <div className="h-[88px] flex items-center px-6 shrink-0 bg-gradient-to-r from-[#143130] to-[#1f4645]">
-          <div className="flex items-center gap-3">
-            <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-              <path d="M50 10 C 60 30, 90 30, 90 50 C 90 70, 60 70, 50 90 C 40 70, 10 70, 10 50 C 10 30, 40 30, 50 10" fill="currentColor" fillOpacity="0.8"/>
-              <circle cx="50" cy="50" r="15" fill="white"/>
-            </svg>
-            <div className="flex flex-col">
-              <span className="font-serif text-2xl font-bold text-white tracking-wide leading-none">Rang and Craft</span>
-              <span className="text-[10px] font-medium tracking-[0.3em] text-white/80 uppercase mt-0.5">JAIPUR</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <div className="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-6 custom-scrollbar">
-          {/* Dashboard (Top Level) */}
-          <div>
-            <NavLink
-              to="/admin"
-              end
-              onClick={() => setSidebarOpen(false)}
-              className={({ isActive }: { isActive: boolean }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium transition-colors ${
-                  isActive
-                    ? 'bg-[#e3ecea] text-[#1f4645]'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`
-              }
-            >
-              <LayoutDashboard className="w-[18px] h-[18px]" />
-              <span>Dashboard</span>
-            </NavLink>
-          </div>
-
-          {navGroups.map((group, idx) => (
-            <div key={idx} className="space-y-2">
-              <p className="px-4 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{group.title}</p>
-              <div className="space-y-0.5">
-                {group.items.map((item) => (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setSidebarOpen(false)}
-                    className={({ isActive }: { isActive: boolean }) =>
-                      `flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-colors ${
-                        isActive
-                          ? 'bg-[#e3ecea] text-[#1f4645]'
-                          : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                      }`
-                    }
-                  >
-                    <item.icon className="w-[18px] h-[18px] text-gray-400" />
-                    <span>{item.name}</span>
-                  </NavLink>
-                ))}
+    <div className="ad">
+      <div className="ad-shell">
+        {navOpen && <div className="ad-overlay" onClick={closeNav} aria-hidden style={{ zIndex: 55 }} />}
+        <aside className={`ad-side${navOpen ? ' is-open' : ''}`} aria-label="Admin navigation">
+          <Link to="/admin" className="ad-side__brand" onClick={closeNav}>
+            <img src="/icon-192.png" alt="" width={34} height={34} />
+            <div><strong>Rang &amp; Craft</strong><span>Admin</span></div>
+          </Link>
+          <nav className="ad-side__nav">
+            {NAV.map((group) => (
+              <div className="ad-side__group" key={group.title}>
+                <div className="ad-side__label">{group.title}</div>
+                {group.items.map((item) => {
+                  const count = item.count && summary ? summary[item.count] : 0;
+                  return (
+                    <NavLink key={item.to} to={item.to} end={item.end} className="ad-side__link" onClick={closeNav}>
+                      <item.icon aria-hidden />
+                      <span>{item.label}</span>
+                      {count > 0 && <span className="ad-side__count" aria-label={`${count} need attention`}>{count}</span>}
+                    </NavLink>
+                  );
+                })}
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Logout */}
-        <div className="p-4 shrink-0">
-          <button
-            onClick={logout}
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-[14px] font-medium text-[#1f4645] bg-[#e3ecea]/50 hover:bg-[#e3ecea] transition-colors"
-          >
-            <LogOut className="w-[18px] h-[18px]" />
-            <span>Log Out</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="h-[88px] bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0 z-30">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-gray-500 hover:text-gray-900"
-              aria-label="Open admin menu"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <h1 className="text-[15px] font-semibold text-gray-800">Rang and Craft · Admin</h1>
-          </div>
-
-          <div className="flex items-center gap-5">
-            <a href="/" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
-              <ExternalLink className="w-4 h-4 text-gray-400" />
-              Live Store
+            ))}
+          </nav>
+          <div className="ad-side__foot">
+            <a href={STORE_URL} target="_blank" rel="noreferrer" className="ad-side__store">
+              <span className="dot" aria-hidden />
+              <span style={{ flex: 1 }}>View live store</span>
+              <ExternalLink aria-hidden />
             </a>
-
-            <div className="flex items-center gap-3 cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-[#e3ecea] flex items-center justify-center text-[#1f4645] font-semibold text-lg border border-[#c9dbd8]">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-semibold text-gray-900 leading-tight">{user.name}</p>
-                <p className="text-[11px] text-gray-500 font-medium">{user.email}</p>
-              </div>
-            </div>
           </div>
-        </header>
+        </aside>
 
-        {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <Outlet />
+        <div className="ad-main">
+          <header className="ad-top">
+            <button type="button" className="ad-icon-btn ad-top__menu" onClick={() => setNavOpen(true)} aria-label="Open navigation"><Menu aria-hidden /></button>
+            <div className="ad-crumbs">
+              <span>Admin</span>
+              <ChevronRight aria-hidden />
+              <strong>{title}</strong>
+            </div>
+            <div className="ad-top__spacer" />
+            <button type="button" className="ad-search-btn" onClick={() => setPaletteOpen(true)} aria-label="Search (Ctrl K)">
+              <Search aria-hidden />
+              <span>Search orders, products…</span>
+              <kbd>Ctrl K</kbd>
+            </button>
+            <div className="ad-user" ref={menuRef}>
+              <button type="button" className="ad-user__btn" onClick={() => setMenuOpen((o) => !o)} aria-haspopup="menu" aria-expanded={menuOpen}>
+                <span className="ad-avatar">{initials(user.name)}</span>
+                <span className="ad-user__name"><strong>{user.name}</strong><span>Administrator</span></span>
+              </button>
+              {menuOpen && (
+                <div className="ad-menu" role="menu">
+                  <div style={{ padding: '8px 10px 10px', fontSize: 12.5, color: 'var(--ad-muted)' }}>Signed in as<br /><strong style={{ color: 'var(--ad-ink)', fontWeight: 500 }}>{user.email}</strong></div>
+                  <hr />
+                  <a href={STORE_URL} target="_blank" rel="noreferrer" role="menuitem"><ExternalLink aria-hidden /> View store</a>
+                  <Link to="/profile" role="menuitem" onClick={() => setMenuOpen(false)}><UserRound aria-hidden /> My account</Link>
+                  <hr />
+                  <button type="button" role="menuitem" className="is-danger" onClick={logout}><LogOut aria-hidden /> Log out</button>
+                </div>
+              )}
+            </div>
+          </header>
+
+          <div className="ad-content" key={location.pathname}>
+            <Outlet context={{ refreshSummary: loadSummary }} />
+          </div>
         </div>
       </div>
+      {paletteOpen && <CommandPalette links={LINKS} onClose={() => setPaletteOpen(false)} />}
     </div>
   );
 };

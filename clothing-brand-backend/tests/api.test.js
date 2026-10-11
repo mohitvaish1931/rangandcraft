@@ -538,3 +538,13 @@ describe('admin password recovery', () => {
     assert.equal(res.body.isAdmin, true);
   });
 });
+
+describe('admin summary', () => {
+  test('is admin-only and returns badge counts', async () => {
+    assert.equal((await request(app).get('/api/admin/summary')).status, 401);
+    assert.equal((await request(app).get('/api/admin/summary').set('Authorization', `Bearer ${userToken}`)).status, 403);
+    const res = await request(app).get('/api/admin/summary').set('Authorization', `Bearer ${adminToken}`);
+    assert.equal(res.status, 200);
+    for (const k of ['toShip', 'pendingReviews', 'newMessages', 'lowStock']) assert.equal(typeof res.body[k], 'number');
+  });
+});
