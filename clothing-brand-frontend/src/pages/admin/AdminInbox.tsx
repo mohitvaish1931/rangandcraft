@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react';
-import { Mail, Phone, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { Download, Inbox, Mail, MailPlus, Phone, Reply, Trash2 } from 'lucide-react';
 import { API_ENDPOINTS, apiCall, fetchJSON, postJSON } from '../../utils/api';
-import { errorMessage } from '../../lib/format';
+import { errorMessage, formatDate, slugToTitle } from '../../lib/format';
 import { useToast } from '../../lib/toast';
+import { initials, timeAgo } from '../../lib/adminFormat';
+import { Badge, Card, Drawer, EmptyState, Field, PageHeader, SearchBox, SkeletonRows, Tabs, type Tone } from '../../components/admin/ui';
+import WhatsAppIcon from '../../components/WhatsAppIcon';
+import '../../styles/admin-people.css';
+
+type Status = 'new' | 'replied' | 'closed';
 
 interface Inquiry {
   _id: string;
@@ -11,44 +18,104 @@ interface Inquiry {
   phone?: string;
   subject: string;
   message: string;
-  status: 'new' | 'replied' | 'closed';
+  status: Status;
   createdAt: string;
 }
 interface Subscriber { _id: string; email: string; source: string; createdAt: string }
+interface InboxData { inquiries: Inquiry[]; subscribers: Subscriber[] }
 
-const STATUS_STYLES: Record<Inquiry['status'], string> = {
-  new: 'bg-amber-50 text-amber-700',
-  replied: 'bg-blue-50 text-blue-700',
-  closed: 'bg-gray-100 text-gray-500',
+type View = 'messages' | 'subscribers';
+type StatusFilter = 'all' | Status;
+
+const STATUS: Record<Status, { label: string; tone: Tone }> = {
+  new: { label: 'New', tone: 'warning' },
+  replied: { label: 'Replied', tone: 'info' },
+  closed: { label: 'Closed', tone: 'neutral' },
 };
+
+const FILTERS: { key: StatusFilter; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'new', label: 'New' },
+  { key: 'replied', label: 'Replied' },
+  { key: 'closed', label: 'Closed' },
+];
+
+// Same topics as the store's contact form.
+const TOPICS: Record<string, string> = {
+  order: 'Order, delivery or exchange',
+  sizing: 'Sizing & styling help',
+  wholesale: 'Wholesale / franchise',
+  custom: 'Custom or bulk orders',
+  other: 'Something else',
+  general: 'General question',
+};
+const topicLabel = (s: string) => TOPICS[s] || slugToTitle(s || 'general');
+const sourceLabel = (s: string) => slugToTitle(s || 'website');
 
 const AdminInbox = () => {
   const toast = useToast();
-  const [tab, setTab] = useState<'messages' | 'subscribers'>('messages');
-  const [data, setData] = useState<{ inquiries: Inquiry[]; subscribers: Subscriber[] } | null>(null);
+  const { refreshSummary } = useOutletContext<{ refreshSummary?: () => void }>() ?? {};
+  const [params, setParams] = useSearchParams();
+  const [data, setData] = useState<InboxData | null>(null);
+  const [view, setView] = useState<View>(params.get('tab') === 'subscribers' ? 'subscribers' : 'messages');
+  const [filter, setFilter] = useState<StatusFilter>('all');
+  const [query, setQuery] = useState('');
+  const openId = params.get('open');
 
   useEffect(() => {
-    fetchJSON<{ inquiries: Inquiry[]; subscribers: Subscriber[] }>(API_ENDPOINTS.CONTACT)
+    fetchJSON<InboxData>(API_ENDPOINTS.CONTACT)
       .then(setData)
       .catch((err) => { toast.error(errorMessage(err)); setData({ inquiries: [], subscribers: [] }); });
   }, [toast]);
 
-  const setStatus = async (id: string, status: Inquiry['status']) => {
+  const counts = useMemo(() => {
+    const list = data?.inquiries ?? [];
+    const n = (s: Status) => list.filter((i) => i.status === s).length;
+    return { all: list.length, new: n('new'), replied: n('replied'), closed: n('closed') } as Record<StatusFilter, number>;
+  }, [data]);
+
+  const q = query.trim().toLowerCase();
+  const messages = useMemo(
+    () => (data?.inquiries ?? [])
+      .filter((m) => filter === 'all' || m.status === filter)
+      .filter((m) => !q || [m.name, m.email, m.phone, m.message, topicLabel(m.subject)].some((v) => String(v || '').toLowerCase().includes(q))),
+    [data, filter, q],
+  );
+  const subscribers = useMemo(
+    () => (data?.subscribers ?? []).filter((s) => !q || [s.email, s.source].some((v) => String(v || '').toLowerCase().includes(q))),
+    [data, q],
+  );
+
+  const setOpen = (id: string | null) => {
+    const next = new URLSearchParams(params);
+    if (id) next.set('open', id); else next.delete('open');
+    setParams(next, { replace: true });
+  };
+
+  const setStatus = async (id: string, status: Status) => {
     try {
       const updated = await postJSON<Inquiry>(`${API_ENDPOINTS.CONTACT}/${id}`, { status }, 'PUT');
       setData((d) => d && { ...d, inquiries: d.inquiries.map((i) => (i._id === id ? updated : i)) });
+      toast.success(`Marked as ${STATUS[status].label.toLowerCase()}`);
+      refreshSummary?.();
+      return true;
     } catch (err) {
       toast.error(errorMessage(err));
+      return false;
     }
   };
 
-  const remove = async (id: string) => {
-    if (!window.confirm('Delete this message?')) return;
+  const remove = async (m: Inquiry) => {
+    if (!window.confirm(`Delete the message from ${m.name}? This can’t be undone.`)) return false;
     try {
-      await apiCall(`${API_ENDPOINTS.CONTACT}/${id}`, { method: 'DELETE' });
-      setData((d) => d && { ...d, inquiries: d.inquiries.filter((i) => i._id !== id) });
+      await apiCall(`${API_ENDPOINTS.CONTACT}/${m._id}`, { method: 'DELETE' });
+      setData((d) => d && { ...d, inquiries: d.inquiries.filter((i) => i._id !== m._id) });
+      toast.success('Message deleted');
+      refreshSummary?.();
+      return true;
     } catch (err) {
       toast.error(errorMessage(err));
+      return false;
     }
   };
 
@@ -63,77 +130,198 @@ const AdminInbox = () => {
     URL.revokeObjectURL(url);
   };
 
-  const newCount = data?.inquiries.filter((i) => i.status === 'new').length ?? 0;
+  const switchView = (v: View) => {
+    setView(v);
+    setQuery('');
+  };
+
+  const open = data?.inquiries.find((m) => m._id === openId) || null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-      <div className="px-6 py-5 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Inbox</h1>
-          <p className="text-sm text-gray-500 mt-1">Contact-form messages and newsletter sign-ups from the store.</p>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => setTab('messages')} className={`px-4 py-2 rounded-xl text-sm font-medium ${tab === 'messages' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>
-            Messages{newCount > 0 ? ` (${newCount} new)` : ''}
-          </button>
-          <button onClick={() => setTab('subscribers')} className={`px-4 py-2 rounded-xl text-sm font-medium ${tab === 'subscribers' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>
-            Subscribers{data ? ` (${data.subscribers.length})` : ''}
-          </button>
-        </div>
+    <>
+      <PageHeader
+        title="Inbox"
+        description={data
+          ? `${counts.new ? `${counts.new} new message${counts.new === 1 ? '' : 's'} · ` : ''}Contact-form messages and newsletter sign-ups from your store.`
+          : 'Loading your inbox…'}
+        actions={view === 'subscribers' ? (
+          <button type="button" className="ad-btn ad-btn--secondary" onClick={exportCsv} disabled={!data?.subscribers.length}><Download aria-hidden /> Export CSV</button>
+        ) : undefined}
+      />
+
+      <div className="ad-toolbar">
+        <Tabs
+          label="Inbox section"
+          value={view}
+          onChange={switchView}
+          items={[
+            { key: 'messages', label: 'Messages', count: data ? data.inquiries.length : undefined },
+            { key: 'subscribers', label: 'Subscribers', count: data ? data.subscribers.length : undefined },
+          ]}
+        />
+        <div className="ad-toolbar__grow" />
+        <SearchBox
+          value={query}
+          onChange={setQuery}
+          placeholder={view === 'messages' ? 'Name, email or words' : 'Email or source'}
+          label={view === 'messages' ? 'Search messages' : 'Search subscribers'}
+        />
       </div>
 
-      {!data ? (
-        <div className="p-10 text-center text-gray-400">Loading…</div>
-      ) : tab === 'messages' ? (
-        data.inquiries.length === 0 ? (
-          <div className="p-10 text-center text-gray-500">No messages yet.</div>
-        ) : (
-          <ul className="divide-y divide-gray-100">
-            {data.inquiries.map((m) => (
-              <li key={m._id} className="p-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="font-semibold text-gray-900">{m.name}</span>
-                    <span className="text-xs uppercase tracking-wide text-gray-400">{m.subject}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${STATUS_STYLES[m.status]}`}>{m.status}</span>
-                  </div>
-                  <span className="text-xs text-gray-400">{new Date(m.createdAt).toLocaleString('en-IN')}</span>
-                </div>
-                <p className="text-sm text-gray-700 whitespace-pre-line mb-3">{m.message}</p>
-                <div className="flex flex-wrap items-center gap-4 text-sm">
-                  <a href={`mailto:${m.email}`} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-gray-900"><Mail className="w-4 h-4" /> {m.email}</a>
-                  {m.phone && <a href={`tel:${m.phone}`} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-gray-900"><Phone className="w-4 h-4" /> {m.phone}</a>}
-                  <select value={m.status} onChange={(e) => setStatus(m._id, e.target.value as Inquiry['status'])} className="ml-auto border border-gray-200 rounded-lg px-2 py-1 text-sm">
-                    <option value="new">New</option>
-                    <option value="replied">Replied</option>
-                    <option value="closed">Closed</option>
-                  </select>
-                  <button onClick={() => remove(m._id)} className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50" aria-label="Delete message"><Trash2 className="w-4 h-4" /></button>
-                </div>
-              </li>
+      {view === 'messages' ? (
+        <>
+          <div className="ad-chips" role="group" aria-label="Filter by status" style={{ marginBottom: 14 }}>
+            {FILTERS.map((f) => (
+              <button key={f.key} type="button" className={`ad-chip${filter === f.key ? ' is-on' : ''}`} aria-pressed={filter === f.key} onClick={() => setFilter(f.key)}>
+                {f.label}<span style={{ opacity: 0.7 }}>{counts[f.key]}</span>
+              </button>
             ))}
-          </ul>
-        )
-      ) : (
-        <div>
-          <div className="px-6 py-4 flex justify-end">
-            <button onClick={exportCsv} disabled={data.subscribers.length === 0} className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-medium disabled:opacity-40">Export CSV</button>
           </div>
-          {data.subscribers.length === 0 ? (
-            <div className="p-10 text-center text-gray-500">No subscribers yet.</div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead><tr className="text-left text-gray-500"><th className="px-6 py-3 font-medium">Email</th><th className="px-6 py-3 font-medium">Source</th><th className="px-6 py-3 font-medium">Joined</th></tr></thead>
-              <tbody className="divide-y divide-gray-100">
-                {data.subscribers.map((s) => (
-                  <tr key={s._id}><td className="px-6 py-3">{s.email}</td><td className="px-6 py-3 text-gray-500">{s.source}</td><td className="px-6 py-3 text-gray-500">{new Date(s.createdAt).toLocaleDateString('en-IN')}</td></tr>
+          <Card flush>
+            {!data ? <SkeletonRows /> : messages.length === 0 ? (
+              <EmptyState
+                icon={Inbox}
+                title={q ? 'No matching messages' : filter === 'new' ? 'No new messages' : filter === 'all' ? 'No messages yet' : `No ${filter} messages`}
+                text={q
+                  ? 'Try a different name, email or word.'
+                  : filter === 'new' ? 'You’re all caught up. New messages from the contact form will land here.' : 'Messages sent through the Contact page of your store appear here.'}
+                action={q ? <button type="button" className="ad-btn ad-btn--secondary" onClick={() => setQuery('')}>Clear search</button> : undefined}
+              />
+            ) : (
+              <ul className="ad-people-msgs">
+                {messages.map((m) => (
+                  <li key={m._id}>
+                    <button type="button" className={`ad-people-msg${m.status === 'new' ? ' is-new' : ''}`} onClick={() => setOpen(m._id)}>
+                      <span className={`ad-avatar${m.status === 'new' ? '' : ' ad-avatar--soft'}`} aria-hidden>{initials(m.name)}</span>
+                      <span className="ad-people-msg__main">
+                        <span className="ad-people-msg__top">
+                          <strong>{m.name}</strong>
+                          <span className="ad-people-msg__time" title={formatDate(m.createdAt)}>{timeAgo(m.createdAt)}</span>
+                        </span>
+                        <span className="ad-people-msg__tags">
+                          <Badge tone={STATUS[m.status].tone}>{STATUS[m.status].label}</Badge>
+                          <Badge plain>{topicLabel(m.subject)}</Badge>
+                        </span>
+                        <span className="ad-people-msg__preview">{m.message}</span>
+                      </span>
+                    </button>
+                  </li>
                 ))}
-              </tbody>
-            </table>
+              </ul>
+            )}
+          </Card>
+        </>
+      ) : (
+        <Card flush>
+          {!data ? <SkeletonRows /> : subscribers.length === 0 ? (
+            <EmptyState
+              icon={MailPlus}
+              title={q ? 'No matching subscribers' : 'No subscribers yet'}
+              text={q ? 'Try a different email.' : 'People who sign up for your newsletter in the store footer or pop-up appear here.'}
+              action={q ? <button type="button" className="ad-btn ad-btn--secondary" onClick={() => setQuery('')}>Clear search</button> : undefined}
+            />
+          ) : (
+            <div className="ad-table-wrap">
+              <table className="ad-table ad-table--stack">
+                <thead><tr><th>Email</th><th>Signed up from</th><th>Date</th></tr></thead>
+                <tbody>
+                  {subscribers.map((s) => (
+                    <tr key={s._id}>
+                      <td className="is-primary">
+                        <a className="ad-link" href={`mailto:${s.email}`} style={{ overflowWrap: 'anywhere' }}>{s.email}</a>
+                      </td>
+                      <td data-label="Signed up from"><Badge plain>{sourceLabel(s.source)}</Badge></td>
+                      <td data-label="Date" className="muted" title={formatDate(s.createdAt)}>{timeAgo(s.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
+        </Card>
+      )}
+
+      {open && <MessageDrawer key={open._id} message={open} onClose={() => setOpen(null)} onStatus={setStatus} onDelete={remove} />}
+    </>
+  );
+};
+
+interface DrawerProps {
+  message: Inquiry;
+  onClose: () => void;
+  onStatus: (id: string, status: Status) => Promise<boolean>;
+  onDelete: (m: Inquiry) => Promise<boolean>;
+}
+
+const MessageDrawer = ({ message: m, onClose, onStatus, onDelete }: DrawerProps) => {
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const topic = topicLabel(m.subject);
+  const first = m.name.split(' ')[0] || '';
+  const phone = (m.phone || '').replace(/\D/g, '').slice(-10);
+  const quoted = m.message.split('\n').map((l) => `> ${l}`).join('\n');
+  const mailto = `mailto:${m.email}?subject=${encodeURIComponent(`Re: ${topic}`)}&body=${encodeURIComponent(`Hi ${first},\n\n\n\nWarm regards,\nRang and Craft\n\n${quoted}`)}`;
+
+  const changeStatus = async (status: Status) => {
+    setSaving(true);
+    await onStatus(m._id, status);
+    setSaving(false);
+  };
+
+  const del = async () => {
+    setDeleting(true);
+    const ok = await onDelete(m);
+    setDeleting(false);
+    if (ok) onClose();
+  };
+
+  return (
+    <Drawer
+      title={m.name}
+      description={<>{topic} · {formatDate(m.createdAt)}</>}
+      onClose={onClose}
+      footer={(
+        <div className="ad-people-foot">
+          <button type="button" className="ad-btn ad-btn--danger" onClick={del} disabled={deleting}>
+            {deleting ? <span className="ad-spinner" /> : <Trash2 aria-hidden />} Delete
+          </button>
+          <div className="ad-people-foot__grow" />
+          {phone.length === 10 && (
+            <a className="ad-btn ad-btn--secondary" href={`https://wa.me/91${phone}?text=${encodeURIComponent(`Hi ${first}, this is Rang and Craft replying to your message.`)}`} target="_blank" rel="noreferrer" aria-label="Reply on WhatsApp">
+              <WhatsAppIcon width={15} height={15} /> WhatsApp
+            </a>
+          )}
+          <a className="ad-btn" href={mailto}><Reply aria-hidden /> Reply by email</a>
         </div>
       )}
-    </div>
+    >
+      <section>
+        <div className="ad-section-title">Message</div>
+        <div className="ad-boxed ad-people-message">{m.message}</div>
+        <p className="ad-hint" style={{ marginTop: 8 }}>Received {timeAgo(m.createdAt)}</p>
+      </section>
+
+      <section>
+        <div className="ad-section-title"><Mail aria-hidden /> From</div>
+        <dl className="ad-kv">
+          <div><dt>Name</dt><dd>{m.name}</dd></div>
+          <div><dt>Email</dt><dd style={{ minWidth: 0, overflowWrap: 'anywhere' }}><a className="ad-link" href={`mailto:${m.email}`}>{m.email}</a></dd></div>
+          <div><dt>Phone</dt><dd>{m.phone ? <a className="ad-link" href={`tel:${m.phone}`}><Phone aria-hidden /> {m.phone}</a> : '—'}</dd></div>
+          <div><dt>Topic</dt><dd>{topic}</dd></div>
+        </dl>
+      </section>
+
+      <section>
+        <Field label="Status" htmlFor="msg-status" hint="Mark it replied once you’ve answered, or closed when there’s nothing more to do.">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <select id="msg-status" className="ad-select" value={m.status} disabled={saving} onChange={(e) => changeStatus(e.target.value as Status)}>
+              {(Object.keys(STATUS) as Status[]).map((s) => <option key={s} value={s}>{STATUS[s].label}</option>)}
+            </select>
+            {saving && <span className="ad-spinner" style={{ color: 'var(--ad-muted)' }} aria-label="Saving" />}
+          </div>
+        </Field>
+      </section>
+    </Drawer>
   );
 };
 

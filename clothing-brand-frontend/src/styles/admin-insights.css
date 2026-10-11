@@ -1,0 +1,78 @@
+/* Insights group (coupons, announcements, store status, reports). Extends admin.css. */
+
+/* ---------- Coupons ---------- */
+.ad-insights-coupons { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+.ad-insights-coupon { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.ad-insights-coupon__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.ad-insights-coupon__code { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.ad-insights-coupon__code .ad-coupon__code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-insights-coupon__code .ad-icon-btn { width: 28px; height: 28px; flex-shrink: 0; }
+.ad-insights-coupon__code .ad-icon-btn svg { width: 15px; height: 15px; }
+.ad-insights-coupon dl { display: grid; gap: 6px; margin: 0; padding-top: 12px; border-top: 1px dashed var(--ad-line-strong); font-size: 13px; }
+.ad-insights-coupon dl > div { display: flex; justify-content: space-between; gap: 12px; min-width: 0; }
+.ad-insights-coupon dt { color: var(--ad-muted); flex-shrink: 0; }
+.ad-insights-coupon dd { margin: 0; text-align: right; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ad-insights-coupon .ad-meter { width: 100%; margin-top: 8px; }
+.ad-insights-coupon__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--ad-line); }
+.ad-insights-coupon__foot .ad-switch { padding: 0; flex: 1; align-items: center; gap: 10px; flex-direction: row-reverse; justify-content: flex-end; }
+.ad-insights-coupon__foot .ad-switch i { margin-top: 0; }
+.ad-insights-coupon__foot .ad-switch strong { font-size: 13px; }
+.ad-insights-sticky { position: sticky; top: calc(var(--ad-top) + 20px); }
+
+/* ---------- Announcement bar preview (mirrors the storefront's .rc-announce) ---------- */
+.ad-insights-bar {
+  overflow: hidden; border-radius: 10px; background: #143130; color: #f3ead9;
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.4;
+}
+.ad-insights-bar__static { display: block; padding: 10px 16px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ad-insights-bar__static.is-empty { color: rgba(243, 234, 217, 0.45); }
+.ad-insights-bar__track { display: flex; width: max-content; animation: ad-insights-marquee 40s linear infinite; }
+.ad-insights-bar:hover .ad-insights-bar__track { animation-play-state: paused; }
+.ad-insights-bar__track span { padding: 10px 28px; white-space: nowrap; }
+.ad-insights-bar__track span::after { content: '✦'; margin-left: 56px; color: #c99a5b; }
+@keyframes ad-insights-marquee { to { transform: translateX(-50%); } }
+.ad-insights-counter { margin-left: auto; font-size: 12px; color: var(--ad-faint); font-variant-numeric: tabular-nums; }
+.ad-insights-counter.is-over { color: var(--ad-danger); }
+.ad-insights-msg { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.ad-insights-msg .ad-insights-bar { flex: 1; min-width: 0; }
+.ad-insights-msg__actions { display: flex; gap: 2px; flex-shrink: 0; }
+
+/* ---------- Store status ---------- */
+.ad-insights-status-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; background: var(--ad-brand-soft); color: var(--ad-brand); flex-shrink: 0; }
+.ad-insights-status-icon svg { width: 18px; height: 18px; }
+.ad-insights-status-icon.is-warn { background: var(--ad-warning-soft); color: var(--ad-warning); }
+.ad-insights-status-icon.is-error { background: var(--ad-danger-soft); color: var(--ad-danger); }
+.ad-list > li.ad-insights-status { align-items: flex-start; padding-block: 16px; }
+.ad-insights-status .ad-list__main span { white-space: normal; overflow: visible; margin-top: 2px; line-height: 1.5; }
+.ad-insights-code {
+  display: inline-block; padding: 0 6px; margin: 2px 2px; border-radius: 6px; border: 1px solid rgba(30, 63, 128, 0.18);
+  background: rgba(255, 255, 255, 0.65); font: 12px/1.6 ui-monospace, 'SFMono-Regular', Menlo, monospace; white-space: nowrap;
+}
+.ad-insights-envs { display: grid; gap: 4px; margin-top: 8px; }
+.ad-insights-envs > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; }
+.ad-insights-envs strong { font-weight: 500; min-width: 108px; }
+.ad-insights-offer { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--ad-line); border-radius: var(--ad-radius); background: var(--ad-subtle); }
+.ad-insights-offer + .ad-insights-offer { margin-top: 10px; }
+.ad-insights-offer strong { display: block; font-weight: 500; }
+.ad-insights-offer span { display: block; font-size: 12.5px; color: var(--ad-muted); }
+
+/* ---------- Reports ---------- */
+.ad-insights-share { display: inline-flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.ad-insights-share small { min-width: 34px; font-size: 12.5px; color: var(--ad-muted); text-align: right; font-variant-numeric: tabular-nums; }
+.ad-insights-split { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--ad-line); }
+.ad-insights-split span { display: block; height: 100%; transition: width 0.4s var(--ad-ease); }
+.ad-insights-split span + span { border-left: 2px solid var(--ad-surface); }
+.ad-insights-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.ad-insights-legend > div { padding: 12px 14px; border: 1px solid var(--ad-line); border-radius: var(--ad-radius); }
+.ad-insights-legend span { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ad-muted); }
+.ad-insights-legend i { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.ad-insights-legend strong { display: block; margin-top: 4px; font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.ad-insights-legend small { display: block; font-size: 12px; color: var(--ad-muted); }
+
+@media (max-width: 760px) {
+  .ad-insights-coupons { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .ad-insights-sticky { position: static; }
+  .ad-insights-msg { flex-direction: column; align-items: stretch; gap: 8px; }
+  .ad-insights-msg__actions { justify-content: flex-end; }
+  .ad-insights-envs strong { min-width: 0; width: 100%; }
+}

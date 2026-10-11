@@ -1,115 +1,151 @@
-import { useState } from 'react';
-import { ImageIcon, Star, ImagePlus } from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
-import { API_ENDPOINTS } from '../../utils/api';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ImagePlus, Images, Pencil, Star } from 'lucide-react';
+import { useAppContext, type Product } from '../../context/AppContext';
+import { API_ENDPOINTS, fetchJSON } from '../../utils/api';
+import { errorMessage, productId } from '../../lib/format';
+import { useToast } from '../../lib/toast';
 import { getImageUrl } from '../../utils/mediaHelper';
+import { Card, EmptyState, PageHeader, SearchBox, Tabs } from '../../components/admin/ui';
+import '../../styles/admin-products.css';
+
+type FilterKey = 'several' | 'single';
+
+const photosOf = (p: Product) => (p.images && p.images.length > 0 ? p.images : p.image ? [p.image] : []);
 
 const AdminFirstPhotoSection = () => {
   const { state, dispatch } = useAppContext();
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const toast = useToast();
+  const [filter, setFilter] = useState<FilterKey>('several');
+  const [query, setQuery] = useState('');
+  const [busy, setBusy] = useState<{ id: string; index: number } | null>(null);
 
-  // We rely on state.products from context
-  const products = state.products || [];
+  const products = state.products;
+  const loading = state.productsStatus === 'idle' || state.productsStatus === 'loading';
 
-  const handleMakeFirst = async (productId: string, imageIndex: number, currentImages: string[]) => {
-    if (imageIndex === 0) return; // Already first
+  const groups = useMemo(() => ({
+    several: products.filter((p) => photosOf(p).length > 1),
+    single: products.filter((p) => photosOf(p).length <= 1),
+  }), [products]);
 
-    setLoadingId(productId);
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return groups[filter].filter((p) => !q || [p.name, p.category].some((v) => String(v || '').toLowerCase().includes(q)));
+  }, [groups, filter, query]);
+
+  const makeCover = async (p: Product, index: number) => {
+    if (index === 0 || busy) return;
+    const id = productId(p);
+    const images = [...photosOf(p)];
+    const [picked] = images.splice(index, 1);
+    images.unshift(picked);
+
+    const fd = new FormData();
+    fd.append('existing_images', JSON.stringify(images));
+    setBusy({ id, index });
     try {
-      // Reorder images
-      const newImages = [...currentImages];
-      const selectedImage = newImages.splice(imageIndex, 1)[0];
-      newImages.unshift(selectedImage);
-
-      const fd = new FormData();
-      fd.append('existing_images', JSON.stringify(newImages));
-
-      const res = await fetch(`${API_ENDPOINTS.PRODUCTS}/${productId}`, {
-        method: 'PUT',
-        body: fd
-      });
-
-      if (!res.ok) throw new Error('Update failed');
-      const updatedProduct = await res.json();
-      
-      dispatch({ type: 'UPDATE_PRODUCT', payload: updatedProduct });
-      
+      const updated = await fetchJSON<Product>(`${API_ENDPOINTS.PRODUCTS}/${id}`, { method: 'PUT', body: fd });
+      dispatch({ type: 'UPDATE_PRODUCT', payload: updated });
+      toast.success(`Cover photo updated for ${p.name}`);
     } catch (err) {
-      console.error(err);
-      alert('❌ Failed to update the first photo. Please try again.');
+      toast.error(errorMessage(err, 'Couldn’t update the cover photo. Please try again.'));
     } finally {
-      setLoadingId(null);
+      setBusy(null);
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
-            <ImageIcon className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-800">First Photo Selector</h1>
-            <p className="text-xs text-gray-500 font-medium">Choose the primary photo for your products</p>
-          </div>
-        </div>
+    <>
+      <PageHeader
+        title="Product photos"
+        description="Choose the cover photo customers see first in the shop. Click any photo to make it the cover."
+      />
+
+      <div className="ad-toolbar">
+        <Tabs
+          label="Filter products"
+          value={filter}
+          onChange={setFilter}
+          items={[
+            { key: 'several', label: 'Several photos', count: groups.several.length },
+            { key: 'single', label: 'One photo or none', count: groups.single.length },
+          ]}
+        />
+        <div className="ad-toolbar__grow" />
+        <SearchBox value={query} onChange={setQuery} placeholder="Search products" label="Search products" />
       </div>
 
-      <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] shadow-sm space-y-8">
-        {products.length === 0 ? (
-          <div className="text-center text-gray-400 py-10">No products found.</div>
-        ) : (
-          <div className="grid grid-cols-1 gap-8">
-            {products.map((product) => {
-              const images = product.images && product.images.length > 0 ? product.images : (product.image ? [product.image] : []);
-              if (images.length <= 1) return null; // Skip products with 1 or 0 images
-
-              return (
-                <div key={product._id || product.id} className="border border-gray-100 rounded-2xl p-6 bg-gray-50/30">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-gray-800">{product.name}</h2>
-                    <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-3 py-1 rounded-full uppercase tracking-wider">{product.category}</span>
-                  </div>
-                  
-                  <div className="flex overflow-x-auto gap-4 pb-4 custom-scrollbar">
-                    {images.map((img: string, idx: number) => {
-                      const isFirst = idx === 0;
-                      const isLoading = loadingId === (product._id || product.id);
-
+      {loading ? (
+        <div className="ad-grid ad-grid--2 ad-products-grid" aria-busy="true" aria-label="Loading">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="ad-card" style={{ padding: 20, display: 'grid', gap: 14 }}>
+              <span className="ad-skel" style={{ height: 14, width: '45%' }} />
+              <div className="ad-tiles">
+                {[0, 1, 2].map((t) => <span key={t} className="ad-skel" style={{ aspectRatio: '4 / 5', borderRadius: 12 }} />)}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : visible.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={Images}
+            title={query ? 'No matching products' : filter === 'several' ? 'No products with several photos yet' : 'Every product has several photos'}
+            text={query ? 'Try a different name or category.' : filter === 'several' ? 'Add more photos to a product, then come back here to pick its cover.' : 'Nice. Customers can see each piece from more than one angle.'}
+            action={!query && filter === 'several' ? <Link to="/admin/products" className="ad-btn">Go to products</Link> : undefined}
+          />
+        </Card>
+      ) : (
+        <div className="ad-grid ad-grid--2 ad-products-grid">
+          {visible.map((p) => {
+            const id = productId(p);
+            const photos = photosOf(p);
+            const saving = busy?.id === id;
+            return (
+              <Card
+                key={id}
+                title={p.name}
+                description={`${p.category ? `${p.category} · ` : ''}${photos.length} photo${photos.length === 1 ? '' : 's'}`}
+                actions={(
+                  <Link to={`/admin/products/${id}/edit`} className="ad-btn ad-btn--secondary ad-btn--sm">
+                    {photos.length > 1 ? <><Pencil aria-hidden /> Edit</> : <><ImagePlus aria-hidden /> Add photos</>}
+                  </Link>
+                )}
+              >
+                {photos.length === 0 ? (
+                  <p className="ad-hint">No photos yet.</p>
+                ) : (
+                  <div className="ad-tiles">
+                    {photos.map((src, i) => {
+                      const cover = i === 0;
                       return (
-                        <div key={idx} className={`relative flex-shrink-0 w-48 h-64 rounded-xl overflow-hidden border-2 transition-all ${isFirst ? 'border-purple-500 shadow-md scale-[1.02]' : 'border-transparent hover:border-purple-200'}`}>
-                          <img src={getImageUrl(img)} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
-                          
-                          {isFirst && (
-                            <div className="absolute top-2 left-2 bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
-                              <Star className="w-3 h-3 fill-current" /> PRIMARY
-                            </div>
+                        <button
+                          key={`${i}:${src}`}
+                          type="button"
+                          className={`ad-tile ad-products-pick${cover ? ' is-primary' : ''}`}
+                          onClick={() => makeCover(p, i)}
+                          disabled={Boolean(busy) && !cover}
+                          aria-pressed={cover}
+                          aria-label={cover ? `Photo ${i + 1}, current cover` : `Make photo ${i + 1} the cover`}
+                        >
+                          <img src={getImageUrl(src, 300)} alt="" loading="lazy" />
+                          {cover ? (
+                            <span className="ad-tile__tag"><Star aria-hidden /> Cover</span>
+                          ) : (
+                            <span className="ad-products-tile-hit" aria-hidden>Make cover</span>
                           )}
-
-                          {!isFirst && (
-                            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                              <button 
-                                onClick={() => handleMakeFirst(product._id || String(product.id), idx, images)}
-                                disabled={isLoading}
-                                className="bg-white text-purple-700 font-bold text-xs px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition-transform flex items-center gap-2 disabled:opacity-50"
-                              >
-                                <ImagePlus className="w-4 h-4" />
-                                {isLoading ? 'Saving...' : 'Make First'}
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                          {saving && busy?.index === i && <span className="ad-products-busy"><span className="ad-spinner" /></span>}
+                        </button>
                       );
                     })}
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 };
 

@@ -1,58 +1,175 @@
-import { useEffect, useState } from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, Server, CreditCard, Database } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  AlertTriangle, CheckCircle2, CreditCard, Database, Gift, KeyRound, Mail, Phone, RefreshCw, Server, Truck, XCircle,
+} from 'lucide-react';
 import { API_ENDPOINTS, API_BASE_URL, fetchJSON } from '../../utils/api';
+import { BUNDLE_OFFERS, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../../lib/offers';
+import { SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_NUMBER, WHATSAPP_URL } from '../../lib/brand';
+import { inr } from '../../lib/adminFormat';
+import { Badge, Card, PageHeader } from '../../components/admin/ui';
+import WhatsAppIcon from '../../components/WhatsAppIcon';
+import '../../styles/admin-insights.css';
 
 type Level = 'ok' | 'warn' | 'error';
 interface Check { label: string; detail: string; level: Level; icon: typeof Server }
 
-const ICON = { ok: CheckCircle2, warn: AlertTriangle, error: XCircle };
-const COLOR = { ok: 'text-emerald-600', warn: 'text-amber-500', error: 'text-red-600' };
+const BADGE: Record<Level, { label: string; tone: 'success' | 'warning' | 'danger' }> = {
+  ok: { label: 'Operational', tone: 'success' },
+  warn: { label: 'Needs attention', tone: 'warning' },
+  error: { label: 'Needs attention', tone: 'danger' },
+};
+
+const ENV_GROUPS = [
+  { label: 'Payments', names: ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET'] },
+  { label: 'Email', names: ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'ADMIN_NOTIFY_EMAIL'] },
+  { label: 'Image uploads', names: ['CLOUDINARY_URL'] },
+  { label: 'Admin login', names: ['ADMIN_EMAIL', 'ADMIN_PASSWORD'] },
+];
+
+const runChecks = async (): Promise<Check[]> => {
+  const [health, pay] = await Promise.allSettled([
+    fetchJSON<{ status: string; db: string }>(API_ENDPOINTS.HEALTH),
+    fetchJSON<{ enabled: boolean; mock: boolean; keyId: string | null }>(API_ENDPOINTS.PAYMENT.CONFIG),
+  ]);
+  const h = health.status === 'fulfilled' ? health.value : null;
+  const p = pay.status === 'fulfilled' ? pay.value : null;
+  return [
+    { label: 'Store server', icon: Server, detail: h ? `Online and answering at ${API_BASE_URL}` : `Can’t reach ${API_BASE_URL}. The store may be starting up; check again in a minute.`, level: h ? 'ok' : 'error' },
+    { label: 'Database', icon: Database, detail: h ? (h.db === 'connected' ? 'Connected. Products, orders and customers are being saved.' : `MongoDB is ${h.db}. Orders can’t be saved until it reconnects.`) : 'Unknown, because the server can’t be reached.', level: h?.db === 'connected' ? 'ok' : 'error' },
+    {
+      label: 'Online payments',
+      icon: CreditCard,
+      detail: !p ? 'Unknown, because the server can’t be reached.'
+        : p.keyId ? `Razorpay in ${p.keyId.startsWith('rzp_live') ? 'live mode: real payments are being collected' : 'test mode: no real money is collected yet'} (key ${p.keyId}).`
+          : p.mock ? 'Practice payments only (development). No money is collected.'
+            : 'Not set up. Customers can’t pay online until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are added.',
+      level: !p ? 'error' : p.keyId?.startsWith('rzp_live') ? 'ok' : 'warn',
+    },
+  ];
+};
 
 const AdminSettings = () => {
   const [checks, setChecks] = useState<Check[] | null>(null);
+  const [checkedAt, setCheckedAt] = useState<Date | null>(null);
 
-  useEffect(() => {
-    Promise.allSettled([
-      fetchJSON<{ status: string; db: string }>(API_ENDPOINTS.HEALTH),
-      fetchJSON<{ enabled: boolean; mock: boolean; keyId: string | null }>(API_ENDPOINTS.PAYMENT.CONFIG),
-    ]).then(([health, pay]) => {
-      const h = health.status === 'fulfilled' ? health.value : null;
-      const p = pay.status === 'fulfilled' ? pay.value : null;
-      setChecks([
-        { label: 'API server', icon: Server, detail: h ? `Reachable at ${API_BASE_URL}` : `Cannot reach ${API_BASE_URL}`, level: h ? 'ok' : 'error' },
-        { label: 'Database', icon: Database, detail: h ? `MongoDB ${h.db}` : 'Unknown', level: h?.db === 'connected' ? 'ok' : 'error' },
-        {
-          label: 'Online payments',
-          icon: CreditCard,
-          detail: !p ? 'Unknown' : p.keyId ? `Razorpay ${p.keyId.startsWith('rzp_live') ? 'LIVE' : 'TEST'} mode (${p.keyId})` : p.mock ? 'Mock payments (development only — no money is collected)' : 'Not configured — customers cannot pay online. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET on the server.',
-          level: !p ? 'error' : p.keyId?.startsWith('rzp_live') ? 'ok' : 'warn',
-        },
-      ]);
-    });
-  }, []);
+  const load = useCallback(() => runChecks().then((list) => { setChecks(list); setCheckedAt(new Date()); }), []);
+  useEffect(() => { void load(); }, [load]);
+
+  const recheck = () => { setChecks(null); void load(); };
+  const problems = checks?.filter((c) => c.level !== 'ok').length ?? 0;
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <h1 className="text-xl font-bold text-gray-900">Store Status</h1>
-        <p className="text-sm text-gray-500 mt-1">Live checks of the services your store depends on. Configuration is managed through server environment variables.</p>
-      </div>
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-100">
-        {!checks ? <p className="p-8 text-gray-400">Running checks…</p> : checks.map((c) => {
-          const StatusIcon = ICON[c.level];
-          return (
-            <div key={c.label} className="p-6 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 shrink-0"><c.icon className="w-5 h-5" /></div>
-              <div className="flex-1">
-                <p className="font-semibold text-gray-900">{c.label}</p>
-                <p className="text-sm text-gray-500">{c.detail}</p>
+    <>
+      <PageHeader
+        title="Store status"
+        description="Live checks of the services your store depends on, plus the rules and contact details customers see."
+        actions={(
+          <button type="button" className="ad-btn ad-btn--secondary" onClick={recheck} disabled={!checks}>
+            {checks ? <RefreshCw aria-hidden /> : <span className="ad-spinner" />} Check again
+          </button>
+        )}
+      />
+
+      <div className="ad-grid ad-grid--main">
+        <div className="ad-stack">
+          <Card
+            title="Services"
+            description={checks && checkedAt ? `Checked at ${checkedAt.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })}` : 'Running checks…'}
+            actions={checks && (problems ? <Badge tone="warning">{problems} need{problems === 1 ? 's' : ''} attention</Badge> : <Badge tone="success">All operational</Badge>)}
+            flush
+          >
+            <ul className="ad-list" aria-busy={!checks}>
+              {!checks ? [0, 1, 2].map((i) => (
+                <li key={i} className="ad-insights-status">
+                  <span className="ad-skel" style={{ width: 40, height: 40, borderRadius: 11 }} />
+                  <div className="ad-list__main" style={{ display: 'grid', gap: 8 }}>
+                    <span className="ad-skel" style={{ height: 12, width: '30%' }} />
+                    <span className="ad-skel" style={{ height: 10, width: '65%' }} />
+                  </div>
+                  <span className="ad-skel" style={{ height: 24, width: 100, borderRadius: 999 }} />
+                </li>
+              )) : checks.map((c) => (
+                <li key={c.label} className="ad-insights-status">
+                  <span className={`ad-insights-status-icon${c.level === 'ok' ? '' : c.level === 'warn' ? ' is-warn' : ' is-error'}`}><c.icon aria-hidden /></span>
+                  <div className="ad-list__main">
+                    <strong>{c.label}</strong>
+                    <span>{c.detail}</span>
+                  </div>
+                  <Badge tone={BADGE[c.level].tone}>{BADGE[c.level].label}</Badge>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
+          <div className="ad-alert ad-alert--info">
+            <KeyRound aria-hidden />
+            <div style={{ minWidth: 0 }}>
+              <strong style={{ fontWeight: 600 }}>Where integrations are set up</strong>
+              <p style={{ marginTop: 2 }}>
+                Payments, email, image uploads and the admin login are configured in Render → your server → Environment.
+                After changing a value there, Render restarts the store automatically. These are the setting names:
+              </p>
+              <div className="ad-insights-envs">
+                {ENV_GROUPS.map((g) => (
+                  <div key={g.label}>
+                    <strong>{g.label}</strong>
+                    {g.names.map((n) => <code key={n} className="ad-insights-code">{n}</code>)}
+                  </div>
+                ))}
               </div>
-              <StatusIcon className={`w-5 h-5 ${COLOR[c.level]}`} />
             </div>
-          );
-        })}
+          </div>
+        </div>
+
+        <div className="ad-stack">
+          <Card title="Shipping & offers" description="Applied automatically at checkout.">
+            <dl className="ad-kv">
+              <div><dt>Shipping fee</dt><dd>{inr(SHIPPING_FEE)}</dd></div>
+              <div className="is-good"><dt>Free shipping from</dt><dd>{inr(FREE_SHIPPING_THRESHOLD)}</dd></div>
+            </dl>
+            <p className="ad-hint" style={{ margin: '8px 0 16px' }}>Measured after bundle savings, before coupons.</p>
+            <div className="ad-section-title"><Gift aria-hidden /> Bundle offers</div>
+            {BUNDLE_OFFERS.map((o) => (
+              <div key={o.id} className="ad-insights-offer">
+                <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><Truck aria-hidden /></span>
+                <div style={{ minWidth: 0 }}>
+                  <strong>{o.label}</strong>
+                  <span>Any {o.size} {o.noun}s for {inr(o.price)}. Can’t be combined with coupons on the same items.</span>
+                </div>
+              </div>
+            ))}
+            <p className="ad-hint" style={{ marginTop: 14 }}>These rules are built into the website and server. Ask your developer to change them.</p>
+          </Card>
+
+          <Card title="Contact details" description="How customers reach you from the store.">
+            <ul className="ad-list" style={{ margin: '-8px -20px' }}>
+              <li>
+                <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><Phone aria-hidden /></span>
+                <div className="ad-list__main"><span>Phone</span><strong><a href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`} className="ad-link">{SUPPORT_PHONE}</a></strong></div>
+              </li>
+              <li>
+                <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><Mail aria-hidden /></span>
+                <div className="ad-list__main"><span>Email</span><strong><a href={`mailto:${SUPPORT_EMAIL}`} className="ad-link" style={{ display: 'inline' }}>{SUPPORT_EMAIL}</a></strong></div>
+              </li>
+              <li>
+                <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><WhatsAppIcon /></span>
+                <div className="ad-list__main"><span>WhatsApp</span><strong><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="ad-link">+{WHATSAPP_NUMBER.slice(0, 2)} {WHATSAPP_NUMBER.slice(2, 7)} {WHATSAPP_NUMBER.slice(7)}</a></strong></div>
+              </li>
+            </ul>
+          </Card>
+
+          {checks && problems === 0 && (
+            <div className="ad-alert ad-alert--success"><CheckCircle2 aria-hidden /> Everything is running normally.</div>
+          )}
+          {checks && checks.some((c) => c.level === 'error') && (
+            <div className="ad-alert ad-alert--danger"><XCircle aria-hidden /> Something isn’t working. If it doesn’t recover in a few minutes, check the server logs on Render.</div>
+          )}
+          {checks && problems > 0 && !checks.some((c) => c.level === 'error') && (
+            <div className="ad-alert ad-alert--warning"><AlertTriangle aria-hidden /> The store works, but one setting needs your attention before you take real orders.</div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

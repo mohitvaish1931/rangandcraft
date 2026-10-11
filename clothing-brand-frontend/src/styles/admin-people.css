@@ -1,0 +1,82 @@
+/* Customers, users, reviews and inbox pages. Builds on admin.css tokens. */
+
+/* Avatar + text in the first table cell */
+.ad .ad-people-who { display: flex; align-items: center; gap: 12px; min-width: 0; border: 0; background: none; padding: 0; text-align: left; cursor: pointer; }
+.ad .ad-people-who > span:last-child { min-width: 0; }
+.ad .ad-people-who strong { display: flex; align-items: center; gap: 8px; font-weight: 500; color: var(--ad-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px; }
+.ad .ad-people-who small { display: block; font-size: 12.5px; color: var(--ad-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px; }
+.ad-people-you { font-size: 11px; font-weight: 500; color: var(--ad-gold-ink); background: var(--ad-gold-soft); border-radius: 999px; padding: 0 7px; line-height: 18px; }
+
+.ad-people-sort { display: block; }
+.ad-people-sort .ad-select { width: auto; min-width: 168px; }
+
+/* Small figures at the top of a drawer */
+.ad-people-mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ad-people-mini > div { padding: 12px 14px; border: 1px solid var(--ad-line); border-radius: var(--ad-radius); background: var(--ad-subtle); min-width: 0; }
+.ad-people-mini span { display: block; font-size: 12px; color: var(--ad-muted); }
+.ad-people-mini strong { display: block; margin-top: 2px; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.ad-people-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+/* Order rows inside the customer drawer */
+.ad-people-orders { list-style: none; margin: 0; padding: 0; border: 1px solid var(--ad-line); border-radius: var(--ad-radius); overflow: hidden; }
+.ad-people-orders > li + li { border-top: 1px solid var(--ad-line); }
+.ad-people-orders a { display: flex; align-items: center; gap: 12px; padding: 11px 14px; transition: background 0.12s; }
+.ad-people-orders a:hover { background: var(--ad-subtle); }
+.ad-people-orders__end { margin-left: auto; display: grid; justify-items: end; gap: 4px; text-align: right; flex-shrink: 0; }
+.ad-people-orders__end strong { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Review moderation rows */
+.ad-people-reviews { list-style: none; margin: 0; padding: 0; }
+.ad-people-review { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--ad-line); animation: ad-fadein 0.2s ease; }
+.ad-people-review:last-child { border-bottom: 0; }
+.ad-people-review__thumb { display: block; width: 56px; height: 70px; border-radius: 8px; overflow: hidden; border: 1px solid var(--ad-line); background: var(--ad-subtle); }
+.ad-people-review__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ad-people-review__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.ad-people-review__head .rc-stars { color: var(--ad-gold); }
+.ad-people-review__title { font-weight: 600; color: var(--ad-ink); overflow-wrap: anywhere; }
+.ad-people-review__body { margin-top: 6px; color: var(--ad-ink-2); white-space: pre-line; line-height: 1.6; overflow-wrap: anywhere; }
+.ad-people-review__photos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.ad-people-review__photos img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--ad-line); display: block; }
+.ad-people-review__meta { margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: 12.5px; color: var(--ad-muted); }
+.ad-people-review__meta a { color: var(--ad-ink-2); font-weight: 500; display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.ad-people-review__meta a:hover { color: var(--ad-brand); text-decoration: underline; text-underline-offset: 3px; }
+.ad-people-review__meta svg { width: 13px; height: 13px; flex-shrink: 0; }
+.ad-people-review__actions { display: flex; flex-direction: column; gap: 8px; min-width: 120px; }
+
+/* Inbox message list */
+.ad-people-msgs { list-style: none; margin: 0; padding: 0; }
+.ad-people-msgs > li + li { border-top: 1px solid var(--ad-line); }
+.ad-people-msg { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 20px; border: 0; background: none; text-align: left; cursor: pointer; transition: background 0.12s; }
+.ad-people-msg:hover { background: #fcfbf9; }
+.ad-people-msg__main { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.ad-people-msg__top { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.ad-people-msg__top strong { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-people-msg__time { margin-left: auto; font-size: 12px; color: var(--ad-muted); white-space: nowrap; flex-shrink: 0; }
+.ad-people-msg__tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ad-people-msg__preview { font-size: 13px; color: var(--ad-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-people-msg.is-new .ad-people-msg__top strong { font-weight: 600; color: var(--ad-ink); }
+.ad-people-msg.is-new .ad-people-msg__preview { color: var(--ad-ink-2); }
+.ad-people-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ad-gold); flex-shrink: 0; align-self: center; }
+
+.ad-people-foot { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+.ad-people-foot__grow { flex: 1; }
+.ad-people-message { white-space: pre-line; overflow-wrap: anywhere; font-size: 14px; line-height: 1.7; }
+
+@media (max-width: 760px) {
+  .ad .ad-table--stack td.ad-people-hide-sm { display: none; }
+  .ad-people-sort { width: 100%; order: 3; }
+  .ad-people-sort .ad-select { width: 100%; }
+  .ad .ad-people-who strong, .ad .ad-people-who small { max-width: 240px; }
+  .ad-people-mini { gap: 8px; }
+  .ad-people-mini > div { padding: 10px; }
+  .ad-people-mini strong { font-size: 15px; }
+  .ad-people-review { grid-template-columns: 44px minmax(0, 1fr); gap: 12px; padding: 16px; }
+  .ad-people-review__thumb { width: 44px; height: 55px; }
+  .ad-people-review__actions { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; min-width: 0; }
+  .ad-people-review__actions .ad-btn { flex: 1; }
+  .ad-people-msg { padding: 14px 16px; }
+  .ad-people-foot__grow { display: none; }
+  .ad-people-foot .ad-btn { flex: 1 1 auto; }
+  .ad-people-foot .ad-btn--danger { order: 3; flex-basis: 100%; }
+}

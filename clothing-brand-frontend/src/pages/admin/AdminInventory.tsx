@@ -1,107 +1,193 @@
-import { 
-  Package, Edit
-} from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState, type KeyboardEvent } from 'react';
+import { Link, useOutletContext } from 'react-router-dom';
+import { AlertTriangle, Boxes, IndianRupee, Minus, PackageCheck, PackageX, Plus } from 'lucide-react';
+import { useAppContext, type Product } from '../../context/AppContext';
+import { API_ENDPOINTS, fetchJSON } from '../../utils/api';
+import { isSoldOut } from '../../lib/catalog';
+import { errorMessage, productId } from '../../lib/format';
+import { inr, inrShort } from '../../lib/adminFormat';
+import { useToast } from '../../lib/toast';
 import { getImageUrl } from '../../utils/mediaHelper';
+import { Badge, Card, EmptyState, PageHeader, SearchBox, SkeletonRows, Stat, Tabs, type Tone } from '../../components/admin/ui';
+import '../../styles/admin-products.css';
+
+type FilterKey = 'all' | 'low' | 'sold-out';
+
+const LOW = 3;
+const stockOf = (p: Product) => p.countInStock ?? p.stock ?? 0;
+const isLow = (p: Product) => !isSoldOut(p) && stockOf(p) <= LOW;
+
+const FILTERS: { key: FilterKey; label: string; test: (p: Product) => boolean }[] = [
+  { key: 'all', label: 'All', test: () => true },
+  { key: 'low', label: 'Low stock', test: isLow },
+  { key: 'sold-out', label: 'Sold out', test: isSoldOut },
+];
+
+const statusOf = (p: Product): { label: string; tone: Tone } => {
+  if (p.soldOut && stockOf(p) > 0) return { label: 'Marked sold out', tone: 'danger' };
+  if (isSoldOut(p)) return { label: 'Sold out', tone: 'danger' };
+  if (isLow(p)) return { label: 'Low stock', tone: 'warning' };
+  return { label: 'In stock', tone: 'success' };
+};
 
 const AdminInventory = () => {
-  const { state } = useAppContext();
-  const navigate = useNavigate();
+  const { state, dispatch } = useAppContext();
+  const toast = useToast();
+  const { refreshSummary } = useOutletContext<{ refreshSummary?: () => void }>() ?? {};
+  const [filter, setFilter] = useState<FilterKey>('all');
+  const [query, setQuery] = useState('');
+
+  const products = state.products;
+  const loading = state.productsStatus === 'idle' || state.productsStatus === 'loading';
+
+  const summary = useMemo(() => {
+    const inStock = products.filter((p) => !isSoldOut(p));
+    return {
+      inStock: inStock.length,
+      units: inStock.reduce((s, p) => s + stockOf(p), 0),
+      value: inStock.reduce((s, p) => s + stockOf(p) * (p.price || 0), 0),
+      counts: Object.fromEntries(FILTERS.map((f) => [f.key, products.filter(f.test).length])) as Record<FilterKey, number>,
+    };
+  }, [products]);
+
+  const visible = useMemo(() => {
+    const f = FILTERS.find((x) => x.key === filter)!;
+    const q = query.trim().toLowerCase();
+    return products.filter(f.test).filter((p) => !q || [p.name, p.category].some((v) => String(v || '').toLowerCase().includes(q)));
+  }, [products, filter, query]);
+
+  /** Saves a new stock count. Only `stock` is sent, so every other field stays as it is. */
+  const saveStock = async (p: Product, stock: number) => {
+    const fd = new FormData();
+    fd.append('stock', String(stock));
+    try {
+      const updated = await fetchJSON<Product>(`${API_ENDPOINTS.PRODUCTS}/${productId(p)}`, { method: 'PUT', body: fd });
+      dispatch({ type: 'UPDATE_PRODUCT', payload: updated });
+      refreshSummary?.();
+      toast.success(`${p.name}: ${stock} in stock`);
+      return true;
+    } catch (err) {
+      toast.error(errorMessage(err));
+      return false;
+    }
+  };
+
+  const { counts } = summary;
 
   return (
-    <div className="space-y-10">
-      <div className="bg-white p-10 rounded-[3rem] border border-gold-primary/10 shadow-sm flex items-center justify-between relative overflow-hidden">
-        <div className="relative z-10">
-          <h2 className="text-3xl font-black text-text-primary luxury-serif tracking-widest uppercase mb-2">Live Inventory</h2>
-          <div className="w-16 h-1 bg-primary-purple rounded-full"></div>
-        </div>
-        <div className="flex items-center gap-10 relative z-10">
-          <div className="text-right">
-            <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.2em] mb-1">Health Score</p>
-            <p className="text-lg font-black text-emerald-600 tracking-widest">98.5%</p>
-          </div>
-          <div className="flex items-center space-x-4 bg-white/5 px-6 py-4 rounded-[2rem] border border-gold-primary/10 shadow-inner">
-            <Package className="h-6 w-6 text-primary-purple" />
-            <span className="text-sm font-black text-text-primary uppercase tracking-widest">{state.products.length} Total SKUs</span>
-          </div>
-        </div>
-        <div className="absolute -right-8 -bottom-8 w-48 h-48 bg-gold-primary/5 rounded-full blur-3xl"></div>
+    <>
+      <PageHeader
+        title="Inventory"
+        description={loading ? 'Loading stock…' : `${summary.inStock} in stock · ${counts.low} low · ${counts['sold-out']} sold out`}
+        actions={<Link to="/admin/products" className="ad-btn ad-btn--secondary"><Boxes aria-hidden /> All products</Link>}
+      />
+
+      <div className="ad-grid ad-grid--stats" style={{ marginBottom: 20 }}>
+        <Stat label="Units in stock" value={loading ? '—' : summary.units.toLocaleString('en-IN')} icon={Boxes} meta={`across ${summary.inStock} products`} />
+        <Stat label="Stock value" value={loading ? '—' : inrShort(summary.value)} icon={IndianRupee} tone="gold" meta="at selling price" />
+        <Stat label="Low stock" value={loading ? '—' : counts.low} icon={AlertTriangle} tone="gold" meta={`${LOW} or fewer left`} />
+        <Stat label="Sold out" value={loading ? '—' : counts['sold-out']} icon={PackageX} meta="can’t be ordered" />
       </div>
 
-      <div className="bg-white border border-gold-primary/10 rounded-[3rem] overflow-hidden shadow-sm">
-        <div className="overflow-x-auto custom-scrollbar">
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-white/5">
-                <th className="px-10 py-6 text-left text-[11px] font-black text-text-muted uppercase tracking-[0.3em]">Item Specification</th>
-                <th className="px-10 py-6 text-left text-[11px] font-black text-text-muted uppercase tracking-[0.3em]">Category</th>
-                <th className="px-10 py-6 text-center text-[11px] font-black text-text-muted uppercase tracking-[0.3em]">Quantity</th>
-                <th className="px-10 py-6 text-left text-[11px] font-black text-text-muted uppercase tracking-[0.3em]">Stock Health</th>
-                <th className="px-10 py-6 text-right text-[11px] font-black text-text-muted uppercase tracking-[0.3em]">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gold-primary/5">
-              {state.products.map((product) => (
-                <tr key={product.id} className="hover:bg-white/[0.02] transition-all duration-300 group">
-                  <td className="px-10 py-6 whitespace-nowrap">
-                    <div className="flex items-center gap-5">
-                      <div className="w-16 h-16 rounded-2xl bg-white/5 overflow-hidden border border-gold-primary/10 shadow-sm relative group-hover:scale-105 transition-transform duration-500">
-                        <img src={getImageUrl(product.images?.[0] || product.image)} alt="" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-black text-text-primary tracking-wide">{product.name}</span>
-                        <span className="text-[10px] text-text-muted font-bold tracking-widest uppercase mt-0.5">ID: {String(product._id || product.id).substring(0,8)}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-10 py-6 whitespace-nowrap">
-                    <span className="px-4 py-1.5 bg-white/5 rounded-full text-[10px] font-black text-gold-primary border border-gold-primary/10 uppercase tracking-widest">
-                      {product.category}
-                    </span>
-                  </td>
-                  <td className="px-10 py-6 whitespace-nowrap text-center">
-                    <div className="flex flex-col items-center gap-2">
-                      <span className={`text-2xl font-black luxury-serif ${(product.countInStock ?? product.stock ?? 0) <= 5 ? 'text-primary-purple' : 'text-text-primary'}`}>
-                        {product.countInStock ?? product.stock ?? 0}
-                      </span>
-                      <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                        <div 
-                          className={`h-full bg-gradient-to-r ${(product.countInStock ?? product.stock ?? 0) <= 5 ? 'from-red-600 to-red-400' : 'from-gold-primary to-gold-light'} transition-all duration-1000`} 
-                          style={{ width: `${Math.min((product.countInStock ?? product.stock ?? 0) * 10, 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-10 py-6 whitespace-nowrap">
-                    {(product.countInStock ?? product.stock ?? 0) > 5 ? (
-                      <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-sm">
-                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                        In Stock
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-full bg-red-50 text-red-700 border border-red-100 shadow-sm">
-                        <span className="w-2 h-2 bg-red-600 rounded-full"></span>
-                        Low Stock
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-10 py-6 whitespace-nowrap text-right">
-                    <button
-                      onClick={() => navigate(`/admin/products/${product._id || product.id}/edit`)}
-                      className="p-3 bg-white border border-gold-primary/10 rounded-2xl text-text-muted hover:text-gold-primary hover:border-gold-primary/30 transition-all shadow-sm hover:shadow-xl hover:-translate-y-0.5"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="ad-toolbar">
+        <Tabs label="Filter stock" value={filter} onChange={setFilter} items={FILTERS.map((f) => ({ key: f.key, label: f.label, count: counts[f.key] }))} />
+        <div className="ad-toolbar__grow" />
+        <SearchBox value={query} onChange={setQuery} placeholder="Search products" label="Search inventory" />
       </div>
-    </div>
+
+      <Card flush>
+        {loading ? <SkeletonRows rows={6} /> : visible.length === 0 ? (
+          <EmptyState
+            icon={filter === 'all' && !query ? Boxes : PackageCheck}
+            title={query ? 'No matching products' : filter === 'low' ? 'Nothing is running low' : filter === 'sold-out' ? 'Nothing is sold out' : 'No products yet'}
+            text={query ? 'Try a different name or category.' : filter === 'all' ? 'Add products to start tracking stock.' : 'Everything has enough stock right now.'}
+            action={filter === 'all' && !query ? <Link to="/admin/products/add" className="ad-btn"><Plus aria-hidden /> Add product</Link> : undefined}
+          />
+        ) : (
+          <div className="ad-table-wrap">
+            <table className="ad-table ad-table--stack">
+              <thead>
+                <tr><th>Product</th><th>Category</th><th>Stock level</th><th>Status</th><th className="num">Update stock</th></tr>
+              </thead>
+              <tbody>
+                {visible.map((p) => <StockRow key={`${productId(p)}:${stockOf(p)}`} product={p} onSave={saveStock} />)}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </>
+  );
+};
+
+const StockRow = ({ product: p, onSave }: { product: Product; onSave: (p: Product, stock: number) => Promise<boolean> }) => {
+  const current = stockOf(p);
+  const [draft, setDraft] = useState(String(current));
+  const [saving, setSaving] = useState(false);
+  const id = productId(p);
+  const st = statusOf(p);
+  const out = isSoldOut(p);
+  const valid = /^\d+$/.test(draft.trim());
+  const changed = valid && Number(draft) !== current;
+
+  const step = (by: number) => setDraft((d) => String(Math.max(0, (Number(d) || 0) + by)));
+
+  const save = async () => {
+    if (!changed || saving) return;
+    setSaving(true);
+    const ok = await onSave(p, Number(draft));
+    if (!ok) setSaving(false);
+  };
+
+  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); save(); }
+    if (e.key === 'Escape') setDraft(String(current));
+  };
+
+  return (
+    <tr>
+      <td className="is-primary">
+        <Link to={`/admin/products/${id}/edit`} className="ad-cell-main">
+          <img src={getImageUrl(p.images?.[0] || p.image, 100)} alt="" loading="lazy" />
+          <span style={{ minWidth: 0 }}>
+            <strong>{p.name}</strong>
+            <span>{inr(p.price)}{p.sizes?.length ? ` · ${p.sizes.join(', ')}` : ''}</span>
+          </span>
+        </Link>
+      </td>
+      <td data-label="Category" className="muted">{p.category || '—'}</td>
+      <td data-label="Stock level">
+        <span className="ad-products-stock" style={{ justifyContent: 'flex-start' }}>
+          <span className="ad-meter" aria-hidden>
+            <span className={out ? 'is-out' : current <= LOW ? 'is-low' : ''} style={{ width: `${out ? 100 : Math.min(100, Math.max(6, (current / 20) * 100))}%` }} />
+          </span>
+          <span className="tabular">{current} left</span>
+        </span>
+      </td>
+      <td data-label="Status"><Badge tone={st.tone}>{st.label}</Badge></td>
+      <td data-label="Update stock" className="num">
+        <div className="ad-products-stepper">
+          <button type="button" className="ad-icon-btn" onClick={() => step(-1)} disabled={saving || Number(draft) <= 0} aria-label={`One less ${p.name}`}><Minus aria-hidden /></button>
+          <input
+            className="ad-input"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={1}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={onKey}
+            disabled={saving}
+            aria-label={`Stock for ${p.name}`}
+            aria-invalid={!valid}
+          />
+          <button type="button" className="ad-icon-btn" onClick={() => step(1)} disabled={saving} aria-label={`One more ${p.name}`}><Plus aria-hidden /></button>
+          <button type="button" className="ad-btn ad-btn--sm" onClick={save} hidden={!changed && !saving} disabled={saving}>
+            {saving ? <span className="ad-spinner" /> : 'Save'}
+          </button>
+        </div>
+      </td>
+    </tr>
   );
 };
 
