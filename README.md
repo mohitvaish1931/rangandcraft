@@ -52,6 +52,7 @@ CI (`.github/workflows/ci.yml`) runs all three on every pull request.
 | `MAIL_FROM` | no | Sender, e.g. `Rang and Craft <orders@rangandcraft.store>`. Defaults to `SMTP_USER`. |
 | `MAIL_REPLY_TO` | no | Where customer replies go, if different from the sender |
 | `ADMIN_NOTIFY_EMAIL` | recommended | Receives an alert for every paid order and every contact-form message |
+| `ADMIN_RESET_PASSWORD` | only to recover the admin login | Set it (8+ characters) and restart: the admin account (`admin@rangandcraft.store`, or `ADMIN_RESET_EMAIL`) gets this password. Sign in, then **delete the variable**. |
 | `SITE_URL` | no | Storefront address used in email links. Defaults to `https://rangandcraft.store`. |
 | `SHIPROCKET_WEBHOOK_TOKEN` | yes, if using the Shiprocket webhook | Must match the token configured in the Shiprocket panel (sent as `x-api-key`). The webhook is rejected in production without it. |
 | `CORS_ORIGINS` | recommended | Comma-separated list of sites allowed to call the API, e.g. `https://rangandcraft.store,https://www.rangandcraft.store` |

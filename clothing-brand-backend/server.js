@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import mongoose from 'mongoose';
 import connectDB from './config/db.js';
+import { applyAdminReset } from './utils/adminReset.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -26,7 +27,9 @@ dotenv.config();
 mongoose.set('strictQuery', true);
 
 if (process.env.NODE_ENV !== 'test') {
-  connectDB();
+  connectDB()
+    .then(applyAdminReset)
+    .catch((err) => console.error('Admin reset failed:', err.message));
 }
 
 const app = express();

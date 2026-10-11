@@ -18,6 +18,7 @@ const { default: Product } = await import('../models/Product.js');
 const { default: Coupon } = await import('../models/Coupon.js');
 const { default: Order } = await import('../models/Order.js');
 const { setMailTransport } = await import('../utils/mailer.js');
+const { applyAdminReset } = await import('../utils/adminReset.js');
 
 const MONGO = process.env.MONGO_TEST_URI || 'mongodb://127.0.0.1:27017/rangandcraft_test';
 
@@ -493,5 +494,34 @@ describe('uploads', () => {
       .attach('image', Buffer.from([0xff, 0xd8, 0xff, 0xd9]), { filename: 'tiny.jpg', contentType: 'image/jpeg' });
     assert.equal(res.status, 503);
     assert.match(res.body.message, /CLOUDINARY_URL/);
+  });
+});
+
+describe('admin password recovery', () => {
+  after(() => { delete process.env.ADMIN_RESET_PASSWORD; delete process.env.ADMIN_RESET_EMAIL; });
+
+  test('does nothing without the variable or with a short password', async () => {
+    delete process.env.ADMIN_RESET_PASSWORD;
+    assert.equal(await applyAdminReset(), null);
+    process.env.ADMIN_RESET_PASSWORD = 'short';
+    assert.equal(await applyAdminReset(), null);
+  });
+
+  test('resets an existing admin so they can sign in', async () => {
+    process.env.ADMIN_RESET_EMAIL = 'Admin@Example.com';
+    process.env.ADMIN_RESET_PASSWORD = 'brand-new-pass-1';
+    assert.equal(await applyAdminReset(), 'admin@example.com');
+    const res = await request(app).post('/api/users/login').send({ email: 'admin@example.com', password: 'brand-new-pass-1' });
+    assert.equal(res.status, 200);
+    assert.equal(res.body.isAdmin, true);
+  });
+
+  test('creates the admin when the account is missing', async () => {
+    process.env.ADMIN_RESET_EMAIL = 'owner@example.com';
+    process.env.ADMIN_RESET_PASSWORD = 'owner-pass-123';
+    await applyAdminReset();
+    const res = await request(app).post('/api/users/login').send({ email: 'owner@example.com', password: 'owner-pass-123' });
+    assert.equal(res.status, 200);
+    assert.equal(res.body.isAdmin, true);
   });
 });

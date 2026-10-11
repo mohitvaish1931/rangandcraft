@@ -149,6 +149,8 @@ a { color: inherit; }
 .rc-alert--success { background: #e7f3ec; color: var(--rc-success); }
 .rc-alert--info { background: var(--rc-brand-soft); color: var(--rc-brand-deep); }
 .rc-password { position: relative; }
+/* Edge/IE add their own reveal button next to ours. */
+.rc-password input::-ms-reveal, .rc-password input::-ms-clear { display: none; }
 .rc-password .rc-input { padding-right: 52px; }
 .rc-password button { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); }
 
