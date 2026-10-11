@@ -94,7 +94,7 @@ const SearchPanel = ({ open, onClose }: { open: boolean; onClose: () => void }) 
   return (
     <>
       <div className={`rc-overlay${open ? ' is-open' : ''}`} onClick={close} aria-hidden />
-      <div className={`rc-search${open ? ' is-open' : ''}`} data-lenis-prevent role="dialog" aria-modal="true" aria-label="Search products" aria-hidden={!open}>
+      <div className={`rc-search${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Search products" aria-hidden={!open}>
         <div className="rc-container">
           <form className="rc-search__form" onSubmit={submit} role="search">
             <Search size={24} strokeWidth={1.4} aria-hidden />
@@ -275,7 +275,7 @@ const Header = () => {
       <SearchPanel open={searchOpen} onClose={() => dispatch({ type: 'TOGGLE_SEARCH', payload: false })} />
 
       <div className={`rc-overlay${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(false)} aria-hidden />
-      <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} data-lenis-prevent aria-label="Menu" aria-hidden={!menuOpen}>
+      <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} aria-label="Menu" aria-hidden={!menuOpen}>
         <div className="rc-drawer__head">
           <img src={logoImg} alt="Rang and Craft" width={41} height={40} style={{ height: 40, width: 'auto' }} />
           <button type="button" className="rc-icon-btn" aria-label="Close menu" onClick={() => setMenuOpen(false)}>

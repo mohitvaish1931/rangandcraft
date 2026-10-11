@@ -101,7 +101,7 @@ const Gallery = () => {
       </div>
 
       {current && open !== null && (
-        <div className="rc-lightbox" role="dialog" aria-modal="true" aria-label={current.product.name} onClick={() => setOpen(null)} data-lenis-prevent>
+        <div className="rc-lightbox" role="dialog" aria-modal="true" aria-label={current.product.name} onClick={() => setOpen(null)}>
           <img key={current.src} src={responsiveImage(current.src, '100vw', 1600).src} alt={current.product.name} onClick={(e) => e.stopPropagation()} />
           <div className="rc-lightbox__caption" onClick={(e) => e.stopPropagation()}>
             <span>{current.product.name}</span>

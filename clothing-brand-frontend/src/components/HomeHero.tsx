@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import SplitText from './SplitText';
 import type { Look, Slide } from '../lib/media';
@@ -16,8 +16,8 @@ const SLIDE_MS = 7000;
 
 const CtaLink = ({ to, className, children }: { to: string; className: string; children: React.ReactNode }) =>
   /^https:\/\//i.test(to)
-    ? <a href={to} className={className} target="_blank" rel="noopener noreferrer" data-magnetic="">{children}</a>
-    : <Link to={to} className={className} data-magnetic="">{children}</Link>;
+    ? <a href={to} className={className} target="_blank" rel="noopener noreferrer">{children}</a>
+    : <Link to={to} className={className}>{children}</Link>;
 
 interface Props {
   /** Admin hero slides; null while they load. */
@@ -32,12 +32,30 @@ interface Props {
  * phones). Copy falls back to the defaults whenever a slide leaves it blank.
  */
 const HomeHero = ({ slides, looks }: Props) => {
+  const sectionRef = useRef<HTMLElement>(null);
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  // Autoplay only stops when nobody can see it (scrolled away or tab hidden) or a
+  // keyboard user is inside it; hovering never freezes it.
+  const [onScreen, setOnScreen] = useState(true);
+  const [keyboardFocus, setKeyboardFocus] = useState(false);
+  const tabVisible = useSyncExternalStore(
+    (cb) => { document.addEventListener('visibilitychange', cb); return () => document.removeEventListener('visibilitychange', cb); },
+    () => document.visibilityState === 'visible',
+    () => true,
+  );
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const list = slides ?? [];
   const count = list.length;
   const slide = count ? list[index % count] : undefined;
+  const paused = !onScreen || !tabVisible || keyboardFocus;
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || count < 2) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [count]);
 
   useEffect(() => {
     if (count < 2 || paused || reduceMotion) return;
@@ -55,16 +73,15 @@ const HomeHero = ({ slides, looks }: Props) => {
 
   return (
     <section
+      ref={sectionRef}
       className="rc-hero rc-hero--home"
       aria-roledescription={count > 1 ? 'carousel' : undefined}
       aria-label="Featured"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onFocus={(e) => setKeyboardFocus(e.target.matches(':focus-visible'))}
+      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setKeyboardFocus(false); }}
     >
       <div className="rc-hero__media">
-        <div className="rc-plx" data-parallax="0.18">
+        <div className="rc-plx">
           {count > 0 ? (
             list.map((s, i) => (
               <picture key={s._id} className={`rc-hero__slide${i === index % count ? ' is-current' : ''}`}>
@@ -112,7 +129,7 @@ const HomeHero = ({ slides, looks }: Props) => {
             )}
             <div className="rc-hero__actions rc-rise rc-rise--4">
               <CtaLink to={cta.to} className="rc-btn rc-btn--light rc-btn--lg">{cta.label}</CtaLink>
-              <Link to="/shop?sort=newest" className="rc-btn rc-btn--ghost-light rc-btn--lg" data-magnetic="">New arrivals</Link>
+              <Link to="/shop?sort=newest" className="rc-btn rc-btn--ghost-light rc-btn--lg">New arrivals</Link>
             </div>
           </div>
           <div className="rc-hero__aside rc-rise rc-rise--4">

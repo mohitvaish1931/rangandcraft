@@ -105,7 +105,7 @@ const SizeGuide = ({ onClose }: { onClose: () => void }) => {
   }, [onClose]);
 
   return (
-    <div className="rc-modal" role="dialog" aria-modal="true" aria-labelledby="size-guide-title" onClick={onClose} data-lenis-prevent>
+    <div className="rc-modal" role="dialog" aria-modal="true" aria-labelledby="size-guide-title" onClick={onClose}>
       <div className="rc-modal__panel" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="rc-icon-btn rc-modal__close" onClick={onClose} aria-label="Close size guide"><X size={20} /></button>
         <span className="rc-eyebrow">Fit guide</span>
@@ -430,7 +430,7 @@ const ProductDetail = ({ id }: { id: string }) => {
                       <span aria-live="polite">{qty}</span>
                       <button type="button" onClick={() => setQty((q) => Math.min(maxQty, q + 1))} disabled={qty >= maxQty} aria-label="Increase quantity"><Plus size={16} /></button>
                     </div>
-                    <button type="button" className={`rc-btn rc-btn--lg${added ? ' is-added' : ''}`} onClick={() => addToBag(false)} data-magnetic="">
+                    <button type="button" className={`rc-btn rc-btn--lg${added ? ' is-added' : ''}`} onClick={() => addToBag(false)}>
                       {added ? <><Check size={18} className="rc-btn__check" /> Added</> : 'Add to bag'}
                     </button>
                     <button

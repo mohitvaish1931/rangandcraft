@@ -170,7 +170,7 @@ const HomePage = () => {
         <section className="rc-section rc-dark rc-cv">
           <div className="rc-container rc-edit">
             <Link to={`/product/${productId(spot.look.product)}`} className="rc-edit__media" data-reveal="mask" data-cursor="View" aria-label={`View ${spot.look.product.name}`}>
-              <div className="rc-plx" data-parallax="0.08">
+              <div className="rc-plx">
                 <img {...responsiveImage(spot.look.src, '(max-width: 900px) 100vw, 50vw', 960)} alt={spot.look.product.name} loading="lazy" />
               </div>
               <span className="rc-edit__tag">{spot.look.product.name}</span>
@@ -187,7 +187,7 @@ const HomePage = () => {
                   {spot.picks.map((p) => <ProductCard key={productId(p)} product={p} />)}
                 </div>
               )}
-              <Link to={`/shop?category=${encodeURIComponent(spot.category)}`} className="rc-btn rc-btn--gold rc-btn--lg" data-magnetic="" style={{ marginTop: spot.picks.length ? 0 : 28 }}>
+              <Link to={`/shop?category=${encodeURIComponent(spot.category)}`} className="rc-btn rc-btn--gold rc-btn--lg" style={{ marginTop: spot.picks.length ? 0 : 28 }}>
                 Shop {spot.category.toLowerCase()}
               </Link>
             </div>

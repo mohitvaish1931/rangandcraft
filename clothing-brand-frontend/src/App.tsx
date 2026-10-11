@@ -10,7 +10,6 @@ import CartDrawer from './components/CartDrawer';
 import MobileBottomNav from './components/MobileBottomNav';
 import MotionProvider from './components/MotionProvider';
 import Cursor from './components/Cursor';
-import Preloader from './components/Preloader';
 import BackToTop from './components/BackToTop';
 import ErrorBoundary from './components/ErrorBoundary';
 import ToastProvider from './components/ToastProvider';
@@ -143,7 +142,6 @@ const MainLayout = () => {
           <BackToTop />
           <MobileBottomNav />
           <Cursor />
-          <Preloader />
         </>
       )}
     </div>
