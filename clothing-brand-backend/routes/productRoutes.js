@@ -131,7 +131,14 @@ router.put('/:id', protect, admin, withUploadErrors(upload.array('image', 10)), 
       product.category = req.body.category || product.category;
       product.brand = req.body.brand || product.brand;
       
-      const newStock = req.body.stock !== undefined ? Number(req.body.stock) : (req.body.countInStock !== undefined ? Number(req.body.countInStock) : product.stock);
+      // Only change stock when the request sends it. Otherwise keep the live
+      // count (countInStock); the legacy `stock` field can be stale and would
+      // silently mark the product sold out.
+      const sentStock = [req.body.stock, req.body.countInStock].find((v) => v !== undefined && v !== '');
+      const parsedStock = sentStock !== undefined ? Number(sentStock) : NaN;
+      const newStock = Number.isFinite(parsedStock) && parsedStock >= 0
+        ? Math.floor(parsedStock)
+        : (product.countInStock ?? product.stock ?? 0);
       product.stock = newStock;
       product.countInStock = newStock;
 

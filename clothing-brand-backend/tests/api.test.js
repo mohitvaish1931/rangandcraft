@@ -548,3 +548,18 @@ describe('admin summary', () => {
     for (const k of ['toShip', 'pendingReviews', 'newMessages', 'lowStock']) assert.equal(typeof res.body[k], 'number');
   });
 });
+
+describe('product updates', () => {
+  test('an update without stock keeps the live stock count', async () => {
+    const p = await Product.create({
+      user: product.user, name: 'Stock Keep Kurta', image: '/images/kurta-men.jpg', brand: 'RC', category: 'Short Kurtas',
+      description: 'x', price: 899, countInStock: 7, stock: 0, sizes: ['M'],
+    });
+    const res = await request(app).put(`/api/products/${p._id}`).set('Authorization', `Bearer ${adminToken}`)
+      .field('name', 'Stock Keep Kurta').field('existing_images', JSON.stringify(['/images/kurta-men.jpg']));
+    assert.equal(res.status, 200);
+    assert.equal(res.body.countInStock, 7);
+    const res2 = await request(app).put(`/api/products/${p._id}`).set('Authorization', `Bearer ${adminToken}`).field('stock', '3');
+    assert.equal(res2.body.countInStock, 3);
+  });
+});
