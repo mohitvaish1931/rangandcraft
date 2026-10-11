@@ -236,7 +236,7 @@ const AdminPromotions = () => {
                         <dt>Ends</dt>
                         <dd>
                           {c.expiresAt ? fmtDate(c.expiresAt) : 'No end date'}
-                          {daysLeft !== null && daysLeft > 0 && daysLeft <= 7 && <span className="muted" style={{ fontWeight: 400 }}> · {daysLeft} day{daysLeft === 1 ? '' : 's'} left</span>}
+                          {daysLeft !== null && daysLeft > 0 && daysLeft <= 7 && <span style={{ fontWeight: 400, color: 'var(--ad-muted)' }}> · {daysLeft} day{daysLeft === 1 ? '' : 's'} left</span>}
                         </dd>
                       </div>
                       <div>

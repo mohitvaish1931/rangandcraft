@@ -148,7 +148,7 @@ const AdminProductReports = () => {
                   </div>
                   <span style={{ textAlign: 'right', flexShrink: 0 }} title="Stock on hand at selling price">
                     <strong className="tabular" style={{ display: 'block', fontWeight: 500 }}>{inr(value)}</strong>
-                    <span className="muted" style={{ fontSize: 12 }}>stock value</span>
+                    <span style={{ fontSize: 12, color: 'var(--ad-muted)' }}>stock value</span>
                   </span>
                 </li>
               ))}

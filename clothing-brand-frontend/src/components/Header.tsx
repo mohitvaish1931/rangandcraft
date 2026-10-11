@@ -5,7 +5,7 @@ import { cartCount, useAppContext } from '../context/AppContext';
 import { categoriesOf, matchesQuery } from '../lib/catalog';
 import { formatPrice, productId } from '../lib/format';
 import { getImageUrl, responsiveImage } from '../utils/mediaHelper';
-import { ANNOUNCEMENTS, FALLBACK_IMAGES } from '../lib/brand';
+import { announcementTexts, FALLBACK_IMAGES } from '../lib/brand';
 import { useScrollLock } from '../lib/motion';
 import logoImg from '../assets/logo.png';
 
@@ -201,13 +201,14 @@ const Header = () => {
     return location.pathname === p && (p !== '/shop' || !/sort=newest|sale=1/.test(location.search));
   };
 
-  const loop = [...ANNOUNCEMENTS, ...ANNOUNCEMENTS];
+  const messages = announcementTexts(state.banners);
+  const loop = [...messages, ...messages];
 
   return (
     <>
       <div className="rc-announce" aria-label="Store announcements">
         <div className="rc-announce__track">
-          {loop.map((text, i) => <span key={i} aria-hidden={i >= ANNOUNCEMENTS.length}>{text}</span>)}
+          {loop.map((text, i) => <span key={i} aria-hidden={i >= messages.length}>{text}</span>)}
         </div>
       </div>
 

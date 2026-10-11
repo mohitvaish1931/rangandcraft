@@ -21,3 +21,9 @@ export const ANNOUNCEMENTS = [
   'Easy 7-day size exchange',
   '1 lakh+ happy customers',
 ];
+
+/** Messages for the scrolling bar: saved announcements, or the built-in ones when none are saved. */
+export const announcementTexts = (banners: { text?: string }[]) => {
+  const saved = banners.map((b) => (b.text || '').trim()).filter(Boolean);
+  return saved.length ? saved : ANNOUNCEMENTS;
+};

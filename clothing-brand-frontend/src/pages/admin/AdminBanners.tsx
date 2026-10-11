@@ -4,7 +4,7 @@ import { useAppContext, type Banner } from '../../context/AppContext';
 import { API_ENDPOINTS, apiCall, postJSON } from '../../utils/api';
 import { errorMessage } from '../../lib/format';
 import { useToast } from '../../lib/toast';
-import { ANNOUNCEMENTS } from '../../lib/brand';
+import { announcementTexts } from '../../lib/brand';
 import { Badge, Card, Drawer, EmptyState, Field, PageHeader, type Tone } from '../../components/admin/ui';
 import '../../styles/admin-insights.css';
 
@@ -106,7 +106,8 @@ const AdminBanners = () => {
     }
   };
 
-  const loop = [...ANNOUNCEMENTS, ...ANNOUNCEMENTS];
+  const live = announcementTexts(banners);
+  const loop = [...live, ...live];
 
   return (
     <>
@@ -121,14 +122,15 @@ const AdminBanners = () => {
       >
         <div className="ad-insights-bar" aria-label="Live announcement bar">
           <div className="ad-insights-bar__track">
-            {loop.map((t, i) => <span key={i} aria-hidden={i >= ANNOUNCEMENTS.length}>{t}</span>)}
+            {loop.map((t, i) => <span key={i} aria-hidden={i >= live.length}>{t}</span>)}
           </div>
         </div>
         <div className="ad-alert ad-alert--info" style={{ marginTop: 16 }}>
           <Info aria-hidden />
           <span>
-            These {ANNOUNCEMENTS.length} messages are built into the website. Messages you save below are stored safely but the bar
-            doesn’t read them yet, so ask your developer to switch the bar over when you’re ready to manage it from here.
+            {banners.length
+              ? `The bar shows your ${banners.length} saved message${banners.length === 1 ? '' : 's'}, top first. Changes appear for shoppers on their next page load.`
+              : 'You have no saved messages, so the bar shows the built-in ones above. As soon as you add a message below, the bar shows your messages instead.'}
           </span>
         </div>
       </Card>

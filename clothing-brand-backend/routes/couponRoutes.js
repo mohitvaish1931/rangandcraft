@@ -12,7 +12,9 @@ const pick = (body) => Object.fromEntries(EDITABLE_FIELDS.filter((k) => body[k] 
 
 // @route GET /api/coupons (Admin) — coupon codes must not be publicly listable.
 router.get('/', protect, admin, asyncHandler(async (req, res) => {
-  const items = await Coupon.find().sort({ createdAt: -1 }).populate('productId');
+  // Not populated: a deleted product would come back as null and the coupon would
+  // look store-wide. The admin page resolves names from the product list.
+  const items = await Coupon.find().sort({ createdAt: -1 });
   res.json(items);
 }));
 
