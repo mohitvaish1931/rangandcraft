@@ -428,6 +428,7 @@
   .ad-page-head__actions .ad-btn { flex: 1; }
   .ad-searchbox { min-width: 0; width: 100%; }
   .ad-card__head, .ad-card__body { padding: 16px; }
+  .ad-card__body--flush { padding: 0; }
   .ad-list > li { padding: 12px 16px; }
   /* Tables become stacked cards; each cell shows its column name. */
   .ad-table--stack thead { display: none; }

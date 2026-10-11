@@ -138,7 +138,7 @@ const AdminProducts = () => {
             <option value="">All categories</option>
             {categories.map((c) => <option key={c.name} value={c.name}>{c.name} ({c.count})</option>)}
           </select>
-          <SearchBox value={query} onChange={setQuery} placeholder="Search name, category or colour" label="Search products" />
+          <SearchBox value={query} onChange={setQuery} placeholder="Search products" label="Search products" />
         </div>
       )}
 
@@ -161,7 +161,7 @@ const AdminProducts = () => {
           )
         ) : (
           <div className="ad-table-wrap">
-            <table className="ad-table ad-table--stack">
+            <table className="ad-table ad-table--stack ad-products-table">
               <thead>
                 <tr>
                   <th>Product</th>

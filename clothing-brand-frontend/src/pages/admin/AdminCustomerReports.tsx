@@ -124,7 +124,7 @@ const AdminCustomerReports = () => {
                     <tr key={c.key}>
                       <td className="is-primary">
                         <div className="ad-cell-main">
-                          <span className="ad-avatar ad-avatar--sm ad-avatar--soft">{initials(c.name)}</span>
+                          <div className="ad-avatar ad-avatar--sm ad-avatar--soft" aria-hidden>{initials(c.name)}</div>
                           <span style={{ minWidth: 0 }}>
                             <strong>{c.name}</strong>
                             <span>{c.email || 'No email'}</span>
@@ -174,11 +174,13 @@ const AdminCustomerReports = () => {
 
           <Card title="Accounts created" description={label}>
             {loading ? <span className="ad-skel" style={{ height: 48 }} /> : (
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-                <span className="ad-stat__value" style={{ marginTop: 0 }}>{r.signups}</span>
-                <span className="ad-hint">new sign-up{r.signups === 1 ? '' : 's'}</span>
-                <span className="ad-stat__meta" style={{ marginTop: 0 }}><Delta value={r.signupsDelta} /> {vs}</span>
-              </div>
+              <>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                  <span className="ad-stat__value" style={{ marginTop: 0 }}>{r.signups}</span>
+                  <span className="ad-hint">new account{r.signups === 1 ? '' : 's'}</span>
+                </div>
+                {r.signupsDelta !== null && <div className="ad-stat__meta"><Delta value={r.signupsDelta} /> {vs}</div>}
+              </>
             )}
             <p className="ad-hint" style={{ marginTop: 8 }}>Many customers check out as guests, so sign-ups are usually lower than buyers.</p>
           </Card>

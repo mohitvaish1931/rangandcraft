@@ -127,7 +127,8 @@ const AdminProductReports = () => {
         )}
       </Card>
 
-      <div className="ad-grid ad-grid--2" style={{ marginTop: 20 }}>
+      <div className="ad-grid ad-grid--2" style={{ marginTop: 20, alignItems: 'start' }}>
+        <div>
         <Card
           title="Not selling"
           description={`In stock but no paid orders, ${label}. Most stock value first.`}
@@ -145,13 +146,18 @@ const AdminProductReports = () => {
                     <strong><Link to={editLink(productId(p))}>{p.name}</Link></strong>
                     <span>{p.category} · {inr(p.price)} · {stock} in stock</span>
                   </div>
-                  <span className="tabular muted" style={{ fontSize: 12.5, textAlign: 'right' }} title="Stock value at selling price">{inr(value)}</span>
+                  <span style={{ textAlign: 'right', flexShrink: 0 }} title="Stock on hand at selling price">
+                    <strong className="tabular" style={{ display: 'block', fontWeight: 500 }}>{inr(value)}</strong>
+                    <span className="muted" style={{ fontSize: 12 }}>stock value</span>
+                  </span>
                 </li>
               ))}
             </ul>
           )}
         </Card>
+        </div>
 
+        <div>
         <Card
           title="Restock soon"
           description={`Sold out or ${LOW_STOCK} or fewer pieces left.`}
@@ -179,6 +185,7 @@ const AdminProductReports = () => {
             </ul>
           )}
         </Card>
+        </div>
       </div>
 
       {!loading && report.low.some(isSoldOut) && (

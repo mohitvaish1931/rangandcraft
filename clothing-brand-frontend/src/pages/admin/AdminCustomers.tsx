@@ -177,7 +177,7 @@ const AdminCustomers = () => {
           icon={Repeat2}
           tone="gold"
           value={stats.repeatPct === null ? '–' : `${stats.repeatPct}%`}
-          meta={customers ? (stats.buyers ? `${stats.repeat} of ${stats.buyers} buyers ordered again` : 'No paid orders yet') : undefined}
+          meta={customers ? (stats.buyers ? `${stats.repeat} of ${stats.buyers} buyer${stats.buyers === 1 ? '' : 's'} ordered again` : 'No paid orders yet') : undefined}
         />
         <Stat label="Average lifetime spend" icon={IndianRupee} value={customers ? inr(stats.avg) : '–'} meta={customers ? `${inr(stats.spent)} from ${stats.buyers} buyer${stats.buyers === 1 ? '' : 's'}` : undefined} />
         <Stat label="New in last 30 days" icon={UserPlus} tone="gold" value={customers ? stats.fresh : '–'} meta={customers ? 'First signed up or ordered' : undefined} />

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  AlertTriangle, CheckCircle2, CreditCard, Database, Gift, KeyRound, Mail, Phone, RefreshCw, Server, Truck, XCircle,
+  CreditCard, Database, Gift, KeyRound, Mail, Phone, RefreshCw, Server, Truck,
 } from 'lucide-react';
 import { API_ENDPOINTS, API_BASE_URL, fetchJSON } from '../../utils/api';
 import { BUNDLE_OFFERS, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../../lib/offers';
@@ -76,6 +76,13 @@ const AdminSettings = () => {
             title="Services"
             description={checks && checkedAt ? `Checked at ${checkedAt.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })}` : 'Running checks…'}
             actions={checks && (problems ? <Badge tone="warning">{problems} need{problems === 1 ? 's' : ''} attention</Badge> : <Badge tone="success">All operational</Badge>)}
+            footer={checks && problems > 0 ? (
+              <span className="ad-hint">
+                {checks.some((c) => c.level === 'error')
+                  ? 'If a service stays down for more than a few minutes, open your server on Render and check its logs.'
+                  : 'The store works, but fix the item marked “Needs attention” before you take real orders.'}
+              </span>
+            ) : undefined}
             flush
           >
             <ul className="ad-list" aria-busy={!checks}>
@@ -124,14 +131,14 @@ const AdminSettings = () => {
         <div className="ad-stack">
           <Card title="Shipping & offers" description="Applied automatically at checkout.">
             <dl className="ad-kv">
-              <div><dt>Shipping fee</dt><dd>{inr(SHIPPING_FEE)}</dd></div>
+              <div><dt><Truck aria-hidden size={14} style={{ verticalAlign: -2, marginRight: 6 }} />Shipping fee</dt><dd>{inr(SHIPPING_FEE)}</dd></div>
               <div className="is-good"><dt>Free shipping from</dt><dd>{inr(FREE_SHIPPING_THRESHOLD)}</dd></div>
             </dl>
             <p className="ad-hint" style={{ margin: '8px 0 16px' }}>Measured after bundle savings, before coupons.</p>
-            <div className="ad-section-title"><Gift aria-hidden /> Bundle offers</div>
+            <div className="ad-label" style={{ marginBottom: 10 }}>Bundle offers</div>
             {BUNDLE_OFFERS.map((o) => (
               <div key={o.id} className="ad-insights-offer">
-                <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><Truck aria-hidden /></span>
+                <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><Gift aria-hidden /></span>
                 <div style={{ minWidth: 0 }}>
                   <strong>{o.label}</strong>
                   <span>Any {o.size} {o.noun}s for {inr(o.price)}. Can’t be combined with coupons on the same items.</span>
@@ -141,8 +148,8 @@ const AdminSettings = () => {
             <p className="ad-hint" style={{ marginTop: 14 }}>These rules are built into the website and server. Ask your developer to change them.</p>
           </Card>
 
-          <Card title="Contact details" description="How customers reach you from the store.">
-            <ul className="ad-list" style={{ margin: '-8px -20px' }}>
+          <Card title="Contact details" description="How customers reach you from the store." flush>
+            <ul className="ad-list">
               <li>
                 <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><Phone aria-hidden /></span>
                 <div className="ad-list__main"><span>Phone</span><strong><a href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`} className="ad-link">{SUPPORT_PHONE}</a></strong></div>
@@ -157,16 +164,6 @@ const AdminSettings = () => {
               </li>
             </ul>
           </Card>
-
-          {checks && problems === 0 && (
-            <div className="ad-alert ad-alert--success"><CheckCircle2 aria-hidden /> Everything is running normally.</div>
-          )}
-          {checks && checks.some((c) => c.level === 'error') && (
-            <div className="ad-alert ad-alert--danger"><XCircle aria-hidden /> Something isn’t working. If it doesn’t recover in a few minutes, check the server logs on Render.</div>
-          )}
-          {checks && problems > 0 && !checks.some((c) => c.level === 'error') && (
-            <div className="ad-alert ad-alert--warning"><AlertTriangle aria-hidden /> The store works, but one setting needs your attention before you take real orders.</div>
-          )}
         </div>
       </div>
     </>

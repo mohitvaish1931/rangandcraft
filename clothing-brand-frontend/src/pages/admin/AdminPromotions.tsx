@@ -187,6 +187,7 @@ const AdminPromotions = () => {
       <div className="ad-grid ad-grid--main">
         <div className="ad-stack">
           {coupons.length > 0 && (
+            <div style={{ display: 'flex', minWidth: 0 }}>
             <Tabs
               label="Filter coupons"
               value={filter}
@@ -198,6 +199,7 @@ const AdminPromotions = () => {
                 { key: 'ended', label: 'Ended', count: counts.ended },
               ]}
             />
+            </div>
           )}
 
           {!loaded && coupons.length === 0 ? (
@@ -275,7 +277,7 @@ const AdminPromotions = () => {
                     autoComplete="off"
                     style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', letterSpacing: '0.06em' }}
                   />
-                  <button type="button" className="ad-btn ad-btn--secondary" onClick={() => setCode(newCode())}><Shuffle aria-hidden /> Generate</button>
+                  <button type="button" className="ad-btn ad-btn--secondary" style={{ flexShrink: 0 }} onClick={() => setCode(newCode())}><Shuffle aria-hidden /> Generate</button>
                 </div>
               </Field>
 

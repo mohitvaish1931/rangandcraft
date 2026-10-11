@@ -165,6 +165,7 @@ const AdminBanners = () => {
           )}
         </Card>
 
+        <div>
         <Card title="New message" description="Keep it short: one line on a phone is about 40 characters.">
           <form onSubmit={addBanner} noValidate>
             <Field
@@ -189,6 +190,7 @@ const AdminBanners = () => {
             </button>
           </form>
         </Card>
+        </div>
       </div>
 
       {editing && <EditDrawer key={bannerId(editing)} banner={editing} onClose={() => setEditing(null)} onSave={saveEdit} />}

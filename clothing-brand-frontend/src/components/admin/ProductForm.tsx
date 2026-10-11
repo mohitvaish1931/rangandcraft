@@ -220,7 +220,7 @@ const ProductForm = ({ initial, submitLabel, onSubmit, onCancel, aside }: Produc
   );
 
   return (
-    <form onSubmit={submit} noValidate>
+    <form className="ad-products-form" onSubmit={submit} noValidate>
       <div className="ad-grid ad-grid--form">
         <div className="ad-stack">
           <Card title="Details">

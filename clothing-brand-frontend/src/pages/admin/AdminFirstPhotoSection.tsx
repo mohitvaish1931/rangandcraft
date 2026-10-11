@@ -42,6 +42,9 @@ const AdminFirstPhotoSection = () => {
 
     const fd = new FormData();
     fd.append('existing_images', JSON.stringify(images));
+    // Without an explicit stock the API falls back to the legacy `stock` field, which can be 0
+    // while `countInStock` isn't — so send the current count to keep it unchanged.
+    fd.append('stock', String(p.countInStock ?? p.stock ?? 0));
     setBusy({ id, index });
     try {
       const updated = await fetchJSON<Product>(`${API_ENDPOINTS.PRODUCTS}/${id}`, { method: 'PUT', body: fd });

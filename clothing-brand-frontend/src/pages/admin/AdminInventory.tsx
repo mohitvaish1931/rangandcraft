@@ -105,7 +105,7 @@ const AdminInventory = () => {
           />
         ) : (
           <div className="ad-table-wrap">
-            <table className="ad-table ad-table--stack">
+            <table className="ad-table ad-table--stack ad-products-table">
               <thead>
                 <tr><th>Product</th><th>Category</th><th>Stock level</th><th>Status</th><th className="num">Update stock</th></tr>
               </thead>

@@ -55,10 +55,9 @@ const AdminSalesReports = () => {
 
     let unpaid = 0;
     let unpaidValue = 0;
-    let prevUnpaid = 0;
     for (const o of orders ?? []) {
       if (isPaid(o)) continue;
-      if (index(o.createdAt) >= 0) { unpaid += 1; unpaidValue += orderTotal(o); } else if (inPrevious(o.createdAt)) prevUnpaid += 1;
+      if (index(o.createdAt) >= 0) { unpaid += 1; unpaidValue += orderTotal(o); }
     }
 
     const total = revenue.reduce((a, b) => a + b, 0);
@@ -102,7 +101,7 @@ const AdminSalesReports = () => {
       .slice(0, 5);
 
     return {
-      days, revenue, count, chart, total, orderCount, aov, unpaid, unpaidValue, prevUnpaid, byCategory, bestDays, money,
+      days, revenue, count, chart, total, orderCount, aov, unpaid, unpaidValue, byCategory, bestDays, money,
       revenueDelta: pctChange(total, prevRevenue),
       countDelta: pctChange(orderCount, prevCount),
       aovDelta: pctChange(aov, prevAov),
@@ -154,7 +153,7 @@ const AdminSalesReports = () => {
           icon={Clock}
           tone="gold"
           value={loading ? '—' : report.unpaid}
-          meta={loading ? label : report.unpaid ? `${inr(report.unpaidValue)} not collected · ${report.prevUnpaid} before` : `none · ${report.prevUnpaid} in the period before`}
+          meta={loading ? label : report.unpaid ? `${inr(report.unpaidValue)} not collected` : 'nothing waiting on payment'}
         />
       </div>
 
