@@ -1,4 +1,4 @@
-export const WHATSAPP_NUMBER = '919351325459';
+export const WHATSAPP_NUMBER = '919828152444';
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 export const whatsappLink = (message: string) => `${WHATSAPP_URL}?text=${encodeURIComponent(message)}`;
 export const SUPPORT_PHONE = '+91 93513 25459';

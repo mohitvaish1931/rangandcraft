@@ -6,7 +6,7 @@ import nodemailer from 'nodemailer';
 const SITE_URL = () => (process.env.SITE_URL || 'https://rangandcraft.store').replace(/\/$/, '');
 const BRAND = 'Rang and Craft';
 const SUPPORT_PHONE = '+91 93513 25459';
-const WHATSAPP_URL = 'https://wa.me/919351325459';
+const WHATSAPP_URL = 'https://wa.me/919828152444';
 
 let transport = null;
 let testTransport = null;

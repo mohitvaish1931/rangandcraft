@@ -1,3 +1,4 @@
+import { whatsappLink } from '../lib/brand';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -60,7 +61,7 @@ const LoginScreen = () => {
         </button>
       </form>
       <p className="rc-muted" style={{ fontSize: 14 }}>
-        Forgot your password? <a href="https://wa.me/919351325459?text=Hi!%20I%20need%20help%20resetting%20my%20password." target="_blank" rel="noopener noreferrer">Message us</a> and we’ll help you reset it.
+        Forgot your password? <a href={whatsappLink('Hi! I need help resetting my password.')} target="_blank" rel="noopener noreferrer">Message us</a> and we’ll help you reset it.
       </p>
       <p style={{ fontSize: 15 }}>
         New to Rang and Craft? <Link to={`/register${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`} style={{ color: 'var(--rc-brand)', fontWeight: 500 }}>Create an account</Link>
