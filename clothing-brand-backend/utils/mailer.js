@@ -76,7 +76,7 @@ ${cta ? `<tr><td style="padding:20px 28px 4px;"><a href="${esc(cta.href)}" style
 <tr><td style="padding:20px 28px 28px;">${body}</td></tr>
 <tr><td style="padding:20px 28px;background:#f2eadd;font-size:12px;line-height:1.6;color:#6e655b;text-align:center;">
   Questions? Reply to this email, <a href="${WHATSAPP_URL}" style="color:#1f4645;">WhatsApp us</a> or call ${SUPPORT_PHONE} (Mon–Sat, 10 AM – 7 PM).<br>
-  ${BRAND} · Jaipur, Rajasthan, India
+  Rang &amp; Craft Textile · Sanga Setu Rd, opposite Shri Ram Chemical, Ganesh Colony, Sanganer, Jaipur, Rajasthan 302029
 </td></tr>
 </table></td></tr></table></body></html>`;
 

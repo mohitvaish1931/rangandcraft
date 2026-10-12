@@ -3,7 +3,9 @@ import { Mail, MapPin, Phone } from 'lucide-react';
 import { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { categoriesOf } from '../lib/catalog';
-import { SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_URL } from '../lib/brand';
+import {
+  MAPS_URL, STORE_ADDRESS, SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_URL,
+} from '../lib/brand';
 import WhatsAppIcon from './WhatsAppIcon';
 import logoImg from '../assets/logo.png';
 
@@ -21,7 +23,7 @@ const Footer = () => {
             <div className="rc-footer__contact">
               <a href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`}><Phone size={16} /> {SUPPORT_PHONE}</a>
               <a href={`mailto:${SUPPORT_EMAIL}`}><Mail size={16} /> {SUPPORT_EMAIL}</a>
-              <span style={{ display: 'inline-flex', gap: 10, alignItems: 'center' }}><MapPin size={16} /> Jaipur, Rajasthan, India</span>
+              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" style={{ alignItems: 'flex-start' }}><MapPin size={16} style={{ flexShrink: 0, marginTop: 3 }} /> {STORE_ADDRESS}</a>
             </div>
             <div className="rc-footer__social">
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  CreditCard, Database, Gift, ImageUp, KeyRound, Mail, Phone, RefreshCw, Server,
+  CreditCard, Database, Gift, ImageUp, KeyRound, Mail, MapPin, Phone, RefreshCw, Server,
 } from 'lucide-react';
 import { API_ENDPOINTS, API_BASE_URL, fetchJSON } from '../../utils/api';
 import { BUNDLE_OFFERS, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../../lib/offers';
-import { SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_NUMBER, WHATSAPP_URL } from '../../lib/brand';
+import {
+  MAPS_URL, STORE_ADDRESS, STORE_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_NUMBER, WHATSAPP_URL,
+} from '../../lib/brand';
 import { inr } from '../../lib/adminFormat';
 import { Badge, Card, PageHeader } from '../../components/admin/ui';
 import WhatsAppIcon from '../../components/WhatsAppIcon';
@@ -183,6 +185,10 @@ const AdminSettings = () => {
               <li>
                 <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><WhatsAppIcon /></span>
                 <div className="ad-list__main"><span>WhatsApp</span><strong><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="ad-link">+{WHATSAPP_NUMBER.slice(0, 2)} {WHATSAPP_NUMBER.slice(2, 7)} {WHATSAPP_NUMBER.slice(7)}</a></strong></div>
+              </li>
+              <li>
+                <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><MapPin aria-hidden /></span>
+                <div className="ad-list__main"><span>Store address</span><strong><a href={MAPS_URL} target="_blank" rel="noreferrer" className="ad-link" style={{ display: 'inline', whiteSpace: 'normal' }}>{STORE_NAME}, {STORE_ADDRESS}</a></strong></div>
               </li>
             </ul>
           </Card>

@@ -6,10 +6,9 @@ import WhatsAppIcon from '../components/WhatsAppIcon';
 import { API_ENDPOINTS, postJSON } from '../utils/api';
 import { errorMessage } from '../lib/format';
 import { useToast } from '../lib/toast';
-import { SUPPORT_EMAIL, SUPPORT_PHONE, whatsappLink } from '../lib/brand';
-
-const STUDIO_ADDRESS = '455, Mandhi Khatikan, Pahadiya Chowk, Jaipur - 302002, Rajasthan, India';
-const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(STUDIO_ADDRESS)}`;
+import {
+  MAPS_URL, STORE_ADDRESS, STORE_AREA, STORE_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, whatsappLink,
+} from '../lib/brand';
 
 const SUBJECTS = [
   { value: 'order', label: 'Order, delivery or exchange' },
@@ -48,7 +47,7 @@ const Contact = () => {
     { icon: <WhatsAppIcon width={22} height={22} />, title: 'WhatsApp', text: 'Fastest replies for orders & sizing', action: 'Chat now', href: whatsappLink('Hi Rang and Craft!'), external: true },
     { icon: <Phone size={22} strokeWidth={1.4} />, title: 'Call us', text: SUPPORT_PHONE, action: 'Call now', href: `tel:${SUPPORT_PHONE.replace(/\s/g, '')}` },
     { icon: <Mail size={22} strokeWidth={1.4} />, title: 'Email', text: 'Write to us anytime', action: 'Send email', href: `mailto:${SUPPORT_EMAIL}` },
-    { icon: <MapPin size={22} strokeWidth={1.4} />, title: 'Studio', text: 'Pahadiya Chowk, Jaipur', action: 'Get directions', href: MAPS_URL, external: true },
+    { icon: <MapPin size={22} strokeWidth={1.4} />, title: 'Studio', text: STORE_AREA, action: 'Get directions', href: MAPS_URL, external: true },
   ];
 
   return (
@@ -124,7 +123,7 @@ const Contact = () => {
             </div>
             <div>
               <span className="rc-eyebrow">Studio</span>
-              <p style={{ marginTop: 8 }}>{STUDIO_ADDRESS}</p>
+              <p style={{ marginTop: 8 }}>{STORE_NAME}, {STORE_ADDRESS}</p>
               <a className="rc-link" href={MAPS_URL} target="_blank" rel="noopener noreferrer" style={{ marginTop: 10 }}>Open in Google Maps</a>
             </div>
             <div>
