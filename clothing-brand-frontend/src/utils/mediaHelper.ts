@@ -136,28 +136,19 @@ export const handleVideoError = (event: React.SyntheticEvent<HTMLVideoElement>) 
   event.currentTarget.poster = PLACEHOLDER_IMAGE;
 };
 
-// Editorial photos in /public/images that have pre-generated WebP variants.
-const LOCAL_VARIANTS = new Set([
-  'clothing_rack_hero', 'heritage-edit-men', 'hero-banner', 'indowestern-men',
-  'kurta-men', 'saree-men', 'suits-men', 'tops-men',
-]);
-const CLOUDINARY_WIDTHS = [360, 540, 720, 960, 1280];
+const CLOUDINARY_WIDTHS = [360, 540, 720, 960, 1280, 1920];
+
+const isCloudinary = (url: string) => url.includes('res.cloudinary.com') && url.includes('/upload/') && !url.includes('/upload/c_');
 
 export interface ResponsiveImage { src: string; srcSet?: string; sizes?: string }
 
 /**
- * src/srcSet/sizes for an image so phones download small files:
- * local editorial photos use their WebP variants, Cloudinary photos are
- * resized on the fly, anything else is returned as-is.
+ * src/srcSet/sizes for an image so phones download small files: Cloudinary
+ * photos are resized on the fly, anything else is returned as-is.
  */
 export const responsiveImage = (url: string | undefined, sizes = '100vw', fallbackWidth = 720): ResponsiveImage => {
   if (!url) return { src: PLACEHOLDER_IMAGE };
-  const local = url.match(/^\/images\/([\w-]+)\.(?:jpe?g|png|webp)$/);
-  if (local && LOCAL_VARIANTS.has(local[1])) {
-    const base = `/images/${local[1]}`;
-    return { src: `${base}.webp`, srcSet: `${base}-640.webp 640w, ${base}.webp 1200w`, sizes };
-  }
-  if (url.includes('res.cloudinary.com') && url.includes('/upload/') && !url.includes('/upload/c_')) {
+  if (isCloudinary(url)) {
     return {
       src: getImageUrl(url, fallbackWidth),
       srcSet: CLOUDINARY_WIDTHS.map((w) => `${getImageUrl(url, w)} ${w}w`).join(', '),
@@ -165,4 +156,15 @@ export const responsiveImage = (url: string | undefined, sizes = '100vw', fallba
     };
   }
   return { src: getImageUrl(url, fallbackWidth) };
+};
+
+/**
+ * A Cloudinary photo cropped to an aspect ratio (e.g. '4:5') around its
+ * subject, as a responsive srcSet. Used where a banner shot for wide screens
+ * has to fill a phone. Other URLs are returned as-is.
+ */
+export const croppedImage = (url: string, aspect: string, sizes = '100vw'): ResponsiveImage => {
+  if (!isCloudinary(url)) return { src: url };
+  const at = (w: number) => url.replace('/upload/', `/upload/c_fill,g_auto,ar_${aspect},w_${w},q_auto,f_auto/`);
+  return { src: at(960), srcSet: CLOUDINARY_WIDTHS.map((w) => `${at(w)} ${w}w`).join(', '), sizes };
 };

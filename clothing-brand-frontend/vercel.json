@@ -4,7 +4,11 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!assets/|images/).*)",
+      "source": "/sitemap.xml",
+      "destination": "https://rangandcraft.onrender.com/api/sitemap.xml"
+    },
+    {
+      "source": "/((?!assets/|images/|sitemap\\.xml).*)",
       "destination": "/index.html"
     }
   ],

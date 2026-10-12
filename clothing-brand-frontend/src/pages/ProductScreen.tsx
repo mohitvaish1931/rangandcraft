@@ -11,13 +11,13 @@ import { getImageUrl, handleImageError, responsiveImage } from '../utils/mediaHe
 import { discountPercent, formatPrice, productId } from '../lib/format';
 import { isSoldOut } from '../lib/catalog';
 import { useToast } from '../lib/toast';
-import { whatsappLink } from '../lib/brand';
+import { SITE_URL, whatsappLink } from '../lib/brand';
 import NotFound from './NotFound';
 import Lightbox from '../components/Lightbox';
 import { flyToBag } from '../lib/flyToBag';
 import { scrollToElement, useMediaQuery, useScrollLock } from '../lib/motion';
 import { deliveryWindow } from '../lib/delivery';
-import { offerFor } from '../lib/offers';
+import { FREE_SHIPPING_THRESHOLD, offerFor, SHIPPING_FEE } from '../lib/offers';
 import { getRecentlyViewed, rememberViewed } from '../lib/recentlyViewed';
 
 const SIZE_CHART = [
@@ -105,7 +105,7 @@ const SizeGuide = ({ onClose }: { onClose: () => void }) => {
   }, [onClose]);
 
   return (
-    <div className="rc-modal" role="dialog" aria-modal="true" aria-labelledby="size-guide-title" onClick={onClose} data-lenis-prevent>
+    <div className="rc-modal" role="dialog" aria-modal="true" aria-labelledby="size-guide-title" onClick={onClose}>
       <div className="rc-modal__panel" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="rc-icon-btn rc-modal__close" onClick={onClose} aria-label="Close size guide"><X size={20} /></button>
         <span className="rc-eyebrow">Fit guide</span>
@@ -268,16 +268,18 @@ const ProductDetail = ({ id }: { id: string }) => {
     flyToBag(getImageUrl(product.image, 400), from).then(() => dispatch({ type: 'TOGGLE_CART', payload: true }));
   };
 
-  const canonical = `https://rangandcraft.store/product/${id}`;
+  const canonical = `${SITE_URL}/product/${id}`;
   const jsonLd = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
     name: product.name,
-    image: images.map((i) => (i.startsWith('http') ? i : `https://rangandcraft.store${i}`)),
+    image: images.map((i) => (i.startsWith('http') ? i : `${SITE_URL}${i}`)),
     description: product.description,
     sku: id,
     category: product.category,
     brand: { '@type': 'Brand', name: 'Rang and Craft' },
+    ...(product.colors?.length ? { color: product.colors.join('/') } : {}),
+    ...(product.materials?.length ? { material: product.materials.join(', ') } : {}),
     ...(reviewCount > 0 ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: rating, reviewCount } } : {}),
     offers: {
       '@type': 'Offer',
@@ -286,6 +288,26 @@ const ProductDetail = ({ id }: { id: string }) => {
       price: product.price,
       itemCondition: 'https://schema.org/NewCondition',
       availability: soldOut ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+      // Mirrors the shipping and return policy pages so Google sees the same terms as shoppers.
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: { '@type': 'MonetaryAmount', value: product.price >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE, currency: 'INR' },
+        shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'IN' },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 3, unitCode: 'DAY' },
+          transitTime: { '@type': 'QuantitativeValue', minValue: 4, maxValue: 8, unitCode: 'DAY' },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'IN',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 7,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        refundType: 'https://schema.org/ExchangeRefund',
+        merchantReturnLink: `${SITE_URL}/refund-policy`,
+      },
     },
   };
 
@@ -408,7 +430,7 @@ const ProductDetail = ({ id }: { id: string }) => {
                       <span aria-live="polite">{qty}</span>
                       <button type="button" onClick={() => setQty((q) => Math.min(maxQty, q + 1))} disabled={qty >= maxQty} aria-label="Increase quantity"><Plus size={16} /></button>
                     </div>
-                    <button type="button" className={`rc-btn rc-btn--lg${added ? ' is-added' : ''}`} onClick={() => addToBag(false)} data-magnetic="">
+                    <button type="button" className={`rc-btn rc-btn--lg${added ? ' is-added' : ''}`} onClick={() => addToBag(false)}>
                       {added ? <><Check size={18} className="rc-btn__check" /> Added</> : 'Add to bag'}
                     </button>
                     <button
@@ -472,7 +494,7 @@ const ProductDetail = ({ id }: { id: string }) => {
                 <summary>Shipping & exchanges <Plus size={18} /></summary>
                 <div className="rc-accordion__body">
                   <p>Shipping is free on orders of ₹1499 and above, and a flat ₹70 below that. Orders are dispatched within 2–3 working days and delivered in 4–8 working days. Wrong size? We offer a 7-day size exchange on unworn pieces with original tags attached.</p>
-                  <p style={{ marginTop: 8 }}><Link to="/shipping-policy">Shipping policy</Link> · <Link to="/refund-policy">Exchanges & refunds</Link></p>
+                  <p style={{ marginTop: 8 }}><Link to="/shipping-policy">Shipping policy</Link> · <Link to="/refund-policy">Return &amp; exchange policy</Link></p>
                 </div>
               </details>
             </div>

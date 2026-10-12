@@ -83,7 +83,7 @@ const ProductListPage = () => {
     <>
       <Seo
         title={category ? `${category} for Men` : saleOnly ? 'Sale' : 'Shop Men’s Kurtas & Shirts'}
-        description={`Browse ${category ? category.toLowerCase() : 'men’s kurtas, shirts and co-ord sets'} from Rang and Craft, crafted in Jaipur. Free shipping above ₹1499.`}
+        description={`Browse ${category ? category.toLowerCase() : 'men’s short kurtas and shirts'} from Rang and Craft, crafted in Jaipur. Free shipping above ₹1499.`}
         path={category ? `/shop?category=${encodeURIComponent(category)}` : '/shop'}
       />
 
@@ -246,7 +246,7 @@ const FilterDrawer = (props: FilterDrawerProps) => {
   return (
     <>
       <div className={`rc-overlay${open ? ' is-open' : ''}`} onClick={onClose} aria-hidden />
-      <aside className={`rc-drawer rc-drawer--right${open ? ' is-open' : ''}`} data-lenis-prevent role="dialog" aria-modal="true" aria-label="Filters" aria-hidden={!open}>
+      <aside className={`rc-drawer rc-drawer--right${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Filters" aria-hidden={!open}>
         <div className="rc-drawer__head">
           <span className="rc-drawer__title">Filters</span>
           <button ref={closeRef} type="button" className="rc-icon-btn" onClick={onClose} aria-label="Close filters"><X size={22} /></button>

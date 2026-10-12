@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { categoriesOf } from '../lib/catalog';
 import {
-  MAPS_URL, STORE_ADDRESS, SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_URL,
+  BUSINESS_ADDRESS, BUSINESS_NAME, MAPS_URL, SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_URL,
 } from '../lib/brand';
 import WhatsAppIcon from './WhatsAppIcon';
 import logoImg from '../assets/logo.png';
@@ -19,12 +19,13 @@ const Footer = () => {
         <div className="rc-footer__grid">
           <div className="rc-footer__brand">
             <img src={logoImg} alt="Rang and Craft" loading="lazy" width={66} height={64} />
-            <p>Menswear rooted in the royal legacy of Jaipur — breathable printed cotton, honest prices, made to be worn every day.</p>
-            <div className="rc-footer__contact">
+            <p>Hand block printed cotton menswear from Jaipur — breathable fabrics, honest prices, made to be worn every day.</p>
+            <address className="rc-footer__contact">
+              <strong>{BUSINESS_NAME}</strong>
+              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" style={{ alignItems: 'flex-start' }}><MapPin size={16} style={{ flexShrink: 0, marginTop: 3 }} /> {BUSINESS_ADDRESS}</a>
               <a href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`}><Phone size={16} /> {SUPPORT_PHONE}</a>
               <a href={`mailto:${SUPPORT_EMAIL}`}><Mail size={16} /> {SUPPORT_EMAIL}</a>
-              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" style={{ alignItems: 'flex-start' }}><MapPin size={16} style={{ flexShrink: 0, marginTop: 3 }} /> {STORE_ADDRESS}</a>
-            </div>
+            </address>
             <div className="rc-footer__social">
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
                 <WhatsAppIcon width={18} height={18} />
@@ -49,11 +50,20 @@ const Footer = () => {
             <h2 className="rc-footer__title">Help</h2>
             <ul>
               <li><Link to="/track-order">Track your order</Link></li>
-              <li><Link to="/shipping-policy">Shipping</Link></li>
-              <li><Link to="/refund-policy">Exchanges & refunds</Link></li>
-              <li><Link to="/care-guide">Fabric care</Link></li>
               <li><Link to="/faq">FAQs</Link></li>
+              <li><Link to="/care-guide">Fabric care</Link></li>
               <li><Link to="/contact">Contact us</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="rc-footer__title">Policies</h2>
+            <ul>
+              <li><Link to="/refund-policy">Return &amp; Exchange Policy</Link></li>
+              <li><Link to="/shipping-policy">Shipping Policy</Link></li>
+              <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+              <li><Link to="/terms-conditions">Terms &amp; Conditions</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -74,6 +84,8 @@ const Footer = () => {
         <div className="rc-footer__bottom">
           <span>© {new Date().getFullYear()} Rang and Craft, Jaipur. All rights reserved.</span>
           <nav aria-label="Legal">
+            <Link to="/refund-policy">Returns</Link>
+            <Link to="/shipping-policy">Shipping</Link>
             <Link to="/privacy-policy">Privacy</Link>
             <Link to="/terms-conditions">Terms</Link>
             <Link to="/accessibility">Accessibility</Link>

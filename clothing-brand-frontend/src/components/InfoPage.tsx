@@ -6,7 +6,7 @@ import { SUPPORT_EMAIL, SUPPORT_PHONE, whatsappLink } from '../lib/brand';
 
 const POLICY_LINKS = [
   { to: '/shipping-policy', label: 'Shipping' },
-  { to: '/refund-policy', label: 'Exchanges & refunds' },
+  { to: '/refund-policy', label: 'Returns & exchanges' },
   { to: '/privacy-policy', label: 'Privacy' },
   { to: '/terms-conditions', label: 'Terms' },
   { to: '/accessibility', label: 'Accessibility' },

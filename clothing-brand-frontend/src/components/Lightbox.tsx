@@ -22,7 +22,7 @@ const Lightbox = ({ images, start, onClose, alt = '' }: Props) => {
   }, [onClose, count]);
 
   return (
-    <div className="rc-lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onClick={onClose} data-lenis-prevent>
+    <div className="rc-lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onClick={onClose}>
       <img key={index} src={responsiveImage(images[index], '100vw', 1600).src} alt={alt} onClick={(e) => e.stopPropagation()} />
       <div className="rc-lightbox__count">{index + 1} / {count}</div>
       <button type="button" className="rc-icon-btn rc-lightbox__close" onClick={onClose} aria-label="Close"><X size={24} /></button>

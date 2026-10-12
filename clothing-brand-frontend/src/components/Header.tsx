@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, ChevronDown, Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react';
 import { cartCount, useAppContext } from '../context/AppContext';
-import { categoriesOf, matchesQuery } from '../lib/catalog';
+import { categoriesOf, matchesQuery, sortProducts } from '../lib/catalog';
 import { formatPrice, productId } from '../lib/format';
+import { photosOf, showcase, spotlightOf } from '../lib/media';
 import { getImageUrl, responsiveImage } from '../utils/mediaHelper';
-import { announcementTexts, FALLBACK_IMAGES } from '../lib/brand';
+import { announcementTexts } from '../lib/brand';
 import { useScrollLock } from '../lib/motion';
 import logoImg from '../assets/logo.png';
 
@@ -22,6 +23,15 @@ const NAV_LINKS = [
 const MegaMenu = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const { state } = useAppContext();
   const categories = useMemo(() => categoriesOf(state.products).slice(0, 7), [state.products]);
+  // Two photo tiles from the catalogue: today's featured category and the newest piece.
+  const tiles = useMemo(() => {
+    const spot = spotlightOf(state.products);
+    const [newest] = sortProducts(showcase(state.products), 'newest');
+    return [
+      spot && { to: `/shop?category=${encodeURIComponent(spot.category)}`, label: spot.category, src: spot.look.src },
+      newest && { to: '/shop?sort=newest', label: 'New this season', src: photosOf(newest)[0] },
+    ].filter(Boolean) as { to: string; label: string; src: string }[];
+  }, [state.products]);
   return (
     <div className={`rc-mega${open ? ' is-open' : ''}`} aria-hidden={!open}>
       <div className="rc-container rc-mega__grid">
@@ -46,14 +56,12 @@ const MegaMenu = ({ open, onClose }: { open: boolean; onClose: () => void }) => 
             <li><Link to="/gallery" onClick={onClose} tabIndex={open ? 0 : -1}>Lookbook</Link></li>
           </ul>
         </div>
-        <Link to="/shop?category=Suits" className="rc-mega__tile" onClick={onClose} tabIndex={open ? 0 : -1}>
-          <img {...responsiveImage(FALLBACK_IMAGES[3], '25vw')} alt="" loading="lazy" />
-          <span>Festive edit</span>
-        </Link>
-        <Link to="/shop?sort=newest" className="rc-mega__tile" onClick={onClose} tabIndex={open ? 0 : -1}>
-          <img {...responsiveImage(FALLBACK_IMAGES[0], '25vw')} alt="" loading="lazy" />
-          <span>New this season</span>
-        </Link>
+        {tiles.map((t) => (
+          <Link key={t.to} to={t.to} className="rc-mega__tile" onClick={onClose} tabIndex={open ? 0 : -1}>
+            <img {...responsiveImage(t.src, '25vw', 540)} alt="" loading="lazy" />
+            <span>{t.label}</span>
+          </Link>
+        ))}
       </div>
     </div>
   );
@@ -86,7 +94,7 @@ const SearchPanel = ({ open, onClose }: { open: boolean; onClose: () => void }) 
   return (
     <>
       <div className={`rc-overlay${open ? ' is-open' : ''}`} onClick={close} aria-hidden />
-      <div className={`rc-search${open ? ' is-open' : ''}`} data-lenis-prevent role="dialog" aria-modal="true" aria-label="Search products" aria-hidden={!open}>
+      <div className={`rc-search${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Search products" aria-hidden={!open}>
         <div className="rc-container">
           <form className="rc-search__form" onSubmit={submit} role="search">
             <Search size={24} strokeWidth={1.4} aria-hidden />
@@ -267,7 +275,7 @@ const Header = () => {
       <SearchPanel open={searchOpen} onClose={() => dispatch({ type: 'TOGGLE_SEARCH', payload: false })} />
 
       <div className={`rc-overlay${menuOpen ? ' is-open' : ''}`} onClick={() => setMenuOpen(false)} aria-hidden />
-      <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} data-lenis-prevent aria-label="Menu" aria-hidden={!menuOpen}>
+      <aside className={`rc-drawer rc-drawer--left${menuOpen ? ' is-open' : ''}`} aria-label="Menu" aria-hidden={!menuOpen}>
         <div className="rc-drawer__head">
           <img src={logoImg} alt="Rang and Craft" width={41} height={40} style={{ height: 40, width: 'auto' }} />
           <button type="button" className="rc-icon-btn" aria-label="Close menu" onClick={() => setMenuOpen(false)}>

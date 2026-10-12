@@ -10,7 +10,6 @@ import CartDrawer from './components/CartDrawer';
 import MobileBottomNav from './components/MobileBottomNav';
 import MotionProvider from './components/MotionProvider';
 import Cursor from './components/Cursor';
-import Preloader from './components/Preloader';
 import BackToTop from './components/BackToTop';
 import ErrorBoundary from './components/ErrorBoundary';
 import ToastProvider from './components/ToastProvider';
@@ -52,6 +51,7 @@ const AdminInventory = lazy(() => import('./pages/admin/AdminInventory'));
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
 const AdminCustomers = lazy(() => import('./pages/admin/AdminCustomers'));
 const AdminBanners = lazy(() => import('./pages/admin/AdminBanners'));
+const AdminHomepage = lazy(() => import('./pages/admin/AdminHomepage'));
 const AdminPromotions = lazy(() => import('./pages/admin/AdminPromotions'));
 const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 const AdminInbox = lazy(() => import('./pages/admin/AdminInbox'));
@@ -105,6 +105,7 @@ const MainLayout = () => {
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="reviews" element={<AdminReviews />} />
                 <Route path="inbox" element={<AdminInbox />} />
+                <Route path="homepage" element={<AdminHomepage />} />
                 <Route path="banners" element={<AdminBanners />} />
                 <Route path="promotions" element={<AdminPromotions />} />
                 <Route path="settings" element={<AdminSettings />} />
@@ -141,7 +142,6 @@ const MainLayout = () => {
           <BackToTop />
           <MobileBottomNav />
           <Cursor />
-          <Preloader />
         </>
       )}
     </div>

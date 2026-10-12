@@ -42,7 +42,7 @@ const CartDrawer = () => {
   return (
     <>
       <div className={`rc-overlay${open ? ' is-open' : ''}`} onClick={close} aria-hidden />
-      <aside className={`rc-drawer rc-drawer--right${open ? ' is-open' : ''}`} data-lenis-prevent role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden={!open}>
+      <aside className={`rc-drawer rc-drawer--right${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden={!open}>
         <div className="rc-drawer__head">
           <span className="rc-drawer__title">Your bag {count > 0 && <span className="rc-muted" style={{ fontSize: '1rem' }}>({count})</span>}</span>
           <button ref={closeRef} type="button" className="rc-icon-btn" onClick={close} aria-label="Close bag">

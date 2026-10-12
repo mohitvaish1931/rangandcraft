@@ -7,7 +7,7 @@ import { API_ENDPOINTS, postJSON } from '../utils/api';
 import { errorMessage } from '../lib/format';
 import { useToast } from '../lib/toast';
 import {
-  MAPS_URL, STORE_ADDRESS, STORE_AREA, STORE_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, whatsappLink,
+  MAPS_URL, BUSINESS_ADDRESS, STORE_AREA, STORE_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, whatsappLink,
 } from '../lib/brand';
 
 const SUBJECTS = [
@@ -123,14 +123,14 @@ const Contact = () => {
             </div>
             <div>
               <span className="rc-eyebrow">Studio</span>
-              <p style={{ marginTop: 8 }}>{STORE_NAME}, {STORE_ADDRESS}</p>
+              <p style={{ marginTop: 8 }}>{STORE_NAME}, {BUSINESS_ADDRESS}</p>
               <a className="rc-link" href={MAPS_URL} target="_blank" rel="noopener noreferrer" style={{ marginTop: 10 }}>Open in Google Maps</a>
             </div>
             <div>
               <span className="rc-eyebrow">Quick help</span>
               <ul className="rc-bullets" style={{ marginTop: 10 }}>
                 <li><Link to="/track-order">Track your order</Link></li>
-                <li><Link to="/refund-policy">Exchanges & refunds</Link></li>
+                <li><Link to="/refund-policy">Return &amp; exchange policy</Link></li>
                 <li><Link to="/shipping-policy">Shipping times</Link></li>
                 <li><Link to="/faq">FAQs</Link></li>
               </ul>

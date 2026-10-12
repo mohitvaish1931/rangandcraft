@@ -7,7 +7,7 @@ router.get('/sitemap.xml', async (req, res) => {
   try {
     const products = await Product.find({}).select('_id updatedAt');
 
-    const baseUrl = 'https://rangandcraft.store';
+    const baseUrl = (process.env.SITE_URL || 'https://www.rangandcrafts.com').replace(/\/$/, '');
     
     // Static pages
     const staticPages = [

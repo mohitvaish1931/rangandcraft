@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import type { Look } from '../lib/media';
+import { productId } from '../lib/format';
 import { responsiveImage } from '../utils/mediaHelper';
 
 const STEPS = [
-  { title: 'Designed in Jaipur', text: 'Every collection begins in the Pink City — its colours, arches and centuries of craft shape each print and silhouette.', image: '/images/heritage-edit-men.jpg' },
-  { title: 'Chosen for comfort', text: 'Breathable fabrics that keep you cool through long Indian summers, and still look sharp at the evening’s celebration.', image: '/images/kurta-men.jpg' },
-  { title: 'Made to last', text: 'Considered details and timeless quality, so every piece earns its place in your wardrobe — season after season.', image: '/images/suits-men.jpg' },
+  { title: 'Designed in Jaipur', text: 'Every collection begins in the Pink City — its colours, arches and centuries of craft shape each print and silhouette.' },
+  { title: 'Printed by hand', text: 'Each print is stamped onto breathable cotton with carved wooden blocks, so small variations make every piece your own.' },
+  { title: 'Made to be worn', text: 'Soft fabrics, considered fits and honest prices — pieces that earn their place in your everyday wardrobe.' },
 ];
 
-/** Pinned image that changes as each chapter of text scrolls past. */
-const StickyStory = () => {
+/** Pinned photo that changes as each chapter of text scrolls past. Photos are close-ups from the catalogue. */
+const StickyStory = ({ looks }: { looks: Look[] }) => {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -34,10 +37,19 @@ const StickyStory = () => {
     };
   }, []);
 
+  const current = looks.length ? looks[active % looks.length] : undefined;
+
   return (
     <div className="rc-sticky-story">
       <div className="rc-sticky-story__media">
-        {STEPS.map((s, i) => <img key={s.image} {...responsiveImage(s.image, '(max-width: 900px) 100vw, 50vw')} alt="" className={i === active ? 'is-current' : ''} loading="lazy" />)}
+        {looks.map((l, i) => (
+          <img key={l.src} {...responsiveImage(l.src, '(max-width: 900px) 100vw, 50vw', 960)} alt="" className={i === active % looks.length ? 'is-current' : ''} loading="lazy" />
+        ))}
+        {current && (
+          <Link to={`/product/${productId(current.product)}`} className="rc-sticky-story__tag">
+            {current.product.name}
+          </Link>
+        )}
         <span className="rc-sticky-story__counter" aria-hidden>0{active + 1} <i>/</i> 0{STEPS.length}</span>
       </div>
       <div>

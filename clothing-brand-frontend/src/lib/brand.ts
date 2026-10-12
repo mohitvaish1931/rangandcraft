@@ -4,27 +4,21 @@ export const whatsappLink = (message: string) => `${WHATSAPP_URL}?text=${encodeU
 export const SUPPORT_PHONE = '+91 93513 25459';
 export const SUPPORT_EMAIL = 'rangandcraft.fashion.jaipur@gmail.com';
 
+// Keep the name, address and phone identical everywhere (site, invoices, Google Merchant Center).
+export const BUSINESS_NAME = 'Rang and Craft';
+/** The live storefront address, used for canonical links, sharing and structured data. */
+export const SITE_URL = 'https://www.rangandcrafts.com';
 export const STORE_NAME = 'Rang & Craft Textile';
-export const STORE_ADDRESS = 'Sanga Setu Rd, opposite Shri Ram Chemical, Ganesh Colony, Sanganer, Jaipur, Rajasthan 302029';
+export const BUSINESS_ADDRESS = 'Sanga Setu Rd, opposite Shri Ram Chemical, Ganesh Colony, Sanganer, Jaipur, Rajasthan 302029';
 export const STORE_AREA = 'Sanganer, Jaipur';
-export const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${STORE_NAME}, ${STORE_ADDRESS}`)}`;
-
-// Editorial fallbacks when a category has no product photo yet.
-export const FALLBACK_IMAGES = [
-  '/images/kurta-men.jpg',
-  '/images/tops-men.jpg',
-  '/images/indowestern-men.jpg',
-  '/images/suits-men.jpg',
-  '/images/saree-men.jpg',
-  '/images/heritage-edit-men.jpg',
-];
+export const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${STORE_NAME}, ${BUSINESS_ADDRESS}`)}`;
 
 export const ANNOUNCEMENTS = [
   'Any 2 short kurtas @ flat ₹1499',
   'Any 2 half sleeve shirts @ flat ₹1499',
   'Free shipping on orders above ₹1499',
-  'Easy 7-day size exchange',
-  '1 lakh+ happy customers',
+  '7-day size exchange on unworn pieces',
+  'Hand block printed cotton from Jaipur',
 ];
 
 /** Messages for the scrolling bar: saved announcements, or the built-in ones when none are saved. */

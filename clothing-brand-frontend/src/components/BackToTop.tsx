@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUp } from 'lucide-react';
-import { getLenis } from '../lib/motion';
+import { prefersReducedMotion } from '../lib/motion';
 
 const R = 22;
 const C = 2 * Math.PI * R;
@@ -25,9 +25,7 @@ const BackToTop = () => {
   }, []);
 
   const toTop = () => {
-    const lenis = getLenis();
-    if (lenis) lenis.scrollTo(0, { duration: 1.4 });
-    else window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
   };
 
   return (

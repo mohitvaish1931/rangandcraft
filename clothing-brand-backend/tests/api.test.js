@@ -107,6 +107,10 @@ describe('admin routes are protected', () => {
     ['get', '/api/coupons'],
     ['post', '/api/coupons'],
     ['post', '/api/banners'],
+    ['get', '/api/slides/all'],
+    ['post', '/api/slides'],
+    ['put', '/api/slides/000000000000000000000000'],
+    ['delete', '/api/slides/000000000000000000000000'],
     ['post', '/api/products'],
     ['delete', '/api/products/000000000000000000000000'],
     ['post', '/api/products/reorder'],
@@ -146,6 +150,38 @@ describe('products', () => {
   test('invalid id gives 404, not 500', async () => {
     const res = await request(app).get('/api/products/not-an-id');
     assert.equal(res.status, 404);
+  });
+});
+
+describe('homepage slides', () => {
+  test('the public list shows only active slides, in order, without storage ids', async () => {
+    const { default: Slide } = await import('../models/Slide.js');
+    await Slide.create([
+      { image: 'https://example.com/2.jpg', title: 'Second', order: 2, publicId: 'x/2' },
+      { image: 'https://example.com/1.jpg', title: 'First', order: 1, publicId: 'x/1' },
+      { image: 'https://example.com/h.jpg', title: 'Hidden', order: 0, active: false },
+    ]);
+    const res = await request(app).get('/api/slides');
+    assert.equal(res.status, 200);
+    assert.deepEqual(res.body.map((s) => s.title), ['First', 'Second']);
+    assert.ok(res.body.every((s) => s.publicId === undefined));
+
+    const all = await request(app).get('/api/slides/all').set('Authorization', `Bearer ${adminToken}`);
+    assert.equal(all.body.length, 3);
+    await Slide.deleteMany({});
+  });
+
+  test('a slide needs a photo', async () => {
+    const res = await request(app).post('/api/slides').set('Authorization', `Bearer ${adminToken}`).field('title', 'No photo');
+    assert.ok([400, 503].includes(res.status));
+  });
+
+  test('slide links must be site paths or https', async () => {
+    const { default: Slide } = await import('../models/Slide.js');
+    await assert.rejects(Slide.create({ image: 'https://example.com/a.jpg', ctaLink: 'javascript:alert(1)' }));
+    await assert.rejects(Slide.create({ image: 'https://example.com/a.jpg', ctaLink: '//evil.example' }));
+    const ok = await Slide.create({ image: 'https://example.com/a.jpg', ctaLink: '/shop?category=Short%20Kurtas' });
+    await Slide.deleteOne({ _id: ok._id });
   });
 });
 

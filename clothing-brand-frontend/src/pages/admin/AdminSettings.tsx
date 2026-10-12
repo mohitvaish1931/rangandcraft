@@ -5,7 +5,7 @@ import {
 import { API_ENDPOINTS, API_BASE_URL, fetchJSON } from '../../utils/api';
 import { BUNDLE_OFFERS, FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '../../lib/offers';
 import {
-  MAPS_URL, STORE_ADDRESS, STORE_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_NUMBER, WHATSAPP_URL,
+  MAPS_URL, BUSINESS_ADDRESS, STORE_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, WHATSAPP_NUMBER, WHATSAPP_URL,
 } from '../../lib/brand';
 import { inr } from '../../lib/adminFormat';
 import { Badge, Card, PageHeader } from '../../components/admin/ui';
@@ -188,7 +188,7 @@ const AdminSettings = () => {
               </li>
               <li>
                 <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><MapPin aria-hidden /></span>
-                <div className="ad-list__main"><span>Store address</span><strong><a href={MAPS_URL} target="_blank" rel="noreferrer" className="ad-link" style={{ display: 'inline', whiteSpace: 'normal' }}>{STORE_NAME}, {STORE_ADDRESS}</a></strong></div>
+                <div className="ad-list__main"><span>Store address</span><strong><a href={MAPS_URL} target="_blank" rel="noreferrer" className="ad-link" style={{ display: 'inline', whiteSpace: 'normal' }}>{STORE_NAME}, {BUSINESS_ADDRESS}</a></strong></div>
               </li>
             </ul>
           </Card>

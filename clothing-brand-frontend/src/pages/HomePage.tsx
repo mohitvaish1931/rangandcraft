@@ -10,22 +10,24 @@ import NewsletterForm from '../components/NewsletterForm';
 import SplitText from '../components/SplitText';
 import Seo from '../components/Seo';
 import { Stars } from '../components/StarRating';
-import { categoriesOf, isOnSale, isSoldOut, sortProducts } from '../lib/catalog';
+import HomeHero from '../components/HomeHero';
+import { categoriesOf, isSoldOut, sortProducts } from '../lib/catalog';
 import { productId } from '../lib/format';
+import { pickLooks, spotlightOf, useSlides } from '../lib/media';
+import { offerFor } from '../lib/offers';
 import { useLatestReviews } from '../lib/useLatestReviews';
 import { responsiveImage } from '../utils/mediaHelper';
-import logoImg from '../assets/logo.png';
 
 const VALUES = [
   { icon: Truck, title: 'Free shipping', text: 'On orders above ₹1499' },
-  { icon: RefreshCcw, title: '7-day exchange', text: 'Hassle-free size swaps' },
+  { icon: RefreshCcw, title: '7-day size exchange', text: 'On unworn pieces with tags' },
   { icon: ShieldCheck, title: 'Secure payments', text: 'UPI, cards & netbanking' },
-  { icon: Gem, title: 'Crafted in Jaipur', text: 'Rooted in heritage' },
+  { icon: Gem, title: 'Made in Jaipur', text: 'Hand block printed cotton' },
 ];
 
-const MARQUEE = ['Kurtas', 'Shirts', 'Co-ords', 'Festive', 'Everyday', 'Jaipur'];
+const MARQUEE = ['Short Kurtas', 'Half Sleeve Shirts', 'Full Sleeve Shirts', 'Block Prints', 'Everyday', 'Jaipur'];
 
-const STATEMENT = 'Menswear rooted in the *royal* legacy of Jaipur — breathable fabrics, honest prices and a quiet *confidence* you can wear every single day.';
+const STATEMENT = 'Menswear rooted in the *block-printing* craft of Jaipur — breathable fabrics, honest prices and a quiet *confidence* you can wear every single day.';
 
 const Statement = () => {
   const words = STATEMENT.split(' ');
@@ -67,13 +69,20 @@ const HomePage = () => {
   const visible = useMemo(() => state.products.filter((p) => p.showOnHomepage !== false), [state.products]);
 
   const newArrivals = useMemo(() => sortProducts(visible, 'featured').filter((p) => !isSoldOut(p)).slice(0, 10), [visible]);
-  const editPicks = useMemo(() => {
-    const pool = visible.filter((p) => !isSoldOut(p));
-    const festive = pool.filter((p) => /suit|festive|bandhgala|sherwani|jacket/i.test(`${p.category} ${p.name}`));
-    const picks = festive.length >= 2 ? festive : sortProducts(pool.filter(isOnSale), 'discount');
-    return picks.slice(0, 2);
-  }, [visible]);
   const categories = useMemo(() => categoriesOf(state.products).slice(0, 6), [state.products]);
+
+  // All imagery comes from the admin's hero slides or the catalogue itself.
+  const slides = useSlides();
+  const media = useMemo(() => {
+    const hero = pickLooks(state.products, 3);
+    const spotlight = spotlightOf(state.products);
+    const story = pickLooks(state.products, 3, { shot: 'detail', salt: 3, exclude: hero });
+    const lookbook = pickLooks(state.products, 4, { shot: 1, salt: 5, exclude: [...hero, ...story] });
+    return { hero, spotlight, story, lookbook };
+  }, [state.products]);
+  const spot = media.spotlight;
+  const spotOffer = spot ? offerFor(spot.category) : null;
+  const shareImage = slides?.[0]?.image || media.hero[0]?.src;
   const { data: reviewData } = useLatestReviews(8);
   const quotes = (reviewData?.reviews ?? [])
     .filter((r) => r.rating >= 4)
@@ -84,45 +93,13 @@ const HomePage = () => {
     <>
       <Seo
         title="Rang and Craft | Men's Kurtas & Shirts from Jaipur"
-        description="Shop men's printed cotton kurtas, half sleeve shirts and co-ord sets, crafted in Jaipur. Breathable fabrics, honest prices, free shipping above ₹1499."
+        description="Shop men's hand block printed cotton short kurtas and half & full sleeve shirts from Jaipur. Free shipping above ₹1499, 7-day size exchange."
         path="/"
+        image={shareImage}
       />
 
       {/* ---------- Hero ---------- */}
-      <section className="rc-hero rc-hero--home">
-        <div className="rc-hero__media">
-          <div className="rc-plx" data-parallax="0.18">
-            <img {...responsiveImage('/images/hero-banner.png')} alt="" fetchPriority="high" decoding="async" />
-          </div>
-        </div>
-        <span className="rc-hero__side" aria-hidden>Rang &amp; Craft — Jaipur, Rajasthan</span>
-        <div className="rc-container rc-hero__layout">
-          <span className="rc-eyebrow rc-rise rc-rise--1">The Jaipur Edit</span>
-          <SplitText as="h1" className="rc-hero__title" text={'Jaipur prints,\n*everyday ease.*'} delay={150} soft />
-          <div className="rc-hero__foot">
-            <div>
-              <p className="rc-hero__text rc-rise rc-rise--3">
-                Breathable printed cotton kurtas and shirts, designed and crafted in Jaipur.
-                <br /><span className="rc-hero__offer">Any 2 short kurtas for ₹1499</span>
-              </p>
-              <div className="rc-hero__actions rc-rise rc-rise--4">
-                <Link to="/shop" className="rc-btn rc-btn--light rc-btn--lg" data-magnetic="">Shop the collection</Link>
-                <Link to="/shop?sort=newest" className="rc-btn rc-btn--ghost-light rc-btn--lg" data-magnetic="">New arrivals</Link>
-              </div>
-            </div>
-            <div className="rc-hero__aside rc-rise rc-rise--4">
-              <div className="rc-scroll-cue" aria-hidden><i />Scroll</div>
-              <div className="rc-badge-spin" aria-hidden>
-                <svg viewBox="0 0 132 132">
-                  <defs><path id="rc-circle" d="M66,66 m-54,0 a54,54 0 1,1 108,0 a54,54 0 1,1 -108,0" /></defs>
-                  <text><textPath href="#rc-circle">Rang &amp; Craft • Crafted in Jaipur • Since day one •</textPath></text>
-                </svg>
-                <img src={logoImg} alt="" width={38} height={37} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeHero slides={slides} looks={media.hero} />
 
       {/* ---------- Marquee ---------- */}
       <div className="rc-marquee" aria-hidden>
@@ -188,29 +165,35 @@ const HomePage = () => {
         </section>
       )}
 
-      {/* ---------- Dark festive edit ---------- */}
-      <section className="rc-section rc-dark rc-cv">
-        <div className="rc-container rc-edit">
-          <div className="rc-edit__media" data-reveal="mask">
-            <div className="rc-plx" data-parallax="0.08">
-              <img {...responsiveImage('/images/suits-men.jpg', '(max-width: 900px) 100vw, 50vw')} alt="Festive wear from Rang and Craft" loading="lazy" />
+      {/* ---------- Category spotlight (changes daily) ---------- */}
+      {spot && (
+        <section className="rc-section rc-dark rc-cv">
+          <div className="rc-container rc-edit">
+            <Link to={`/product/${productId(spot.look.product)}`} className="rc-edit__media" data-reveal="mask" data-cursor="View" aria-label={`View ${spot.look.product.name}`}>
+              <div className="rc-plx">
+                <img {...responsiveImage(spot.look.src, '(max-width: 900px) 100vw, 50vw', 960)} alt={spot.look.product.name} loading="lazy" />
+              </div>
+              <span className="rc-edit__tag">{spot.look.product.name}</span>
+            </Link>
+            <div>
+              <span className="rc-eyebrow">In focus · {spot.count} piece{spot.count === 1 ? '' : 's'}</span>
+              <SplitText key={spot.category} className="rc-h1" text={spot.category.replace(/(\S+)$/, '*$1*')} />
+              <p className="rc-lead" style={{ marginTop: 18 }} data-reveal="up">
+                Hand block printed on breathable cotton in our Jaipur studio, ready to ship across India.
+                {spotOffer && <><br /><span className="rc-edit__offer">{spotOffer.label}</span></>}
+              </p>
+              {spot.picks.length > 0 && (
+                <div className="rc-edit__products">
+                  {spot.picks.map((p) => <ProductCard key={productId(p)} product={p} />)}
+                </div>
+              )}
+              <Link to={`/shop?category=${encodeURIComponent(spot.category)}`} className="rc-btn rc-btn--gold rc-btn--lg" style={{ marginTop: spot.picks.length ? 0 : 28 }}>
+                Shop {spot.category.toLowerCase()}
+              </Link>
             </div>
           </div>
-          <div>
-            <span className="rc-eyebrow">The festive edit</span>
-            <SplitText className="rc-h1" text={'Dressed for\nevery *celebration*'} />
-            <p className="rc-lead" style={{ marginTop: 18 }} data-reveal="up">
-              Bandhgalas, suits and long kurtas for weddings, pujas and the evenings you’ll remember.
-            </p>
-            {editPicks.length > 0 && (
-              <div className="rc-edit__products">
-                {editPicks.map((p) => <ProductCard key={productId(p)} product={p} />)}
-              </div>
-            )}
-            <Link to="/shop?category=Suits" className="rc-btn rc-btn--gold rc-btn--lg" data-magnetic="" style={{ marginTop: editPicks.length ? 0 : 28 }}>Explore festive</Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ---------- Sticky story ---------- */}
       <section className="rc-section rc-cv">
@@ -221,7 +204,7 @@ const HomePage = () => {
               <SplitText className="rc-h2" text="Made with *intent*" />
             </div>
           </div>
-          <StickyStory />
+          <StickyStory looks={media.story} />
         </div>
       </section>
 
@@ -246,24 +229,27 @@ const HomePage = () => {
       )}
 
       {/* ---------- Lookbook ---------- */}
-      <section className="rc-section rc-cv">
-        <div className="rc-container">
-          <div className="rc-section-head">
-            <div>
-              <span className="rc-eyebrow">Lookbook</span>
-              <SplitText className="rc-h2" text="Seen in the *Pink City*" />
+      {media.lookbook.length >= 2 && (
+        <section className="rc-section rc-cv">
+          <div className="rc-container">
+            <div className="rc-section-head">
+              <div>
+                <span className="rc-eyebrow">Lookbook</span>
+                <SplitText className="rc-h2" text="Seen in the *Pink City*" />
+              </div>
+              <Link to="/gallery" className="rc-link">Open the lookbook <ArrowRight size={14} /></Link>
             </div>
-            <Link to="/gallery" className="rc-link">Open the lookbook <ArrowRight size={14} /></Link>
+            <div className="rc-lookbook">
+              {media.lookbook.map(({ src, product }, i) => (
+                <Link key={src} to={`/product/${productId(product)}`} data-reveal="mask" data-cursor="View" style={{ '--d': `${i * 120}ms` } as React.CSSProperties}>
+                  <img {...responsiveImage(src, '(max-width: 1100px) 50vw, 25vw')} alt={product.name} loading="lazy" />
+                  <span className="rc-lookbook__cap">{product.name}</span>
+                </Link>
+              ))}
+            </div>
           </div>
-          <div className="rc-lookbook">
-            {['/images/indowestern-men.jpg', '/images/tops-men.jpg', '/images/saree-men.jpg', '/images/clothing_rack_hero.png'].map((src, i) => (
-              <Link key={src} to="/gallery" data-reveal="mask" data-cursor="View" style={{ '--d': `${i * 120}ms` } as React.CSSProperties} aria-label="Open the lookbook">
-                <img {...responsiveImage(src, '(max-width: 1100px) 50vw, 25vw')} alt="" loading="lazy" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ---------- Values + newsletter ---------- */}
       <section className="rc-section">
