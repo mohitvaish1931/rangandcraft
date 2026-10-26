@@ -259,6 +259,38 @@ describe('orders and payments', () => {
     assert.equal(stored.isPaid, false);
   });
 
+  test('payment order creation enforces the 100-paise minimum', async () => {
+    const belowMinimum = await Order.create({
+      orderItems: [{ name: 'x', qty: 1, image: 'x', price: 0.99, product: cheapProduct._id }],
+      shippingAddress: address, paymentMethod: 'Razorpay', totalPrice: 0.99, itemsPrice: 0.99,
+    });
+    const rejected = await request(app).post('/api/payment/razorpay').send({ orderId: belowMinimum._id });
+    assert.equal(rejected.status, 400);
+
+    const minimum = await Order.create({
+      orderItems: [{ name: 'x', qty: 1, image: 'x', price: 1, product: cheapProduct._id }],
+      shippingAddress: address, paymentMethod: 'Razorpay', totalPrice: 1, itemsPrice: 1,
+    });
+    const accepted = await request(app).post('/api/payment/razorpay').send({ orderId: minimum._id });
+    assert.equal(accepted.status, 200);
+    assert.equal(accepted.body.amount, 100);
+  });
+
+  test('verify rejects missing payment fields without marking the order paid', async () => {
+    const order = await Order.create({
+      orderItems: [{ name: 'x', qty: 1, image: 'x', price: 500, product: cheapProduct._id }],
+      shippingAddress: address, paymentMethod: 'Razorpay', totalPrice: 500, itemsPrice: 500,
+      razorpayOrderId: 'order_mock_missing_fields',
+    });
+    const res = await request(app).post('/api/payment/verify').send({
+      mongo_order_id: order._id,
+      razorpay_order_id: order.razorpayOrderId,
+      razorpay_signature: 'mock',
+    });
+    assert.equal(res.status, 400);
+    assert.equal((await Order.findById(order._id)).isPaid, false);
+  });
+
   test('with Razorpay keys set, the mock prefix no longer skips signature checks', async () => {
     process.env.RAZORPAY_KEY_ID = 'rzp_test_key';
     process.env.RAZORPAY_KEY_SECRET = 'rzp_secret';

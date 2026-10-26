@@ -183,6 +183,7 @@ const CheckoutScreen = () => {
         },
       });
       checkout.on('payment.failed', (r) => {
+        setPlacing(false);
         toast.error(r.error?.description || 'Payment failed. No money was taken — please try again.');
       });
       checkout.open();

@@ -96,6 +96,7 @@ router.post('/razorpay', writeLimiter, asyncHandler(async (req, res) => {
   if (order.totalPrice <= 0) return res.status(400).json({ message: 'Nothing to pay for this order.' });
 
   const amount = Math.round(order.totalPrice * 100);
+  if (amount < 100) return res.status(400).json({ message: 'Payment amount must be at least 100 paise.' });
 
   if (!razorpayConfigured()) {
     if (!mockPaymentsAllowed()) {
@@ -127,6 +128,11 @@ router.post('/razorpay', writeLimiter, asyncHandler(async (req, res) => {
 // @route   POST /api/payment/verify
 router.post('/verify', writeLimiter, asyncHandler(async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, mongo_order_id } = req.body;
+
+  if ([razorpay_order_id, razorpay_payment_id, razorpay_signature, mongo_order_id]
+    .some((value) => typeof value !== 'string' || !value.trim())) {
+    return res.status(400).json({ message: 'Missing required payment verification fields.' });
+  }
 
   const order = await loadOrder(mongo_order_id);
   if (!order) return res.status(404).json({ message: 'Order not found' });

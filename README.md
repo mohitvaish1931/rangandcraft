@@ -60,6 +60,8 @@ CI (`.github/workflows/ci.yml`) runs all three on every pull request.
 
 Frontend: `VITE_API_BASE` (in `clothing-brand-frontend/.env.production`) points the storefront at the API.
 
+The checkout reads the public Razorpay key ID from `GET /api/payment/razorpay/config`; no frontend key variable is needed. Keep `RAZORPAY_KEY_SECRET` in the backend environment only. For local testing, use Razorpay test-mode credentials and complete a checkout from `/checkout`.
+
 ## How orders and payments work
 
 1. The browser sends only product ids, quantities, sizes and an optional coupon code.
@@ -67,6 +69,8 @@ Frontend: `VITE_API_BASE` (in `clothing-brand-frontend/.env.production`) points 
 3. `POST /api/payment/razorpay` creates a Razorpay order for the stored total and remembers its id.
 4. After checkout, `POST /api/payment/verify` checks Razorpay's signature **and** that the payment belongs to that order, then marks it paid, reduces stock, counts the coupon use and books the shipment, exactly once. The customer gets a confirmation email and the store gets a new-order alert.
 5. When an order is marked **Shipped** (from the admin panel or the Shiprocket webhook), the customer is emailed the courier, AWB and tracking link, once.
+
+Payment orders are created for the server-calculated amount (minimum 100 paise). The verify endpoint rejects missing fields and only marks an order paid after a valid signature.
 
 ## Admin
 
