@@ -77,7 +77,7 @@ const AboutUs = () => {
       <div className="rc-figures" role="list">
         <div className="rc-figure" role="listitem"><strong>1</strong><span>Studio, in Jaipur</span></div>
         <div className="rc-figure" role="listitem"><strong>100%</strong><span>Cotton fabrics</span></div>
-        <div className="rc-figure" role="listitem"><strong>S–3XL</strong><span>Size range</span></div>
+        <div className="rc-figure" role="listitem"><strong>Inclusive</strong><span>Size range</span></div>
         <div className="rc-figure" role="listitem"><strong>7 days</strong><span>Size exchange</span></div>
       </div>
 

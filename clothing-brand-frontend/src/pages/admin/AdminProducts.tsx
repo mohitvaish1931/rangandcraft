@@ -3,7 +3,7 @@ import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { ArrowDown, ArrowDownUp, ArrowUp, Check, ExternalLink, GripVertical, Pencil, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { useAppContext, type Product } from '../../context/AppContext';
 import { API_ENDPOINTS, postJSON } from '../../utils/api';
-import { categoriesOf, isSoldOut } from '../../lib/catalog';
+import { availableSizes, categoriesOf, isSoldOut } from '../../lib/catalog';
 import { errorMessage, productId } from '../../lib/format';
 import { inr } from '../../lib/adminFormat';
 import { useToast } from '../../lib/toast';
@@ -178,7 +178,8 @@ const AdminProducts = () => {
                   const stock = stockOf(p);
                   const st = statusOf(p);
                   const out = isSoldOut(p);
-                  const sub = [p.sizes?.length ? p.sizes.join(', ') : '', p.colors?.length ? `${p.colors.length} colour${p.colors.length === 1 ? '' : 's'}` : ''].filter(Boolean).join(' · ');
+                  const sizes = availableSizes(p.sizes);
+                  const sub = [sizes.length ? sizes.join(', ') : '', p.colors?.length ? `${p.colors.length} colour${p.colors.length === 1 ? '' : 's'}` : ''].filter(Boolean).join(' · ');
                   const dragProps = reordering ? {
                     draggable: true,
                     onDragStart: (e: DragEvent) => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); setDragFrom(idx); },

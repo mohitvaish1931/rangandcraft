@@ -14,6 +14,7 @@ import { useToast } from '../lib/toast';
 import { SITE_URL, whatsappLink } from '../lib/brand';
 import NotFound from './NotFound';
 import Lightbox from '../components/Lightbox';
+import { availableSizes } from '../lib/catalog';
 import { flyToBag } from '../lib/flyToBag';
 import { scrollToElement, useMediaQuery, useScrollLock } from '../lib/motion';
 import { deliveryWindow } from '../lib/delivery';
@@ -21,13 +22,10 @@ import { FREE_SHIPPING_THRESHOLD, offerFor, SHIPPING_FEE } from '../lib/offers';
 import { getRecentlyViewed, rememberViewed } from '../lib/recentlyViewed';
 
 const SIZE_CHART = [
-  { size: 'S', chest: 36, waist: 32, hip: 38 },
   { size: 'M', chest: 38, waist: 34, hip: 40 },
   { size: 'L', chest: 40, waist: 36, hip: 42 },
   { size: 'XL', chest: 42, waist: 38, hip: 44 },
   { size: 'XXL', chest: 44, waist: 40, hip: 46 },
-  { size: '4XL', chest: 48, waist: 44, hip: 50 },
-  { size: '5XL', chest: 50, waist: 46, hip: 52 },
 ];
 
 const Gallery = ({ images, name, onOpen }: { images: string[]; name: string; onOpen: (index: number) => void }) => {
@@ -233,15 +231,18 @@ const ProductDetail = ({ id }: { id: string }) => {
   }
 
   // A single available option is selected automatically.
-  const size = chosenSize || (product.sizes?.length === 1 ? product.sizes[0] : '');
+  const productSizes = availableSizes(product.sizes);
+  const size = chosenSize || (productSizes.length === 1 ? productSizes[0] : '');
   const color = chosenColor || (product.colors?.length === 1 ? product.colors[0] : '');
   const images = [...new Set([product.image, ...(product.images || [])].filter(Boolean))];
   const soldOut = isSoldOut(product);
+  const noAvailableSizes = Boolean(product.sizes?.length) && productSizes.length === 0;
+  const unavailable = soldOut || noAvailableSizes;
   const off = discountPercent(product.price, product.originalPrice);
   const offer = offerFor(product.category);
   const stock = product.countInStock ?? MAX_LINE_QUANTITY;
   const maxQty = Math.max(1, Math.min(MAX_LINE_QUANTITY, stock));
-  const needsSize = (product.sizes?.length ?? 0) > 0;
+  const needsSize = productSizes.length > 0;
   const rating = product.rating || product.averageRating || 0;
   const reviewCount = product.numReviews || product.reviewCount || 0;
   const wished = state.wishlist.some((w) => productId(w) === id);
@@ -287,7 +288,7 @@ const ProductDetail = ({ id }: { id: string }) => {
       priceCurrency: 'INR',
       price: product.price,
       itemCondition: 'https://schema.org/NewCondition',
-      availability: soldOut ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+      availability: unavailable ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
       // Mirrors the shipping and return policy pages so Google sees the same terms as shoppers.
       shippingDetails: {
         '@type': 'OfferShippingDetails',
@@ -374,7 +375,7 @@ const ProductDetail = ({ id }: { id: string }) => {
                 )}
               </div>
               <p className="rc-pdp__tax" style={{ marginTop: 6 }}>Inclusive of all taxes · Free shipping above ₹1499</p>
-              {!soldOut && offer && (
+              {!unavailable && offer && (
                 <Link to={`/shop?category=${encodeURIComponent(product.category)}`} className="rc-offer">
                   <Gift size={18} strokeWidth={1.5} aria-hidden />
                   <span><strong>Bundle offer:</strong> {offer.label.replace(/^Any /, 'any ')}. Applied automatically in your bag.</span>
@@ -383,11 +384,11 @@ const ProductDetail = ({ id }: { id: string }) => {
               )}
             </div>
 
-            {soldOut ? (
+            {unavailable ? (
               <div className="rc-alert rc-alert--info" style={{ flexDirection: 'column' }}>
-                <strong>This piece is currently sold out.</strong>
-                <span>Message us and we’ll let you know when it’s back.</span>
-                <a className="rc-btn rc-btn--sm" style={{ marginTop: 8, alignSelf: 'flex-start' }} href={whatsappLink(`Hi! Please let me know when "${product.name}" is back in stock.`)} target="_blank" rel="noopener noreferrer">Notify me on WhatsApp</a>
+                <strong>{soldOut ? 'This piece is currently sold out.' : 'No sizes are currently available.'}</strong>
+                <span>{soldOut ? 'Message us and we’ll let you know when it’s back.' : 'Message us on WhatsApp if you need help finding your size.'}</span>
+                <a className="rc-btn rc-btn--sm" style={{ marginTop: 8, alignSelf: 'flex-start' }} href={whatsappLink(soldOut ? `Hi! Please let me know when "${product.name}" is back in stock.` : `Hi! I need help finding my size for "${product.name}".`)} target="_blank" rel="noopener noreferrer">{soldOut ? 'Notify me on WhatsApp' : 'Ask us on WhatsApp'}</a>
               </div>
             ) : (
               <>
@@ -398,7 +399,7 @@ const ProductDetail = ({ id }: { id: string }) => {
                       <button type="button" className="rc-link" style={{ fontSize: 12 }} onClick={() => setShowGuide(true)}><Ruler size={14} /> Size guide</button>
                     </div>
                     <div className="rc-swatches" role="radiogroup" aria-label="Size">
-                      {product.sizes!.map((s) => (
+                      {productSizes.map((s) => (
                         <button key={s} type="button" role="radio" aria-checked={size === s} className={`rc-swatch${size === s ? ' is-active' : ''}`} onClick={() => { setSize(s); setSizeError(false); }}>
                           {s}
                         </button>
@@ -449,7 +450,7 @@ const ProductDetail = ({ id }: { id: string }) => {
               </>
             )}
 
-            {!soldOut && (
+            {!unavailable && (
               <p className="rc-delivery">
                 <CalendarClock size={18} strokeWidth={1.5} aria-hidden />
                 <span>Order today for delivery between <strong>{deliveryWindow().label}</strong></span>
@@ -530,7 +531,7 @@ const ProductDetail = ({ id }: { id: string }) => {
         </section>
       )}
 
-      {!soldOut && (
+      {!unavailable && (
         <div className={`rc-sticky-buy${stickyVisible ? ' is-visible' : ''}`} aria-hidden={!stickyVisible}>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</div>

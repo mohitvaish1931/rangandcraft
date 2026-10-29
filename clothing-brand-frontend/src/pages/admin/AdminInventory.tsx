@@ -3,7 +3,7 @@ import { Link, useOutletContext } from 'react-router-dom';
 import { AlertTriangle, Boxes, IndianRupee, Minus, PackageCheck, PackageX, Plus } from 'lucide-react';
 import { useAppContext, type Product } from '../../context/AppContext';
 import { API_ENDPOINTS, fetchJSON } from '../../utils/api';
-import { isSoldOut } from '../../lib/catalog';
+import { availableSizes, isSoldOut } from '../../lib/catalog';
 import { errorMessage, productId } from '../../lib/format';
 import { inr, inrShort } from '../../lib/adminFormat';
 import { useToast } from '../../lib/toast';
@@ -151,7 +151,7 @@ const StockRow = ({ product: p, onSave }: { product: Product; onSave: (p: Produc
           <img src={getImageUrl(p.images?.[0] || p.image, 100)} alt="" loading="lazy" />
           <span style={{ minWidth: 0 }}>
             <strong>{p.name}</strong>
-            <span>{inr(p.price)}{p.sizes?.length ? ` · ${p.sizes.join(', ')}` : ''}</span>
+            <span>{inr(p.price)}{availableSizes(p.sizes).length ? ` · ${availableSizes(p.sizes).join(', ')}` : ''}</span>
           </span>
         </Link>
       </td>

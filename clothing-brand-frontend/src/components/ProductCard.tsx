@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { useRef, useState } from 'react';
 import { Check, Heart } from 'lucide-react';
 import { useAppContext, type Product } from '../context/AppContext';
+import { availableSizes, isSoldOut } from '../lib/catalog';
 import { getImageUrl, handleImageError, responsiveImage } from '../utils/mediaHelper';
 
 const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 25vw';
 import { discountPercent, formatPrice, productId } from '../lib/format';
-import { isSoldOut } from '../lib/catalog';
 import { offerFor } from '../lib/offers';
 import { Stars } from './StarRating';
 import { flyToBag } from '../lib/flyToBag';
@@ -26,6 +26,9 @@ const ProductCard = ({ product, priority = false }: Props) => {
   const href = `/product/${id}`;
   const off = discountPercent(product.price, product.originalPrice);
   const soldOut = isSoldOut(product);
+  const sizes = availableSizes(product.sizes);
+  const noAvailableSizes = Boolean(product.sizes?.length) && sizes.length === 0;
+  const unavailable = soldOut || noAvailableSizes;
   const altImage = product.images?.find((img) => img && img !== product.image);
   const wished = state.wishlist.some((w) => productId(w) === id);
   const rating = product.rating || product.averageRating || 0;
@@ -42,10 +45,8 @@ const ProductCard = ({ product, priority = false }: Props) => {
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   };
-  const sizes = product.sizes ?? [];
-
   return (
-    <article className={`rc-card${soldOut ? ' is-soldout' : ''}`}>
+    <article className={`rc-card${unavailable ? ' is-soldout' : ''}`}>
       <div className="rc-card__frame" ref={frameRef}>
         <Link to={href} className="rc-card__media" aria-label={product.name} tabIndex={-1} data-cursor="View">
           <img
@@ -61,8 +62,8 @@ const ProductCard = ({ product, priority = false }: Props) => {
           {altImage && <img className="rc-card__alt" {...responsiveImage(altImage, CARD_SIZES, 600)} alt="" loading="lazy" decoding="async" width={600} height={750} aria-hidden />}
         </Link>
         <div className="rc-card__badges">
-          {soldOut ? <span className="rc-tag rc-tag--dark">Sold out</span> : off > 0 && <span className="rc-tag rc-tag--sale">{off}% off</span>}
-          {product.isBOGO && !soldOut && <span className="rc-tag">Buy 1 Get 1</span>}
+          {unavailable ? <span className="rc-tag rc-tag--dark">{soldOut ? 'Sold out' : 'No sizes available'}</span> : off > 0 && <span className="rc-tag rc-tag--sale">{off}% off</span>}
+          {product.isBOGO && !unavailable && <span className="rc-tag">Buy 1 Get 1</span>}
         </div>
         <button
           type="button"
@@ -73,7 +74,7 @@ const ProductCard = ({ product, priority = false }: Props) => {
         >
           <Heart size={18} strokeWidth={1.6} />
         </button>
-        {!soldOut && (
+        {!unavailable && (
           <div className="rc-card__qa">
             {added ? (
               <div className="rc-card__qa-done" role="status"><Check size={16} /> Added to bag</div>
@@ -99,7 +100,7 @@ const ProductCard = ({ product, priority = false }: Props) => {
           <span className="rc-price__now">{formatPrice(product.price)}</span>
           {off > 0 && <span className="rc-price__was">{formatPrice(product.originalPrice)}</span>}
         </div>
-        {!soldOut && offerFor(product.category) && (
+        {!unavailable && offerFor(product.category) && (
           <span className="rc-card__offer">Any 2 for {formatPrice(offerFor(product.category)!.price)}</span>
         )}
         {reviews > 0 && (

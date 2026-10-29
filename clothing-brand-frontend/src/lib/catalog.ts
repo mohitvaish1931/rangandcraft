@@ -60,7 +60,11 @@ const DEFAULT_CATEGORIES = ['Short Kurtas', 'Long Kurtas', 'Half Sleeves Shirts'
 export const categoryOptions = (products: Product[], current?: string) =>
   [...new Set([...DEFAULT_CATEGORIES, ...products.map((p) => p.category), current].filter(Boolean) as string[])].sort();
 
-const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', 'XXXL', '4XL', 'FREE SIZE'];
+const REMOVED_SIZES = new Set(['S', '3XL', 'XXXL', '4XL', '5XL']);
+export const isAvailableSize = (size: string) => !REMOVED_SIZES.has(size.trim().toUpperCase());
+export const availableSizes = (sizes: string[] = []) => sizes.filter(isAvailableSize);
+
+const SIZE_ORDER = ['XS', 'M', 'L', 'XL', 'XXL', '2XL', 'FREE SIZE'];
 const sizeRank = (s: string) => {
   const i = SIZE_ORDER.indexOf(s.toUpperCase());
   return i === -1 ? SIZE_ORDER.length + (Number.parseFloat(s) || 0) : i;
@@ -68,7 +72,7 @@ const sizeRank = (s: string) => {
 
 /** Every size offered across the catalogue, in wearing order. */
 export const sizesOf = (products: Product[]) =>
-  [...new Set(products.flatMap((p) => p.sizes || []).map((s) => s.trim()).filter(Boolean))]
+  [...new Set(products.flatMap((p) => p.sizes || []).map((s) => s.trim()).filter(Boolean).filter(isAvailableSize))]
     .sort((a, b) => sizeRank(a) - sizeRank(b) || a.localeCompare(b));
 
 export const PRICE_RANGES = [
@@ -82,4 +86,4 @@ export const inPriceRanges = (p: Product, ranges: string[]) =>
   !ranges.length || PRICE_RANGES.some((r) => ranges.includes(r.value) && p.price >= r.min && p.price <= r.max);
 
 export const hasAnySize = (p: Product, sizes: string[]) =>
-  !sizes.length || (p.sizes || []).some((s) => sizes.includes(s.trim()));
+  !sizes.length || availableSizes(p.sizes).some((s) => sizes.includes(s.trim()));

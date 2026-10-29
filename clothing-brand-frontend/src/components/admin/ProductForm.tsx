@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { ImagePlus, Star, X } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
-import { categoryOptions, sizesOf } from '../../lib/catalog';
+import { availableSizes, categoryOptions, isAvailableSize, sizesOf } from '../../lib/catalog';
 import { discountPercent, errorMessage } from '../../lib/format';
 import { inr } from '../../lib/adminFormat';
 import { useToast } from '../../lib/toast';
@@ -52,7 +52,7 @@ const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_BYTES = 10 * 1024 * 1024;
 const MAX_NEW = 10; // the API accepts up to 10 uploads per request
 const LOW_STOCK = 3;
-const COMMON_SIZES = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
+const COMMON_SIZES = ['M', 'L', 'XL', 'XXL'];
 
 const lines = (text: string) => text.split('\n').map((s) => s.trim()).filter(Boolean);
 const isWhole = (s: string) => /^\d+$/.test(s.trim());
@@ -85,7 +85,7 @@ const FIELD_ID: Record<ErrorKey, string> = {
 const ProductForm = ({ initial, submitLabel, onSubmit, onCancel, aside }: ProductFormProps) => {
   const toast = useToast();
   const { state } = useAppContext();
-  const [start] = useState<Values>(() => ({ ...EMPTY, ...initial }));
+  const [start] = useState<Values>(() => ({ ...EMPTY, ...initial, sizes: availableSizes(initial?.sizes) }));
   const [values, setValues] = useState<Values>(start);
   const [added, setAdded] = useState<NewPhoto[]>([]);
   const [submitted, setSubmitted] = useState(false);
@@ -306,7 +306,18 @@ const ProductForm = ({ initial, submitLabel, onSubmit, onCancel, aside }: Produc
 
           <Card title="Variants" description="Type a value and press Enter. Customers pick from these on the product page.">
             <Field label="Sizes" htmlFor="pf-sizes" optional>
-              <ChipInput id="pf-sizes" values={values.sizes} onChange={(v) => set('sizes', v)} placeholder="e.g. M" ideas={sizeIdeas} upper />
+              <ChipInput
+                id="pf-sizes"
+                values={values.sizes}
+                onChange={(v) => {
+                  const available = v.filter(isAvailableSize);
+                  if (available.length !== v.length) toast.error('Sizes S, 3XL and XXXL are no longer available.');
+                  set('sizes', available);
+                }}
+                placeholder="e.g. M"
+                ideas={sizeIdeas}
+                upper
+              />
             </Field>
             <Field label="Colours" htmlFor="pf-colors" optional>
               <ChipInput id="pf-colors" values={values.colors} onChange={(v) => set('colors', v)} placeholder="e.g. Indigo" ideas={colourIdeas} />
