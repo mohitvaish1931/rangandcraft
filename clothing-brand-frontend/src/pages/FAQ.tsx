@@ -46,11 +46,6 @@ const GROUPS: { title: string; items: Faq[] }[] = [
     title: 'Offers & payments',
     items: [
       {
-        q: 'How do the “any 2 @ ₹1499” offers work?',
-        a: 'Add any 2 short kurtas, or any 2 half sleeve shirts, to your bag and the pair is automatically priced at ₹1499 at checkout. Add 4 and you get the offer twice. Coupons can’t be combined with the bundle offer on the same items.',
-        link: { to: '/shop', label: 'Shop the collection' },
-      },
-      {
         q: 'Which payment methods do you accept?',
         a: 'We accept UPI, debit and credit cards, net banking and popular wallets, processed securely by Razorpay. Cash on delivery isn’t available at the moment.',
       },

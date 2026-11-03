@@ -35,7 +35,7 @@ const TermsConditions = () => (
             {
               icon: <BadgePercent size={22} strokeWidth={1.5} />,
               title: 'Offers & coupons',
-              body: <p>Bundle offers are applied automatically at checkout. A coupon can’t be combined with a bundle offer on the same items, and each coupon is subject to its own validity and usage limits. We may end or change an offer at any time; orders already placed keep the price you paid.</p>,
+              body: <p>Offers and coupons are applied at checkout, and each coupon is subject to its own validity and usage limits. We may end or change an offer at any time; orders already placed keep the price you paid.</p>,
             },
             {
               icon: <Receipt size={22} strokeWidth={1.5} />,

@@ -10,7 +10,7 @@ const DEFAULT_COPY = {
   eyebrow: 'The Jaipur Edit',
   title: 'Jaipur prints,\n*everyday ease.*',
   text: 'Hand block printed cotton kurtas and shirts, made in Jaipur.',
-  offer: 'Any 2 short kurtas for ₹1499',
+  offer: 'Free shipping on orders above ₹1499',
 };
 const SLIDE_MS = 7000;
 

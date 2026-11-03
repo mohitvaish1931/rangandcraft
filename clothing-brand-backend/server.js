@@ -6,6 +6,7 @@ import compression from 'compression';
 import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import { applyAdminReset } from './utils/adminReset.js';
+import { applyPriceUpdates } from './utils/priceUpdates.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -30,8 +31,11 @@ mongoose.set('strictQuery', true);
 
 if (process.env.NODE_ENV !== 'test') {
   connectDB()
-    .then(applyAdminReset)
-    .catch((err) => console.error('Admin reset failed:', err.message));
+    .then(async () => {
+      await applyAdminReset().catch((err) => console.error('Admin reset failed:', err.message));
+      await applyPriceUpdates().catch((err) => console.error('Price update failed:', err.message));
+    })
+    .catch((err) => console.error('Startup tasks failed:', err.message));
 }
 
 const app = express();

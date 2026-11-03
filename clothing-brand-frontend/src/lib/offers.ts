@@ -5,10 +5,12 @@ import type { CartItem } from '../context/AppContext';
 export const SHIPPING_FEE = 70;
 export const FREE_SHIPPING_THRESHOLD = 1499;
 
-export const BUNDLE_OFFERS = [
-  { id: 'short-kurtas-2', label: 'Any 2 short kurtas @ ₹1499', noun: 'short kurta', match: /short\s*kurta/i, size: 2, price: 1499 },
-  { id: 'half-sleeve-2', label: 'Any 2 half sleeve shirts @ ₹1499', noun: 'half sleeve shirt', match: /half\s*sleeve/i, size: 2, price: 1499 },
-];
+export interface BundleOffer { id: string; label: string; noun: string; match: RegExp; size: number; price: number }
+
+// "Any N for ₹X" offers, matched by category, e.g.
+// { id: 'short-kurtas-2', label: 'Any 2 short kurtas @ ₹1499', noun: 'short kurta', match: /short\s*kurta/i, size: 2, price: 1499 }.
+// None are running right now.
+export const BUNDLE_OFFERS: BundleOffer[] = [];
 
 /** The bundle offer a product qualifies for, if any. */
 export const offerFor = (category?: string) => BUNDLE_OFFERS.find((o) => o.match.test(category || '')) || null;

@@ -194,10 +194,10 @@ describe('orders and payments', () => {
     });
     assert.equal(res.status, 201);
     assert.equal(res.body.itemsPrice, 1998);
-    // Two short kurtas trigger the "any 2 @ ₹1499" bundle; 1499 qualifies for free shipping.
-    assert.equal(res.body.offerDiscount, 499);
+    // No bundle offers are running; 1998 qualifies for free shipping.
+    assert.equal(res.body.offerDiscount, 0);
     assert.equal(res.body.shippingPrice, 0);
-    assert.equal(res.body.totalPrice, 1499);
+    assert.equal(res.body.totalPrice, 1998);
   });
 
   test('orders below ₹1499 pay ₹70 shipping', async () => {
@@ -326,7 +326,7 @@ describe('orders and payments', () => {
     assert.equal(order.status, 201);
     const rzp = await request(app).post('/api/payment/razorpay').send({ orderId: order.body._id, amount: 1 });
     assert.equal(rzp.status, 200);
-    assert.equal(rzp.body.amount, 149900);
+    assert.equal(rzp.body.amount, 199800); // 2 × ₹999, no bundle offer
 
     const payload = { mongo_order_id: order.body._id, razorpay_order_id: rzp.body.id, razorpay_payment_id: 'mock', razorpay_signature: 'mock' };
     const first = await request(app).post('/api/payment/verify').send(payload);
@@ -418,25 +418,65 @@ describe('reviews', () => {
 });
 
 describe('bundle offers', async () => {
-  const { applyBundleOffers, priceOrder } = await import('../utils/pricing.js');
+  const { applyBundleOffers, priceOrder, BUNDLE_OFFERS } = await import('../utils/pricing.js');
   const kurta = (price, qty = 1) => ({ product: `k${price}`, category: 'Short Kurtas', price, qty });
+  const offers = [{ id: 'short-kurtas-2', label: 'Any 2 short kurtas @ ₹1499', match: /short\s*kurta/i, size: 2, price: 1499 }];
+
+  test('no offers are running', () => {
+    assert.deepEqual(BUNDLE_OFFERS, []);
+    assert.equal(applyBundleOffers([kurta(1299, 2)]).discount, 0);
+  });
 
   test('pairs the most expensive units and leaves the cheapest one out', () => {
-    const r = applyBundleOffers([kurta(1299), kurta(899), kurta(799)]);
+    const r = applyBundleOffers([kurta(1299), kurta(899), kurta(799)], offers);
     assert.equal(r.discount, 1299 + 899 - 1499);
     assert.deepEqual(r.bundledQty, [1, 1, 0]);
   });
 
   test('never makes a pair more expensive than buying separately', () => {
-    const r = applyBundleOffers([kurta(600, 2)]);
+    const r = applyBundleOffers([kurta(600, 2)], offers);
     assert.equal(r.discount, 0);
   });
 
   test('coupons only apply to units outside a bundle', () => {
     const lines = [kurta(999, 3)];
-    const pricing = priceOrder(lines, { discountPercent: 10, active: true, applicableCategories: [] });
+    const pricing = priceOrder(lines, { discountPercent: 10, active: true, applicableCategories: [] }, offers);
     assert.equal(pricing.offerDiscount, 999 * 2 - 1499);
     assert.equal(pricing.discountAmount, 100); // 10% of the one unbundled kurta
+  });
+});
+
+describe('one-off price updates', async () => {
+  const { applyPriceUpdates } = await import('../utils/priceUpdates.js');
+
+  test('sets prices by category once, keeping an MRP only while it is higher', async () => {
+    const base = { user: product.user, image: 'https://example.com/p.jpg', brand: 'RC', description: 'd', countInStock: 5, sizes: ['M'] };
+    const [kurta, shirt, full, other] = await Product.create([
+      { ...base, name: 'PU kurta', category: 'Short Kurta', price: 999, originalPrice: 1299 },
+      { ...base, name: 'PU half', category: 'half sleeves shirts', price: 899, originalPrice: 500 },
+      { ...base, name: 'PU full', category: 'Full Sleeve Shirts', price: 999 },
+      { ...base, name: 'PU three', category: 'Three Piece Half Sleeves Shirts', price: 1599 },
+    ]);
+    const update = {
+      id: `test-prices-${Date.now()}`,
+      prices: [
+        { category: /^\s*short\s*kurtas?\s*$/i, price: 749 },
+        { category: /^\s*half\s*sleeves?\s*shirts?\s*$/i, price: 599 },
+        { category: /^\s*full\s*sleeves?\s*shirts?\s*$/i, price: 699 },
+      ],
+    };
+    await applyPriceUpdates([update]);
+    const read = async (p) => Product.findById(p._id).lean();
+    assert.deepEqual([(await read(kurta)).price, (await read(kurta)).originalPrice], [749, 1299]);
+    assert.deepEqual([(await read(shirt)).price, (await read(shirt)).originalPrice], [599, 0]);
+    assert.equal((await read(full)).price, 699);
+    assert.equal((await read(other)).price, 1599);
+
+    // A second start leaves later admin edits alone.
+    await Product.updateOne({ _id: kurta._id }, { price: 799 });
+    await applyPriceUpdates([update]);
+    assert.equal((await read(kurta)).price, 799);
+    await Product.deleteMany({ _id: { $in: [kurta, shirt, full, other].map((p) => p._id) } });
   });
 });
 

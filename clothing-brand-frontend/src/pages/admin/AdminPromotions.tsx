@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Copy, Info, Plus, Shuffle, Tag, Trash2 } from 'lucide-react';
+import { Copy, Plus, Shuffle, Tag, Trash2 } from 'lucide-react';
 import { useAppContext, type Coupon, type Product } from '../../context/AppContext';
 import { API_ENDPOINTS, apiCall, fetchJSON, postJSON } from '../../utils/api';
 import { errorMessage, productId as idOf } from '../../lib/format';
@@ -176,13 +176,6 @@ const AdminPromotions = () => {
         actions={<button type="button" className="ad-btn" onClick={goToForm}><Plus aria-hidden /> Create coupon</button>}
       />
 
-      <div className="ad-alert ad-alert--info" style={{ marginBottom: 20 }}>
-        <Info aria-hidden />
-        <span>
-          Coupons can’t be combined with the automatic “any 2 for ₹1499” bundle offers. Items that already got the bundle price
-          aren’t discounted again; the coupon only applies to the other items in the bag.
-        </span>
-      </div>
 
       <div className="ad-grid ad-grid--main">
         <div className="ad-stack">

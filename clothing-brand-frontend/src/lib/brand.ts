@@ -14,8 +14,6 @@ export const STORE_AREA = 'Sanganer, Jaipur';
 export const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${STORE_NAME}, ${BUSINESS_ADDRESS}`)}`;
 
 export const ANNOUNCEMENTS = [
-  'Any 2 short kurtas @ flat ₹1499',
-  'Any 2 half sleeve shirts @ flat ₹1499',
   'Free shipping on orders above ₹1499',
   '7-day size exchange on unworn pieces',
   'Hand block printed cotton from Jaipur',

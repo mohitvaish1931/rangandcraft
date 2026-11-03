@@ -158,8 +158,9 @@ const AdminSettings = () => {
               <div><dt>Shipping fee</dt><dd>{inr(SHIPPING_FEE)}</dd></div>
               <div className="is-good"><dt>Free shipping from</dt><dd>{inr(FREE_SHIPPING_THRESHOLD)}</dd></div>
             </dl>
-            <p className="ad-hint" style={{ margin: '8px 0 16px' }}>Measured after bundle savings, before coupons.</p>
+            <p className="ad-hint" style={{ margin: '8px 0 16px' }}>Measured before coupons.</p>
             <div className="ad-label" style={{ marginBottom: 10 }}>Bundle offers</div>
+            {BUNDLE_OFFERS.length === 0 && <p className="ad-hint">No “any 2 for ₹X” offers are running.</p>}
             {BUNDLE_OFFERS.map((o) => (
               <div key={o.id} className="ad-insights-offer">
                 <span className="ad-insights-status-icon" style={{ width: 34, height: 34 }}><Gift aria-hidden /></span>

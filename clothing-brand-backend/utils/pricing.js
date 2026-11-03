@@ -7,11 +7,10 @@ export const MAX_QTY_PER_LINE = 10;
 export const SHIPPING_FEE = 70;
 export const FREE_SHIPPING_THRESHOLD = 1499;
 
-// "Any 2 for ₹X" offers advertised on the storefront. Matching is by category.
-export const BUNDLE_OFFERS = [
-  { id: 'short-kurtas-2', label: 'Any 2 short kurtas @ ₹1499', match: /short\s*kurta/i, size: 2, price: 1499 },
-  { id: 'half-sleeve-2', label: 'Any 2 half sleeve shirts @ ₹1499', match: /half\s*sleeve/i, size: 2, price: 1499 },
-];
+// "Any N for ₹X" offers, matched by category, e.g.
+// { id: 'short-kurtas-2', label: 'Any 2 short kurtas @ ₹1499', match: /short\s*kurta/i, size: 2, price: 1499 }.
+// None are running; keep in step with BUNDLE_OFFERS in the frontend's lib/offers.ts.
+export const BUNDLE_OFFERS = [];
 
 /**
  * Applies bundle offers. Units are grouped most-expensive first so the
@@ -127,9 +126,9 @@ export const buildOrderLines = (rawItems, productsById) => {
   });
 };
 
-export const priceOrder = (lines, coupon) => {
+export const priceOrder = (lines, coupon, bundleOffers = BUNDLE_OFFERS) => {
   const itemsPrice = lines.reduce((sum, line) => sum + line.price * line.qty, 0);
-  const offers = applyBundleOffers(lines);
+  const offers = applyBundleOffers(lines, bundleOffers);
   const offerDiscount = Math.min(offers.discount, itemsPrice);
   const discountAmount = Math.min(computeDiscount(lines, coupon, offers.bundledQty), itemsPrice - offerDiscount);
   const merchandise = itemsPrice - offerDiscount;
