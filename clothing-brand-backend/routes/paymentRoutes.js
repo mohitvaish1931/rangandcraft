@@ -1,5 +1,4 @@
 import express from 'express';
-import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import mongoose from 'mongoose';
 import Order from '../models/Order.js';
@@ -9,10 +8,9 @@ import { createShipmozoOrder } from '../utils/shipmozo.js';
 import { notifyOrderPaid } from '../utils/mailer.js';
 import { writeLimiter } from '../middleware/rateLimit.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { razorpayClient, razorpayConfigured, razorpayReason } from '../utils/razorpay.js';
 
 const router = express.Router();
-
-const razorpayConfigured = () => Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
 
 // Mock payments mark orders as paid without charging anyone, so they are
 // only allowed outside production (or when explicitly enabled for staging).
@@ -108,16 +106,19 @@ router.post('/razorpay', writeLimiter, asyncHandler(async (req, res) => {
     return res.json({ id: mockId, currency: 'INR', amount, mock: true });
   }
 
-  const instance = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  });
-  const rzpOrder = await instance.orders.create({
-    amount,
-    currency: 'INR',
-    receipt: String(order._id),
-    notes: { mongo_order_id: String(order._id) },
-  });
+  let rzpOrder;
+  try {
+    rzpOrder = await razorpayClient().orders.create({
+      amount,
+      currency: 'INR',
+      receipt: String(order._id),
+      notes: { mongo_order_id: String(order._id) },
+    });
+  } catch (err) {
+    // Never pass Razorpay's 401 through: the storefront would read it as an expired sign-in.
+    console.error(`Razorpay refused to create a payment for order ${order._id}:`, err?.statusCode, razorpayReason(err));
+    return res.status(502).json({ message: 'We couldn’t start the payment right now. Please try again in a minute, or message us on WhatsApp to place your order.' });
+  }
 
   order.razorpayOrderId = rzpOrder.id;
   await order.save();

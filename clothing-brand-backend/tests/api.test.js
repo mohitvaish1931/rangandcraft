@@ -338,6 +338,33 @@ describe('orders and payments', () => {
     assert.equal(after, before - 2);
   });
 
+  test('a payment Razorpay refuses answers 502 with a clear message, never 401', async () => {
+    process.env.RAZORPAY_KEY_ID = 'rzp_test_wrong';
+    process.env.RAZORPAY_KEY_SECRET = 'wrong_secret';
+    try {
+      const order = await Order.create({
+        orderItems: [{ name: 'x', qty: 1, image: 'x', price: 500, product: cheapProduct._id }],
+        shippingAddress: address, paymentMethod: 'Razorpay', totalPrice: 500, itemsPrice: 500,
+      });
+      const res = await request(app).post('/api/payment/razorpay').send({ orderId: order._id });
+      assert.equal(res.status, 502);
+      assert.match(res.body.message, /couldn’t start the payment/);
+    } finally {
+      delete process.env.RAZORPAY_KEY_ID;
+      delete process.env.RAZORPAY_KEY_SECRET;
+    }
+  });
+
+  test('payment check explains Razorpay problems', async () => {
+    const { razorpayReason, checkPayments } = await import('../utils/razorpay.js');
+    assert.equal(razorpayReason({ statusCode: 401, error: { description: 'Authentication failed' } }), 'Authentication failed');
+    assert.equal(razorpayReason({ statusCode: 500 }), 'Razorpay answered 500');
+    const res = await checkPayments();
+    assert.equal(res.configured, false);
+    const denied = await request(app).get('/api/admin/payments-check');
+    assert.equal(denied.status, 401);
+  });
+
   test('mock payments are refused in production without keys', async () => {
     process.env.NODE_ENV = 'production';
     try {

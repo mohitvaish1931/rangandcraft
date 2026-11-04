@@ -29,6 +29,12 @@ const ENV_GROUPS = [
 ];
 
 interface UploadsCheck { ok: boolean; configured: boolean; status?: number; message: string; cloudName?: string; apiKey?: string }
+interface PaymentsCheck { ok: boolean; configured: boolean; status?: number; message: string; mode?: 'live' | 'test'; keyId?: string }
+
+const paymentHint = (c: PaymentsCheck) => {
+  if (c.status === 401 || /auth/i.test(c.message)) return 'RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET on Render don’t match. Copy both again from Razorpay → Account & Settings → API Keys (regenerate the secret if you don’t have it).';
+  return 'Check your Razorpay dashboard for account activation or website approval notices.';
+};
 
 const uploadHint = (u: UploadsCheck) => {
   const m = u.message.toLowerCase();
@@ -40,13 +46,15 @@ const uploadHint = (u: UploadsCheck) => {
 };
 
 const runChecks = async (): Promise<Check[]> => {
-  const [health, pay, uploads] = await Promise.allSettled([
+  const [health, pay, payCheck, uploads] = await Promise.allSettled([
     fetchJSON<{ status: string; db: string }>(API_ENDPOINTS.HEALTH),
     fetchJSON<{ enabled: boolean; mock: boolean; keyId: string | null }>(API_ENDPOINTS.PAYMENT.CONFIG),
+    fetchJSON<PaymentsCheck>(API_ENDPOINTS.ADMIN_PAYMENTS_CHECK),
     fetchJSON<UploadsCheck>(API_ENDPOINTS.ADMIN_UPLOADS_CHECK),
   ]);
   const h = health.status === 'fulfilled' ? health.value : null;
   const p = pay.status === 'fulfilled' ? pay.value : null;
+  const pc = payCheck.status === 'fulfilled' ? payCheck.value : null;
   const u = uploads.status === 'fulfilled' ? uploads.value : null;
   return [
     { label: 'Store server', icon: Server, detail: h ? `Online and answering at ${API_BASE_URL}` : `Can’t reach ${API_BASE_URL}. The store may be starting up; check again in a minute.`, level: h ? 'ok' : 'error' },
@@ -55,10 +63,11 @@ const runChecks = async (): Promise<Check[]> => {
       label: 'Online payments',
       icon: CreditCard,
       detail: !p ? 'Unknown, because the server can’t be reached.'
-        : p.keyId ? `Razorpay in ${p.keyId.startsWith('rzp_live') ? 'live mode: real payments are being collected' : 'test mode: no real money is collected yet'} (key ${p.keyId}).`
-          : p.mock ? 'Practice payments only (development). No money is collected.'
-            : 'Not set up. Customers can’t pay online until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are added.',
-      level: !p ? 'error' : p.keyId?.startsWith('rzp_live') ? 'ok' : 'warn',
+        : pc?.configured && !pc.ok ? `Razorpay refused the keys${pc.status ? ` (${pc.status})` : ''}: “${pc.message}” — key ${pc.keyId}. Customers can’t pay until this is fixed. ${paymentHint(pc)}`
+          : p.keyId ? `Razorpay in ${p.keyId.startsWith('rzp_live') ? 'live mode: real payments are being collected' : 'test mode: no real money is collected yet'} (key ${p.keyId})${pc?.ok ? '. Keys verified with Razorpay just now.' : '.'}`
+            : p.mock ? 'Practice payments only (development). No money is collected.'
+              : 'Not set up. Customers can’t pay online until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are added.',
+      level: !p || (pc?.configured && !pc.ok) ? 'error' : p.keyId?.startsWith('rzp_live') ? 'ok' : 'warn',
     },
     {
       label: 'Image uploads',

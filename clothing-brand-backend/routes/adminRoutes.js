@@ -6,6 +6,7 @@ import Product from '../models/Product.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { checkUploads } from '../config/cloudinary.js';
+import { checkPayments } from '../utils/razorpay.js';
 
 const router = express.Router();
 
@@ -25,6 +26,12 @@ router.get('/summary', protect, admin, asyncHandler(async (req, res) => {
 // @route   GET /api/admin/uploads-check
 router.get('/uploads-check', protect, admin, asyncHandler(async (req, res) => {
   res.json(await checkUploads());
+}));
+
+// @desc    Test the Razorpay keys with a read-only call, with Razorpay's own reason if they fail
+// @route   GET /api/admin/payments-check
+router.get('/payments-check', protect, admin, asyncHandler(async (req, res) => {
+  res.json(await checkPayments());
 }));
 
 export default router;
